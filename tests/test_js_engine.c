@@ -367,6 +367,20 @@ int main(void) {
     step_frames(1, 1.0 / 60.0);
     eval_must("__unit.btnCount", "0");
 
+    /* Actor facing: a mock actor at 0x200000 with a 2x-scaled identity rotation at +0x328. */
+    {
+        float *rot = (float *)(g_mock_guest + 0x200000 + 0x328);
+        const float scaled[9] = {2, 0, 0, 0, 2, 0, 0, 0, 2};
+        memcpy(rot, scaled, sizeof scaled);
+    }
+    eval_must("String(game.actors.getFacing(0x200000))", "\"0\"");
+    eval_must("game.actors.setFacing(0x200000, Math.PI / 2) && Math.abs(game.actors.getFacing(0x200000) - Math.PI / 2) < 1e-5", "true");
+    eval_must("[0,1,2,3,4,5,6,7,8].map(i => (Math.round(memory.readF32(0x200328 + 4 * i) * 1000) / 1000 || 0).toFixed(3)).join(' ')",
+              "0.000 0.000 2.000 0.000 2.000 0.000 -2.000 0.000 0.000");
+    eval_must("Math.abs(game.actors.inspect(0x200000).facing - Math.PI / 2) < 1e-5", "true");
+    eval_must("let bad = false; try { game.actors.setFacing(0x200000, NaN); } catch (e) { bad = e instanceof TypeError; } bad", "true");
+    eval_must("String(game.actors.getFacing(0x10))", "null");
+
     hos_js_shutdown();
     rm_rf_dir(base_dir);
     VirtualFree(g_mock_guest, 0, MEM_RELEASE);

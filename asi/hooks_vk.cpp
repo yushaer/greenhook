@@ -392,6 +392,8 @@ void js_overlay_before_begin(uint32_t w, uint32_t h) {
     if (!g_vk.p_GImGui || !*g_vk.p_GImGui) return;
     ImGuiIO& io = g_vk.ig_GetIO();
     io.MouseDrawCursor = false;
+    /* WantCaptureMouse is last frame's answer: the cursor is over a window or a widget holds it. */
+    hos_js_set_overlay_state((int)w, (int)h, g_have_ptr && io.WantCaptureMouse);
     if (g_have_ptr) {
         g_had_ptr = true;
         int ix = 0, iy = 0;

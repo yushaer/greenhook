@@ -41,7 +41,7 @@ powershell -ExecutionPolicy Bypass -File scripts_sdk\uninstall-from-v3.ps1 -Game
 
 ### 2. Add or Run Scripts
 - Drop `.js` files (or `<mod>\main.js` / `mod.json`) into `<GameDir>\scripts\`, or bundle scripts inside `<GameDir>\mods\<ModName>\scripts\`.
-- Ready-to-use examples are copied into `<GameDir>\scripts\examples\` (`01-hud-telemetry.js` through `04-native-and-romfs.js`).
+- Ready-to-use examples are copied into `<GameDir>\scripts\examples\` (`01-hud-telemetry.js` through `05-scene-editor.js`). `05-scene-editor.js` is an in-game scene editor: press `F7` for a free-fly camera, click objects to select them, and drag handles to move them. Edits are saved as virtual RomFS overrides.
 - TypeScript autocomplete definitions live at `<GameDir>\scripts\greenhook.d.ts`.
 
 ### 3. Build & Run Unit Tests from Source
@@ -60,7 +60,7 @@ powershell -ExecutionPolicy Bypass -File tests\run_tests.ps1
 | `host/` | QuickJS-NG engine core (`js_engine.c`, `js_memory.c`, `js_oot.c`, `js_io.c`, `js_ui.c`, `js_api.h`, `js_internal.h`) plus the three minimal stock host ABI headers (`hos.h`, `hos_paths.h`, `control.h`). |
 | `gpu/` | Minimal stock Vulkan/ImGui/NVN ABI headers (`gpu/vk/` and `gpu/render/`) required for binary-compatible overlay compilation. |
 | `third_party/` | Vendored **QuickJS-NG** (`quickjs/`), **MinHook** (`minhook/`), **a64-kit** (`a64-kit/rt/a64.h`), and **Dear ImGui `1.92.9b`** headers (`imgui/`). |
-| `scripts_sdk/` | Mod author SDK: `longshot.d.ts`, `README.md`, 4 example scripts (`examples/`), Node.js CLI (`longshot-js-cli.mjs`), and deploy scripts (`install-to-v3.ps1`, `uninstall-from-v3.ps1`). |
+| `scripts_sdk/` | Mod author SDK: `longshot.d.ts`, `README.md`, 5 example scripts (`examples/`), Node.js CLI (`longshot-js-cli.mjs`), and deploy scripts (`install-to-v3.ps1`, `uninstall-from-v3.ps1`). |
 | `tests/` | Standalone unit test harness (`test_js_engine.c` + `run_tests.ps1`) with mock guest memory & host stubs. |
 | `docs/` | Technical architecture, API reference, build guide, and CLI/debugging guides. |
 

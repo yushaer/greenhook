@@ -656,6 +656,26 @@ static JSValue js_input_isKeyDown(JSContext *ctx, JSValueConst this_val, int arg
     return JS_NewBool(ctx, (GetAsyncKeyState(vk) & 0x8000) != 0);
 }
 
+static volatile LONG g_overlay_w = 0, g_overlay_h = 0, g_overlay_ui_mouse = 0;
+
+void hos_js_set_overlay_state(int width, int height, int ui_wants_mouse) {
+    InterlockedExchange(&g_overlay_w, width > 0 ? width : 0);
+    InterlockedExchange(&g_overlay_h, height > 0 ? height : 0);
+    InterlockedExchange(&g_overlay_ui_mouse, ui_wants_mouse ? 1 : 0);
+}
+
+void js_overlay_size(int *width, int *height) {
+    int w = (int)InterlockedCompareExchange(&g_overlay_w, 0, 0);
+    int h = (int)InterlockedCompareExchange(&g_overlay_h, 0, 0);
+    if (w <= 0 || h <= 0) {
+        int64_t r = 0, d = 0;
+        w = 1280, h = 720;
+        if (!rx_control_frame_info(&r, &d, &w, &h) || w <= 0 || h <= 0) w = 1280, h = 720;
+    }
+    *width = w;
+    *height = h;
+}
+
 static JSValue js_input_getMouse(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     (void)this_val, (void)argc, (void)argv;
     int64_t r = 0, d = 0;
@@ -665,10 +685,20 @@ static JSValue js_input_getMouse(JSContext *ctx, JSValueConst this_val, int argc
     GetCursorPos(&pt);
     HWND fg = GetForegroundWindow();
     DWORD pid = 0;
+    int cw = 0, ch = 0;
     if (fg) {
         GetWindowThreadProcessId(fg, &pid);
-        if (pid == GetCurrentProcessId()) ScreenToClient(fg, &pt);
+        if (pid == GetCurrentProcessId()) {
+            ScreenToClient(fg, &pt);
+            RECT rc;
+            if (GetClientRect(fg, &rc)) cw = rc.right - rc.left, ch = rc.bottom - rc.top;
+        }
     }
+    /* Map client pixels into ui.draw pixels the same way the overlay maps the pointer for Dear ImGui. */
+    int ow = 0, oh = 0;
+    js_overlay_size(&ow, &oh);
+    const double ox = cw > 0 ? (double)pt.x * ow / cw : pt.x;
+    const double oy = ch > 0 ? (double)pt.y * oh / ch : pt.y;
     uint32_t btns = ((GetAsyncKeyState(VK_LBUTTON) & 0x8000) ? 1u : 0u) |
                     ((GetAsyncKeyState(VK_RBUTTON) & 0x8000) ? 2u : 0u) |
                     ((GetAsyncKeyState(VK_MBUTTON) & 0x8000) ? 4u : 0u);
@@ -678,6 +708,11 @@ static JSValue js_input_getMouse(JSContext *ctx, JSValueConst this_val, int argc
     JS_SetPropertyStr(ctx, o, "width", JS_NewInt32(ctx, w));
     JS_SetPropertyStr(ctx, o, "height", JS_NewInt32(ctx, h));
     JS_SetPropertyStr(ctx, o, "buttons", JS_NewUint32(ctx, btns));
+    JS_SetPropertyStr(ctx, o, "overlayX", JS_NewFloat64(ctx, ox));
+    JS_SetPropertyStr(ctx, o, "overlayY", JS_NewFloat64(ctx, oy));
+    JS_SetPropertyStr(ctx, o, "overlayWidth", JS_NewInt32(ctx, ow));
+    JS_SetPropertyStr(ctx, o, "overlayHeight", JS_NewInt32(ctx, oh));
+    JS_SetPropertyStr(ctx, o, "overUi", JS_NewBool(ctx, InterlockedCompareExchange(&g_overlay_ui_mouse, 0, 0) != 0));
     return o;
 }
 

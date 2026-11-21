@@ -1728,10 +1728,9 @@ static JSValue js_cam_worldToScreen(JSContext *ctx, JSValueConst this_val, int a
     if (!view) return JS_NULL;
     float m[12];
     if (!js_mem_read(view + 8, m, sizeof m)) return JS_NULL;
-    int64_t rep = 0, drw = 0;
+    /* Return ui.draw pixels, which follow the overlay image rather than the render frame. */
     int width = 1280, height = 720;
-    if (!rx_control_frame_info(&rep, &drw, &width, &height) || width <= 0 || height <= 0)
-        width = 1280, height = 720;
+    js_overlay_size(&width, &height);
     const double cx = m[0] * wx + m[1] * wy + m[2] * wz + m[3];
     const double cy = m[4] * wx + m[5] * wy + m[6] * wz + m[7];
     const double cz = m[8] * wx + m[9] * wy + m[10] * wz + m[11];

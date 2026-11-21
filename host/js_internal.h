@@ -53,6 +53,8 @@ void hos_mark_written(const void *p, size_t n);
 int rx_option(int id, int otherwise);
 void rx_option_set(int id, int value);
 int rx_control_frame_info(int64_t *presents, int64_t *draws, int *width, int *height);
+/* The ui.draw coordinate space: the overlay's image size once it has drawn, else the frame size. */
+void js_overlay_size(int *width, int *height);
 int rx_control_setting(int index, HosControlSetting *out);
 int rx_control_setting_set(const char *key, int value, HosControlSetting *out);
 int rx_control_shot(const char *path, int64_t after, void (*done)(void *ctx, int64_t present, int ok), void *ctx);

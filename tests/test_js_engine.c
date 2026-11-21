@@ -317,6 +317,39 @@ int main(void) {
     assert(snap.window_count == 1 && !strcmp(snap.windows[0].id, "win1"));
     assert(snap.windows[0].widget_count == 2);
 
+    /* Layout scopes are recorded in order, and windows hold 128 widgets. */
+    eval_must("const lw = ui.window('layout', 'Layout');"
+              "lw.beginTabBar('tabs').tab('a', 'First').label('one').endTab()"
+              ".tab('b', 'Second').beginChild('list', 120).label('two').endChild().endTab().endTabBar();"
+              "let threw = false; try { lw.beginChild('bad', -1); } catch (e) { threw = e instanceof RangeError; }"
+              "String(threw)", "true");
+    {
+        static MkwVkJsSnapshot ls;
+        memset(&ls, 0, sizeof ls);
+        ls.struct_size = sizeof ls;
+        assert(hos_js_ui_snapshot_vk(&ls) == 1);
+        const MkwVkJsWindow *lw = NULL;
+        for (int i = 0; i < ls.window_count; i++) if (!strcmp(ls.windows[i].id, "layout")) lw = &ls.windows[i];
+        assert(lw && lw->widget_count == 10);
+        const int kinds[10] = {MKWVK_JS_WIDGET_TAB_BAR, MKWVK_JS_WIDGET_TAB, MKWVK_JS_WIDGET_LABEL, MKWVK_JS_WIDGET_TAB_END,
+                               MKWVK_JS_WIDGET_TAB, MKWVK_JS_WIDGET_CHILD, MKWVK_JS_WIDGET_LABEL, MKWVK_JS_WIDGET_CHILD_END,
+                               MKWVK_JS_WIDGET_TAB_END, MKWVK_JS_WIDGET_TAB_BAR_END};
+        for (int i = 0; i < 10; i++) assert(lw->widgets[i].kind == kinds[i]);
+        assert(!strcmp(lw->widgets[1].id, "a") && !strcmp(lw->widgets[1].label, "First"));
+        assert(lw->widgets[5].fval == 120.0f);
+    }
+    eval_must("const cw = ui.window('cap', 'Cap'); for (let i = 0; i < 200; i++) cw.label('x'); 'ok'", "ok");
+    {
+        static MkwVkJsSnapshot cs;
+        memset(&cs, 0, sizeof cs);
+        cs.struct_size = sizeof cs;
+        assert(hos_js_ui_snapshot_vk(&cs) == 1);
+        int found = 0;
+        for (int i = 0; i < cs.window_count; i++)
+            if (!strcmp(cs.windows[i].id, "cap")) { assert(cs.windows[i].widget_count == MKWVK_JS_MAX_WIDGETS); found = 1; }
+        assert(found && MKWVK_JS_MAX_WIDGETS == 128);
+    }
+
     MkwVkJsEvent ev;
     memset(&ev, 0, sizeof ev);
     ev.kind = MKWVK_JS_EV_CLICK;

@@ -419,6 +419,67 @@ void js_overlay_before_begin(uint32_t w, uint32_t h) {
     }
 }
 
+/* Index of the closer matching the opener at `start`, or the last widget when it is missing. */
+static int matching_close(const MkwVkJsWindow& win, int start, int open_kind, int close_kind) {
+    int depth = 0;
+    for (int j = start + 1; j < win.widget_count; j++) {
+        if (win.widgets[j].kind == open_kind) depth++;
+        else if (win.widgets[j].kind == close_kind && depth-- == 0) return j;
+    }
+    return win.widget_count - 1;
+}
+
+/* Handles a layout scope widget. Returns false when `wg` is not a scope. Scopes that are open are pushed
+   on `stack` so their closer (or the end of the window) ends them; hidden contents are skipped. */
+static bool draw_scope(const MkwVkJsWindow& win, int& i, int* stack, int& sp, int cap) {
+    const MkwVkJsWidget& wg = win.widgets[i];
+    const int top = sp > 0 ? stack[sp - 1] : 0;
+    switch (wg.kind) {
+    case MKWVK_JS_WIDGET_TAB_BAR:
+        if (sp < cap && g_vk.ig_BeginTabBar(wg.id[0] ? wg.id : "##tabs", ImGuiTabBarFlags_FittingPolicyScroll))
+            stack[sp++] = MKWVK_JS_WIDGET_TAB_BAR;
+        else i = matching_close(win, i, MKWVK_JS_WIDGET_TAB_BAR, MKWVK_JS_WIDGET_TAB_BAR_END);
+        return true;
+    case MKWVK_JS_WIDGET_TAB: {
+        char name[192];
+        snprintf(name, sizeof name, "%s###%s", wg.label, wg.id);
+        if (top == MKWVK_JS_WIDGET_TAB_BAR && sp < cap && g_vk.ig_BeginTabItem(name, nullptr, 0))
+            stack[sp++] = MKWVK_JS_WIDGET_TAB;
+        else i = matching_close(win, i, MKWVK_JS_WIDGET_TAB, MKWVK_JS_WIDGET_TAB_END);
+        return true;
+    }
+    case MKWVK_JS_WIDGET_TAB_END:
+        if (top == MKWVK_JS_WIDGET_TAB) { g_vk.ig_EndTabItem(); sp--; }
+        return true;
+    case MKWVK_JS_WIDGET_TAB_BAR_END:
+        if (top == MKWVK_JS_WIDGET_TAB_BAR) { g_vk.ig_EndTabBar(); sp--; }
+        return true;
+    case MKWVK_JS_WIDGET_CHILD:
+        if (sp >= cap) { i = matching_close(win, i, MKWVK_JS_WIDGET_CHILD, MKWVK_JS_WIDGET_CHILD_END); return true; }
+        /* EndChild is required even when BeginChild reports the region as clipped. */
+        stack[sp++] = MKWVK_JS_WIDGET_CHILD;
+        if (!g_vk.ig_BeginChild(wg.id[0] ? wg.id : "##child", ImVec2(0.0f, wg.fval), ImGuiChildFlags_Borders, 0))
+            i = matching_close(win, i, MKWVK_JS_WIDGET_CHILD, MKWVK_JS_WIDGET_CHILD_END) - 1;
+        return true;
+    case MKWVK_JS_WIDGET_CHILD_END:
+        if (top == MKWVK_JS_WIDGET_CHILD) { g_vk.ig_EndChild(); sp--; }
+        return true;
+    default:
+        return false;
+    }
+}
+
+static void close_scopes(int* stack, int& sp) {
+    while (sp > 0) {
+        switch (stack[--sp]) {
+        case MKWVK_JS_WIDGET_TAB: g_vk.ig_EndTabItem(); break;
+        case MKWVK_JS_WIDGET_TAB_BAR: g_vk.ig_EndTabBar(); break;
+        case MKWVK_JS_WIDGET_CHILD: g_vk.ig_EndChild(); break;
+        default: break;
+        }
+    }
+}
+
 void draw_hud_prims(ImDrawList* dl, ImFont* font) {
     if (!g_snap_valid || g_snap.prim_count <= 0 || !dl) return;
     ImFont* f = font ? font : g_vk.ig_GetFont();
@@ -551,7 +612,9 @@ void draw_js_windows() {
         const ImGuiWindowFlags flags = win.h <= 0.0f ? ImGuiWindowFlags_AlwaysAutoResize : 0;
         bool open = true;
         if (g_vk.ig_Begin(wname, &open, flags)) {
+            int scopes[16], scope_n = 0;
             for (int i = 0; i < win.widget_count; i++) {
+                if (draw_scope(win, i, scopes, scope_n, 16)) continue;
                 MkwVkJsWidget& wg = win.widgets[i];
                 g_vk.ig_PushID_i(i);
                 switch (wg.kind) {
@@ -594,6 +657,7 @@ void draw_js_windows() {
                 }
                 g_vk.ig_PopID();
             }
+            close_scopes(scopes, scope_n);
         }
         g_vk.ig_End();
         if (!open) {

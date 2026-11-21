@@ -7,7 +7,7 @@ enum {
     MKWVK_JS_MAX_PRIMS = 1024,
     MKWVK_JS_MAX_TOASTS = 16,
     MKWVK_JS_MAX_WINDOWS = 16,
-    MKWVK_JS_MAX_WIDGETS = 64,
+    MKWVK_JS_MAX_WIDGETS = 128,
     MKWVK_JS_MAX_SCRIPTS = 64,
     MKWVK_JS_MAX_LOGS = 64,
 };
@@ -28,6 +28,13 @@ enum {
     MKWVK_JS_WIDGET_CHECKBOX = 5,
     MKWVK_JS_WIDGET_SLIDER = 6,
     MKWVK_JS_WIDGET_PROGRESS = 7,
+    /* Layout scopes. Each opener is matched by its closer later in the same window. */
+    MKWVK_JS_WIDGET_TAB_BAR = 8,
+    MKWVK_JS_WIDGET_TAB = 9,
+    MKWVK_JS_WIDGET_TAB_END = 10,
+    MKWVK_JS_WIDGET_TAB_BAR_END = 11,
+    MKWVK_JS_WIDGET_CHILD = 12,       /* fval: height in pixels, 0 fills the remaining space */
+    MKWVK_JS_WIDGET_CHILD_END = 13,
 };
 enum {
     MKWVK_JS_EV_CLICK = 1,

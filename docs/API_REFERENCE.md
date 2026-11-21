@@ -249,6 +249,17 @@ Color inputs accept `"#RGB"`, `"#RGBA"`, `"#RRGGBB"`, `"#RRGGBBAA"`, `"rgb(...)"
 ### `ui.window(id, title, opts?)`
 Creates persistent interactive Dear ImGui panels (automatically captures mouse cursor while open):
 - Chainable handle methods: `setOpen(bool)`, `isOpen()`, `close()`, `clear()`, `label(text, color?)`, `separator()`, `sameLine()`, `button(id, label, onClick?)`, `checkbox(id, label, initial, onChange?)`, `slider(id, label, min, max, initial, onChange?)`, `progressBar(fraction, label?)`.
+- Layout scopes: `beginTabBar(id)` … `endTabBar()` holds tabs. `tab(id, label)` … `endTab()` shows its widgets only while that tab is selected. `beginChild(id, height?)` … `endChild()` makes a bordered region that scrolls (`height` in pixels, 0 fills the remaining space). Scopes nest. Unclosed scopes are closed when the window finishes drawing.
+- A window holds up to 128 widgets, counting `separator()`, `sameLine()` and scope markers.
+
+```js
+const panel = ui.window("tools", "Tools", { w: 360, h: 420 });
+panel.beginTabBar("tabs")
+     .tab("world", "World").button("noon", "Noon", () => game.world.setTime(12, 0)).endTab()
+     .tab("log", "Log").beginChild("lines", 0);
+for (const line of ["first", "second", "third"]) panel.label(line);
+panel.endChild().endTab().endTabBar();
+```
 
 ### `ui.console`
 - `ui.console.open()`, `close()`, `toggle(): boolean`, `isOpen(): boolean`, `clear()`.

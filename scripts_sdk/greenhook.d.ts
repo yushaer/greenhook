@@ -547,6 +547,15 @@ interface UiWindowHandle {
     checkbox(id: string, label: string, initial: boolean, onChange?: (checked: boolean) => void): this;
     slider(id: string, label: string, min: number, max: number, initial: number, onChange?: (value: number) => void): this;
     progressBar(fraction: number, label?: string): this;
+    /** Start a tab bar. Add tabs with tab()/endTab(), then close it with endTabBar(). */
+    beginTabBar(id: string): this;
+    /** Start a tab inside a tab bar. Widgets until endTab() show only while it is selected. */
+    tab(id: string, label: string): this;
+    endTab(): this;
+    endTabBar(): this;
+    /** Start a scrollable, bordered region. height in pixels (0 fills the remaining space). Close with endChild(). */
+    beginChild(id: string, height?: number): this;
+    endChild(): this;
 }
 
 interface UiNamespace {

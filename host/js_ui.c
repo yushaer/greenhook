@@ -515,6 +515,61 @@ static JSValue win_progress(JSContext *ctx, JSValueConst this_val, int argc, JSV
     return JS_DupValue(ctx, this_val);
 }
 
+/* Layout scopes: tab bars, tabs and scrollable child regions. Openers take an id (and a tab label);
+   closers take nothing. Unmatched scopes are closed when the window finishes drawing. */
+static JSValue add_scope(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic,
+                         int kind, int want_label, const char *usage) {
+    if (magic < 0 || magic >= g_window_count) return JS_DupValue(ctx, this_val);
+    const char *id = NULL, *label = NULL;
+    double height = 0;
+    const int opener = kind == MKWVK_JS_WIDGET_TAB_BAR || kind == MKWVK_JS_WIDGET_TAB || kind == MKWVK_JS_WIDGET_CHILD;
+    if (opener) {
+        if (argc < (want_label ? 2 : 1)) return JS_ThrowTypeError(ctx, "%s", usage);
+        if (kind == MKWVK_JS_WIDGET_CHILD && argc >= 2 && !JS_IsUndefined(argv[1])) {
+            if (JS_ToFloat64(ctx, &height, argv[1]) < 0) return JS_EXCEPTION;
+            if (!(height >= 0 && height <= 8192)) return JS_ThrowRangeError(ctx, "child height must be 0-8192");
+        }
+        id = JS_ToCString(ctx, argv[0]);
+        if (!id) return JS_EXCEPTION;
+        if (want_label) {
+            label = JS_ToCString(ctx, argv[1]);
+            if (!label) { JS_FreeCString(ctx, id); return JS_EXCEPTION; }
+        }
+    }
+    AcquireSRWLockExclusive(&g_ui_lock);
+    MkwVkJsWindow *w = &g_windows[magic];
+    if (w->widget_count < MKWVK_JS_MAX_WIDGETS) {
+        MkwVkJsWidget *wg = &w->widgets[w->widget_count++];
+        memset(wg, 0, sizeof *wg);
+        wg->kind = kind;
+        if (id) snprintf(wg->id, sizeof wg->id, "%s", id);
+        if (label) snprintf(wg->label, sizeof wg->label, "%s", label);
+        wg->fval = (float)height;
+    }
+    ReleaseSRWLockExclusive(&g_ui_lock);
+    if (id) JS_FreeCString(ctx, id);
+    if (label) JS_FreeCString(ctx, label);
+    return JS_DupValue(ctx, this_val);
+}
+static JSValue win_beginTabBar(JSContext *ctx, JSValueConst t, int argc, JSValueConst *argv, int magic) {
+    return add_scope(ctx, t, argc, argv, magic, MKWVK_JS_WIDGET_TAB_BAR, 0, "beginTabBar(id)");
+}
+static JSValue win_tab(JSContext *ctx, JSValueConst t, int argc, JSValueConst *argv, int magic) {
+    return add_scope(ctx, t, argc, argv, magic, MKWVK_JS_WIDGET_TAB, 1, "tab(id, label)");
+}
+static JSValue win_endTab(JSContext *ctx, JSValueConst t, int argc, JSValueConst *argv, int magic) {
+    return add_scope(ctx, t, argc, argv, magic, MKWVK_JS_WIDGET_TAB_END, 0, "endTab()");
+}
+static JSValue win_endTabBar(JSContext *ctx, JSValueConst t, int argc, JSValueConst *argv, int magic) {
+    return add_scope(ctx, t, argc, argv, magic, MKWVK_JS_WIDGET_TAB_BAR_END, 0, "endTabBar()");
+}
+static JSValue win_beginChild(JSContext *ctx, JSValueConst t, int argc, JSValueConst *argv, int magic) {
+    return add_scope(ctx, t, argc, argv, magic, MKWVK_JS_WIDGET_CHILD, 0, "beginChild(id, height?)");
+}
+static JSValue win_endChild(JSContext *ctx, JSValueConst t, int argc, JSValueConst *argv, int magic) {
+    return add_scope(ctx, t, argc, argv, magic, MKWVK_JS_WIDGET_CHILD_END, 0, "endChild()");
+}
+
 static JSValue js_ui_window(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     (void)this_val;
     if (argc < 2) return JS_ThrowTypeError(ctx, "ui.window(id, title, opts?)");
@@ -583,6 +638,12 @@ static JSValue js_ui_window(JSContext *ctx, JSValueConst this_val, int argc, JSV
     JS_SetPropertyStr(ctx, handle, "checkbox", JS_NewCFunctionMagic(ctx, (JSCFunctionMagic *)win_checkbox, "checkbox", 4, JS_CFUNC_generic_magic, wi));
     JS_SetPropertyStr(ctx, handle, "slider", JS_NewCFunctionMagic(ctx, (JSCFunctionMagic *)win_slider, "slider", 6, JS_CFUNC_generic_magic, wi));
     JS_SetPropertyStr(ctx, handle, "progressBar", JS_NewCFunctionMagic(ctx, (JSCFunctionMagic *)win_progress, "progressBar", 2, JS_CFUNC_generic_magic, wi));
+    JS_SetPropertyStr(ctx, handle, "beginTabBar", JS_NewCFunctionMagic(ctx, (JSCFunctionMagic *)win_beginTabBar, "beginTabBar", 1, JS_CFUNC_generic_magic, wi));
+    JS_SetPropertyStr(ctx, handle, "tab", JS_NewCFunctionMagic(ctx, (JSCFunctionMagic *)win_tab, "tab", 2, JS_CFUNC_generic_magic, wi));
+    JS_SetPropertyStr(ctx, handle, "endTab", JS_NewCFunctionMagic(ctx, (JSCFunctionMagic *)win_endTab, "endTab", 0, JS_CFUNC_generic_magic, wi));
+    JS_SetPropertyStr(ctx, handle, "endTabBar", JS_NewCFunctionMagic(ctx, (JSCFunctionMagic *)win_endTabBar, "endTabBar", 0, JS_CFUNC_generic_magic, wi));
+    JS_SetPropertyStr(ctx, handle, "beginChild", JS_NewCFunctionMagic(ctx, (JSCFunctionMagic *)win_beginChild, "beginChild", 2, JS_CFUNC_generic_magic, wi));
+    JS_SetPropertyStr(ctx, handle, "endChild", JS_NewCFunctionMagic(ctx, (JSCFunctionMagic *)win_endChild, "endChild", 0, JS_CFUNC_generic_magic, wi));
     return handle;
 }
 

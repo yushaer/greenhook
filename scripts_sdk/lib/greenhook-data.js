@@ -542,12 +542,48 @@ export function writeResource(path, bytes, { memory = false } = {}) {
     const { romfs } = globalThis.game;
     const data = path.endsWith(".zs") ? storedFrame(bytes) : bytes;
     if (memory) return romfs.setVirtualFile(path, data);
-    const { fs, Greenhook } = globalThis;
     const rel = "romfs-overrides/" + path.replace(/\\/g, "/");
+    const { fs } = globalThis;
     fs.mkdir(rel.slice(0, rel.lastIndexOf("/")));
     fs.writeBytes(rel, data);
     romfs.clearOverride(path);
-    return romfs.redirect(path, Greenhook.dataDir.replace(/[\\/]+$/, "") + "\\" + rel.replace(/\//g, "\\"));
+    const manifest = readManifest();
+    manifest[path] = rel;
+    fs.writeJson(MANIFEST, manifest);
+    return romfs.redirect(path, hostPath(rel));
+}
+
+// Files written by writeResource persist under scripts_data/romfs-overrides and are listed in a
+// manifest, so a script can re-register them at the very start of the next launch, before the game
+// reads them. Registering a redirect does not read RomFS, so it works before RomFS is mounted.
+const MANIFEST = "romfs-overrides/manifest.json";
+function readManifest() {
+    try {
+        const m = globalThis.fs.exists(MANIFEST) ? globalThis.fs.readJson(MANIFEST) : null;
+        return m && typeof m === "object" ? m : {};
+    } catch { return {}; }
+}
+function hostPath(rel) {
+    return globalThis.Greenhook.dataDir.replace(/[\\/]+$/, "") + "\\" + rel.replace(/\//g, "\\");
+}
+
+/** Re-registers every saved writeResource override. Call it from a script's top level. Returns the count. */
+export function installSavedOverrides() {
+    let n = 0;
+    for (const [path, rel] of Object.entries(readManifest())) {
+        if (typeof rel === "string" && globalThis.fs.exists(rel) && globalThis.game.romfs.redirect(path, hostPath(rel))) n++;
+    }
+    return n;
+}
+
+/** Removes a saved override and its file. The running game keeps any copy it already loaded. */
+export function removeSavedOverride(path) {
+    const manifest = readManifest(), rel = manifest[path];
+    globalThis.game.romfs.clearOverride(path);
+    if (typeof rel === "string" && globalThis.fs.exists(rel)) globalThis.fs.remove(rel);
+    delete manifest[path];
+    globalThis.fs.writeJson(MANIFEST, manifest);
+    return typeof rel === "string";
 }
 
 // These are observations from the shared transform update. A quiet actor can leave the set while still alive.

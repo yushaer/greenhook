@@ -52,7 +52,7 @@ const SNAP = 0.5;
 const MATCH_RADIUS = 1.0;
 const PAGE = 10;
 
-const FIELD_NAMES = /** @type {const} */ ({ translate: "Translate", rotate: "Rotate", scale: "Scale" });
+const FIELD_NAMES = ({ translate: "Translate", rotate: "Rotate", scale: "Scale" });
 const AXES = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
 const AXIS_COLORS = ["#ff5050", "#5cff6a", "#5aa0ff"];
 
@@ -227,7 +227,8 @@ function stock(path) {
     if (!actors) {
         game.romfs.clearOverride(path);
         const bytes = readResource(path);
-        actors = bytes ? decodeByml(bytes).root.Actors ?? [] : [];
+        const root = bytes && decodeByml(bytes).root;
+        actors = root && !Array.isArray(root) && Array.isArray(root.Actors) ? root.Actors : [];
         stockActors.set(path, actors);
         if (!isEmpty(edits[path])) applyFile(path); // restore the override for the game
     }
@@ -341,6 +342,7 @@ function applyFile(path) {
     const bytes = readResource(path);
     if (!bytes) return { ok: false, reason: "missing file" };
     const doc = decodeByml(bytes);
+    if (Array.isArray(doc.root) || !Array.isArray(doc.root.Actors)) return { ok: false, reason: "missing Actors array" };
     const actors = /** @type {any[]} */ (doc.root.Actors);
     const byHash = new Map(actors.map(a => [hashOf(a), a]));
     for (const [hash, pose] of Object.entries(fe.moved)) {

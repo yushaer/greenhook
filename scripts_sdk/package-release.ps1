@@ -1,4 +1,4 @@
-param([string]$Version = "0.1.0-beta.1")
+param([string]$Version = "0.1.0-beta.2")
 $ErrorActionPreference = "Stop"
 $Repo = Split-Path -Parent $PSScriptRoot
 $Out = Join-Path $Repo "work/releases"

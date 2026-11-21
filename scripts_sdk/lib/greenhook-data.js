@@ -185,6 +185,11 @@ export function editResource(path, edit) {
     if (data === null) return false;
     const result = edit(data);
     if (result && typeof result.then === "function") throw new TypeError("editResource callback must be synchronous");
+    return installResource(path, data);
+}
+
+function installResource(path, data) {
+    if (path.endsWith(".zs") && data.length > 32 * 1024 * 1024) throw new RangeError("Resource exceeds Zstd output limit");
     return globalThis.game.romfs.setVirtualFile(path, path.endsWith(".zs") ? storedFrame(data) : data);
 }
 
@@ -516,7 +521,6 @@ export function resourceSize(path) {
  */
 export function setResourceSizes(sizes) {
     const path = sizeTablePath();
-    globalThis.game.romfs.clearOverride(path);
     const bytes = readResource(path).slice();
     const t = parseSizeTable(bytes);
     const updated = [], missing = [];
@@ -533,23 +537,22 @@ export function setResourceSizes(sizes) {
 /**
  * Serves `bytes` (decompressed content) for RomFS `path`. By default the data is written to
  * scripts_data/romfs-overrides/<path> and the game path is redirected to that host file, so every
- * loader thread opens a real file (the asynchronous area loader rejects in-memory handles).
+ * loader thread opens a real file.
  * Pass { memory: true } for a setVirtualFile override instead.
  */
 export function writeResource(path, bytes, { memory = false } = {}) {
     if (typeof path !== "string" || !path || /(^|[\\/])\.\.([\\/]|$)|^[\\/]|:/.test(path))
         throw new TypeError("Expected a relative RomFS path");
     const { romfs } = globalThis.game;
+    if (memory) return installResource(path, bytes);
     const data = path.endsWith(".zs") ? storedFrame(bytes) : bytes;
-    if (memory) return romfs.setVirtualFile(path, data);
     const rel = "romfs-overrides/" + path.replace(/\\/g, "/");
     const { fs } = globalThis;
     fs.mkdir(rel.slice(0, rel.lastIndexOf("/")));
-    fs.writeBytes(rel, data);
-    romfs.clearOverride(path);
+    if (!fs.writeBytes(rel, data)) return false;
     const manifest = readManifest();
     manifest[path] = rel;
-    fs.writeJson(MANIFEST, manifest);
+    if (!fs.writeJson(MANIFEST, manifest)) return false;
     return romfs.redirect(path, hostPath(rel));
 }
 
@@ -640,4 +643,122 @@ export function findRecord(table, rowId) {
         else hi = mid;
     }
     return null;
+}
+
+export function listPlacementFiles(map) {
+    if (typeof map !== "string" || !map || /[\\/:]/.test(map) || map === "." || map === "..")
+        throw new TypeError("Expected one Banc directory name");
+    const dir = "Banc/" + map;
+    return globalThis.game.romfs.listDir(dir).filter(name => name.endsWith(".bcett.byml.zs")).sort().map(name => dir + "/" + name);
+}
+
+function updatePlacement(path, sourceId, addition) {
+    if (typeof sourceId !== "bigint" || BigInt.asUintN(64, sourceId) !== sourceId)
+        throw new RangeError("Expected an unsigned 64-bit placement ID");
+    const bytes = readResource(path);
+    if (bytes === null) return false;
+    const document = decodeByml(bytes), actors = document.root.Actors;
+    if (!Array.isArray(actors)) throw new TypeError("Expected a Banc Actors array");
+    const index = actors.findIndex(actor => byml.value(actor.Hash) === sourceId);
+    if (index < 0) return false;
+    if (actors.some((actor, i) => i !== index && byml.value(actor.Hash) === sourceId))
+        throw new RangeError("Ambiguous source placement ID");
+    if (addition) {
+        if (actors.some(actor => byml.value(actor.Hash) === addition.id))
+            throw new RangeError("Placement ID already exists");
+        const copy = cloneByml(actors[index]);
+        copy.Hash = byml.u64(addition.id);
+        copy.Translate = addition.xyz.map(byml.f32);
+        // Keep the actor's physics placement identity consistent with its new map identity.
+        if (copy.Phive?.Placement?.ID) copy.Phive.Placement.ID = byml.u64(addition.id);
+        actors.push(copy);
+    } else {
+        actors.splice(index, 1);
+    }
+    const encoded = encodeByml(document);
+    if (encoded.length > bytes.length && path.startsWith("Banc/")) {
+        const budget = resourceSize(path);
+        if (budget !== null && encoded.length + 288 > budget)
+            throw new RangeError("Placement exceeds the map allocation. Raise its resource size before loading the map.");
+    }
+    return installResource(path, encoded);
+}
+
+export function addActorPlacement(path, templateId, newId, position) {
+    if (typeof newId !== "bigint" || !newId || BigInt.asUintN(64, newId) !== newId)
+        throw new RangeError("Expected a nonzero unsigned 64-bit new placement ID");
+    const xyz = [position?.x, position?.y, position?.z];
+    if (!xyz.every(v => Number.isFinite(v) && Number.isFinite(Math.fround(v))))
+        throw new RangeError("Expected three finite float coordinates");
+    return updatePlacement(path, templateId, { id: newId, xyz });
+}
+
+export function removeActorPlacement(path, id) {
+    return updatePlacement(path, id);
+}
+
+// Re-resolve identity and virtual dispatch inside the same guest callback.
+export function callActorMethod(actor, slot, args = {}) {
+    const ptr = actor?.ptr, instanceId = actor?.instanceId, vtable = actor?.vtable;
+    if (typeof ptr !== "bigint" || !ptr || !Number.isInteger(instanceId) || typeof vtable !== "bigint")
+        throw new TypeError("Expected an observed actor with ptr, instanceId and vtable");
+    if (!Number.isSafeInteger(slot) || slot < 0 || slot > 0xffffffff) throw new RangeError("Invalid method slot");
+    const x = [ptr, ...(args.x ?? [])], f = [...(args.f ?? [])], d = [...(args.d ?? [])];
+    const indirectResult = args.indirectResult;
+    if (x.length > 8 || f.length > 8 || d.length > 8) throw new RangeError("Too many register arguments");
+    return globalThis.game.defer(() => {
+        const current = globalThis.game.actors.inspect(ptr);
+        if (!current || current.instanceId !== instanceId || current.vtable !== vtable)
+            throw new ReferenceError("Actor identity has changed");
+        const address = globalThis.game.actors.getMethods(ptr, slot, 1)?.[0];
+        if (!address) throw new ReferenceError("Unresolved actor method");
+        return globalThis.native.call(address, { x, f, d, indirectResult });
+    });
+}
+
+// Scalar AArch64 arguments use independent integer and floating-point register cursors.
+export function bindGameFunction(address, parameters, returns) {
+    const types = ["bool", "i32", "u32", "i64", "u64", "ptr", "f32", "f64"];
+    if (!Array.isArray(parameters) || parameters.some(t => !types.includes(t)) ||
+        !(returns === "void" || types.includes(returns))) throw new TypeError("Unsupported scalar signature");
+    const signature = [...parameters];
+    const floats = signature.filter(t => t === "f32" || t === "f64").length;
+    if (floats > 8 || signature.length - floats > 8) throw new RangeError("Stack arguments are unsupported");
+    if (!globalThis.native.hasFunction(address)) throw new ReferenceError("Unknown translated function");
+    return (...values) => {
+        if (values.length !== signature.length) throw new TypeError("Wrong argument count");
+        const x = [], f = [], d = [];
+        let vector = 0;
+        signature.forEach((type, i) => {
+            const v = values[i];
+            if (type === "f32" || type === "f64") {
+                if (typeof v !== "number") throw new TypeError("Expected number for " + type);
+                (type === "f32" ? f : d)[vector++] = v;
+            } else if (type === "bool") {
+                if (typeof v !== "boolean") throw new TypeError("Expected boolean");
+                x.push(v ? 1 : 0);
+            } else if (type === "u32" || type === "i32") {
+                if (!Number.isInteger(v) || (type === "u32" ? v >>> 0 : v | 0) !== v)
+                    throw new RangeError("Expected " + type);
+                x.push(v >>> 0);
+            } else {
+                if (typeof v !== "bigint" || (type === "i64" ? BigInt.asIntN(64, v) : BigInt.asUintN(64, v)) !== v)
+                    throw new RangeError("Expected bigint for " + type);
+                x.push(BigInt.asUintN(64, v));
+            }
+        });
+        return globalThis.game.defer(() => {
+            const r = globalThis.native.call(address, { x, f, d });
+            switch (returns) {
+            case "void": return;
+            case "f32": return r.f0;
+            case "f64": return r.d0;
+            case "bool": return Boolean(r.x0 & 1n);
+            case "u32": return Number(BigInt.asUintN(32, r.x0));
+            case "i32": return Number(BigInt.asIntN(32, r.x0));
+            case "i64": return BigInt.asIntN(64, r.x0);
+            default: return r.x0;
+            }
+        });
+    };
 }

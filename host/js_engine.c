@@ -788,7 +788,7 @@ static void register_globals(JSContext *ctx) {
     JS_SetPropertyStr(ctx, global, "TextDecoder", JS_NewCFunction2(ctx, js_text_decoder_ctor, "TextDecoder", 0, JS_CFUNC_constructor, 0));
 
     JSValue ls = JS_NewObject(ctx);
-    JS_SetPropertyStr(ctx, ls, "version", JS_NewString(ctx, "0.1.0-beta.1"));
+    JS_SetPropertyStr(ctx, ls, "version", JS_NewString(ctx, "0.1.0-beta.2"));
     JS_SetPropertyStr(ctx, ls, "gameBuild", JS_NewString(ctx, "e0f3ccfa"));
     JS_SetPropertyStr(ctx, ls, "scriptsDir", JS_NewString(ctx, g_scripts_dir));
     JS_SetPropertyStr(ctx, ls, "dataDir", JS_NewString(ctx, g_data_dir));

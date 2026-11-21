@@ -28,4 +28,6 @@ Import `game`, `ui`, `events`, `fs`, `native`, `memory` or `Greenhook` from `gre
 
 Import `openTable`, `findRecord`, `trackActors`, `readResource`, `openPack`, `openByml` and `editResource` from `greenhook/data` for game databases, map placements and in-memory resource edits. The installer places this shared library under `scripts/lib`.
 
+Use `listPlacementFiles`, `addActorPlacement` and `removeActorPlacement` to edit actors for subsequent scene loads. Use `callActorMethod` with a verified virtual slot to dispatch a method on a current actor observation. All four are exported by `greenhook/data`.
+
 The installed `API_REFERENCE.md` describes callback timing, method signatures, return values, gameplay units, unavailable data, register arguments, and structured resource editing. The Developer ZIP also includes `docs/CLI_AND_DEBUGGING.md` and the Node.js CLI under `scripts_sdk`.

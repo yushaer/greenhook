@@ -366,6 +366,25 @@ const stop = game.onPlayerUpdate(({ actor }) => {
 
 Before invoking a discovered method, determine its receiver, argument registers, pointer lifetimes, and return type from its translated implementation and callers. Integer and pointer arguments go into `x`, single-precision floats into `f`, and doubles into `d`. A member method commonly expects the receiver in `x[0]`. Use `game.defer` to obtain a live guest context. The dispatch table contains no C++ names, prototypes, or ownership information. Passing an incorrect receiver or argument can crash the game.
 
+### Binding a translated function with a known signature
+
+`bindGameFunction(address, parameters, returns)` from `greenhook/data` creates a callable JavaScript wrapper and supplies parameter and return hints in VS Code. Each invocation uses `game.defer` and returns a promise. It supports `bool` (boolean), `i32`, `u32`, `f32`, `f64` (number), and `ptr`, `i64`, `u64` (bigint). A `void` result resolves to undefined. Integer/pointer and floating-point arguments each have eight register slots. Structure returns, stack arguments and variadic calls require separate ABI handling. Verify the signature against the translated implementation and callers before binding it.
+
+For example, the named SetTime function takes the world manager pointer followed by seconds. Bind it once. Obtain the manager and call the wrapper inside the same guest callback to avoid retaining a pointer across a map transition.
+
+```js
+import { game, native } from "greenhook";
+import { bindGameFunction } from "greenhook/data";
+
+const setSeconds = bindGameFunction(native.addresses.SetTime, ["ptr", "u32"], "void");
+async function setNoon() {
+    await game.defer(() => {
+        const world = game.world.getSingletons().worldMgr;
+        if (world) return setSeconds(world, 12 * 3600);
+    });
+}
+```
+
 ### Verified native calling conventions in the 3.0.0 game image
 
 | Address and method | Guest inputs | Result or effect |
@@ -405,7 +424,7 @@ async function readClock() {
 
 ## Observing active actors
 
-`game.onActorUpdate(callback)` runs at Longshot's shared actor transform update, with a live guest context. The snapshot includes `ptr`, `instanceId`, `statusCode`, `name`, `vtable`, `components`, and `pos`. The identity and raw status fields are the actor fields that the translated ActorLinkSet reads at offsets 24 and 44. Keep callbacks short. Store observations for display and reacquire live pointers before mutation.
+`game.onActorUpdate(callback)` runs at Longshot's shared actor transform update, with a live guest context. The snapshot includes `ptr`, `instanceId`, `statusCode`, `name`, `vtable`, `components`, and `pos`. The identity and raw status fields are the actor fields that the translated ActorLinkSet reads at offsets 24 and 44. Keep callbacks short. Store observations for display and reacquire live pointers before mutation. Actor names are best-effort on build 3.0.0. Some transform callbacks expose an unreadable or non-text name. Match a known placement by its map data when you need an authored actor type.
 
 ```js
 import { trackActors } from "greenhook/data";
@@ -420,11 +439,40 @@ const actors = trackActors({
 
 An entry leaves on a map change, pointer reuse with a different instance ID, or an idle timeout in presented frames. A sleeping actor can time out and later reappear. These are observation events. A spawn request, engine destructor, offscreen actor or paused scene has different timing.
 
+## Adding and removing map actor placements
+
+Import these helpers from `greenhook/data`. They edit a Banc map resource in memory. Apply the override before entering its scene. The game decides which placements to instantiate when it loads the map, including age, event and other conditions. Placement IDs are unsigned 64-bit hashes stored in the map. Live actor pointers and instance IDs belong to a different system.
+
+| Function | Behavior |
+| --- | --- |
+| `listPlacementFiles(map)` | Takes one Banc directory name, such as `"KokiriForest"`. Returns sorted resource paths, including age, static, dynamic and cutscene variants present on disk. Select the variant your mod targets. |
+| `addActorPlacement(path, templateId, newId, position)` | Copies an existing placement in that file. Supplies a new nonzero bigint ID and absolute world coordinates `{x,y,z}`. Keeps the original actor type, rotation, parameters, links and conditions. Sets the copied physics placement ID where present. Duplicate IDs within the file, invalid coordinates and edits that exceed a known map allocation throw before installation. Choose an ID unique across the placements your mod can load together. |
+| `removeActorPlacement(path, id)` | Removes the matching placement from that file’s actor list for subsequent loads. References to that ID elsewhere in the map or in other files remain the mod author’s responsibility. |
+
+Both edits return false when the requested file or source ID is missing or the override table is full. They build on the currently visible override. The SDK deep-copies the template, then re-encodes the map in its original byte order. For a larger map, reserve sufficient space with setResourceSizes and restart before applying it. Apply edits once during setup. Calling `game.romfs.clearOverride(path)` clears all edits to that path, including edits from other mods.
+
+```js
+import { listPlacementFiles, addActorPlacement } from "greenhook/data";
+
+// templateId is a Hash from this file’s Actors array.
+function placeInKokiriForest(templateId, newId, position) {
+    const file = listPlacementFiles("KokiriForest")
+        .find(path => path.endsWith("/KokiriForest_Child_Static.bcett.byml.zs"));
+    return file ? addActorPlacement(file, templateId, newId, position) : false;
+}
+```
+
+## Calling an actor’s virtual method
+
+`callActorMethod(actor, slot, args?)` from `greenhook/data` schedules a call in a live guest context. Pass an observation from `game.onActorUpdate`, `trackActors().list()` or a successful `game.actors.inspect(ptr)`. Before dispatch it re-reads the pointer, instance ID and vtable, then resolves the slot on that actor. A mismatch or an unresolved entry rejects the promise. These checks cannot establish that the object is still alive if freed storage retains the same contents.
+
+Supply the **zero-based slot and signature verified for the actor class**. The helper passes the actor in x0. The first element of `args.x` goes into x1, leaving room for seven integer or pointer arguments. `args.f` and `args.d` start at vector register 0 and share the same register bank. Use `indirectResult` for a caller-owned return buffer when the method requires it. The promise resolves to `{x0,x1,x2,x3,f0,d0}`. There is no universal spawn, destruction, AI or animation slot across actor classes.
+
 ## Editing installed resources in memory
 
 `editResource(path, edit)` reads a private copy, calls the synchronous edit function with the decompressed bytes, then registers a virtual override. It returns false when the input is missing or virtual slots are full. An exception before registration preserves the previous override. For a .zs input it emits a valid Zstandard frame with raw blocks and the same decompressed size. Already-loaded game objects may require a scene or resource reload before they reflect a change. `game.romfs.clearOverride(path)` removes the override for future opens.
 
-`node.set(key, value)` edits an existing numeric, Boolean or string field in place. Use bigint for 64-bit integers. A string replacement must already appear in that file's string table. `openPack` returns mutable byte views, so editing a BYML member also changes its parent pack's bytes. Avoid editing aliased BYML data unless all references should see the change. Container insertion, new strings and arbitrary resizing require an asset authoring tool.
+`node.set(key, value)` edits an existing numeric, Boolean or string field in place. Use bigint for 64-bit integers. A string replacement must already appear in that file's string table. `openPack` returns mutable byte views, so editing a BYML member also changes its parent pack's bytes. Avoid editing aliased BYML data unless all references should see the change. For new fields, strings and resized containers, use the tree writer below.
 
 ```js
 import { editResource, openByml } from "greenhook/data";
@@ -474,3 +522,14 @@ if (table) {
 ## VS Code type hints
 
 Install the Developer ZIP and open the installed `scripts` folder. The SDK README section **Type hints in Visual Studio Code** covers completion, separate projects, and troubleshooting.
+
+## Writing game resources and keeping edits across launches
+
+| Export from `greenhook/data` | Usage |
+| --- | --- |
+| `decodeByml(bytes)` | Decode the whole file into an editable document with `root`, `version` and `littleEndian`. Maps become objects and arrays become JavaScript arrays. Numeric fields carry their original storage type. |
+| `byml.value(field)`, `byml.isNumber(field)` | Unwrap a numeric field or test whether a value is a tagged number. Use `byml.i32`, `u32`, `f32`, `i64`, `u64` or `f64` to choose an explicit width for a replacement. Pass bigint values for exact 64-bit integers. |
+| `cloneByml(value)`, `encodeByml(document)` | Deep-copy a subtree before editing it. Encode the whole document to bytes after adding or removing records. The original format version and byte order are preserved when using the decoded document. |
+| `writeResource(path, bytes, options?)` | Accepts decompressed bytes and wraps them for a .zs destination. The default saves a file under scripts_data/romfs-overrides and registers a redirect. Pass `{memory:true}` for a session override. Check the returned boolean. |
+| `installSavedOverrides()`, `removeSavedOverride(path)` | Restore saved redirects at script startup and return the number installed, or remove the saved override for one path. A scene may retain an already loaded resource until re-entry. |
+| `resourceSize(path)`, `setResourceSizes(sizes)` | Read the resource allocation in bytes (null if unlisted), or raise listed minima using a Map or path-to-size object. The result lists updated and missing paths. The running game can retain its old size table. Restore the saved redirect on the next launch before loading larger resources. |

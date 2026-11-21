@@ -739,10 +739,46 @@ declare module "greenhook/data" {
     export interface ResourceNode {
         readonly kind: "array" | "map";
         readonly length: number;
+        /** Raw BYML tag of an existing field, or undefined when missing. */
+        typeOf(key: string | number): number | undefined;
         set(key: string | number, value: string | number | boolean | bigint): void;
         get(key: string | number): ResourceValue | undefined;
         entries(): IterableIterator<[string | number, ResourceValue]>;
     }
+    export type BymlNumber = { type: "i32" | "u32" | "f32" | "f64"; value: number } | { type: "i64" | "u64"; value: bigint };
+    export type BymlValue = null | boolean | string | number | bigint | Uint8Array | BymlNumber | BymlValue[] | { [key: string]: BymlValue };
+    export interface BymlDocument { root: BymlValue[] | { [key: string]: BymlValue }; version: number; littleEndian: boolean }
+    /** Decode an editable tree, preserving numeric tags and document byte order. */
+    export function decodeByml(bytes: Uint8Array): BymlDocument;
+    /** Serialize an edited map or array, including new strings and fields. */
+    export function encodeByml(doc: Pick<BymlDocument, "root"> & Partial<BymlDocument>): Uint8Array;
+    export function cloneByml<T extends BymlValue>(value: T): T;
+    export const byml: {
+        i32(value: number): BymlNumber; u32(value: number): BymlNumber; f32(value: number): BymlNumber; f64(value: number): BymlNumber;
+        i64(value: bigint | number): BymlNumber; u64(value: bigint | number): BymlNumber;
+        isNumber(value: unknown): value is BymlNumber;
+        value<T>(value: T): T extends BymlNumber ? T["value"] : T;
+    };
+    /** Read this resource's allocation limit in bytes, or null when unlisted. */
+    export function resourceSize(path: string): number | null;
+    /** Raise size-table entries for subsequent loads of the resource size table. */
+    export function setResourceSizes(sizes: Map<string, number> | Record<string, number>): { path: string; updated: string[]; missing: string[] };
+    /** Install decompressed content as a saved redirect, or pass memory: true for a session override. */
+    export function writeResource(path: string, bytes: Uint8Array, options?: { memory?: boolean }): boolean;
+    export function installSavedOverrides(): number;
+    export function removeSavedOverride(path: string): boolean;
+    export type ScalarType = "bool" | "i32" | "u32" | "i64" | "u64" | "ptr" | "f32" | "f64";
+    type ScalarValue<T> = T extends "void" ? void : T extends "bool" ? boolean : T extends "i64" | "u64" | "ptr" ? bigint : number;
+    /** Bind a verified scalar register signature. Each invocation runs in game.defer and resolves to the decoded result. */
+    export function bindGameFunction<P extends readonly ScalarType[], R extends ScalarType | "void">(address: AddressLike, parameters: readonly [...P], returns: R): (...values: { [I in keyof P]: ScalarValue<P[I]> }) => Promise<ScalarValue<R>>;
+    /** Sorted resource paths for all installed placement variants in one Banc directory. */
+    export function listPlacementFiles(map: string): string[];
+    /** Clone a placed actor under a new placement ID and position for future loads. Returns false if the file, template or override slot is unavailable. */
+    export function addActorPlacement(path: string, templateId: bigint, newId: bigint, position: Vec3): boolean;
+    /** Omit the identified placement from future loads of this resource. Returns false if absent or the override cannot be installed. */
+    export function removeActorPlacement(path: string, id: bigint): boolean;
+    /** Invoke a verified virtual slot in a guest callback. The actor occupies x0. args.x starts at x1. Rejects on changed identity or an unresolved slot. */
+    export function callActorMethod(actor: Pick<ActorSnapshot, "ptr" | "vtable"> & { instanceId: number }, slot: number, args?: Parameters<NativeNamespace["call"]>[1]): Promise<ReturnType<NativeNamespace["call"]>>;
     export interface ObservedActor extends ActorSnapshot { instanceId: number; statusCode: number; lastSeenFrame: number; }
     /** Track observed actor instances until map change, pointer reuse, idle expiry, or stop(). */
     export function trackActors(options?: {

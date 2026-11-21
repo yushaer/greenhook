@@ -686,6 +686,71 @@ static JSValue js_mem_free(JSContext *ctx, JSValueConst this_val, int argc, JSVa
 }
 
 /* ---- native.* JS bindings ---- */
+/* In the 3.0.0 main image an AI node's slot 19 returns its class name via
+   ADRP X0; ADD X0,X0,#imm; RET. Decode that accessor without invoking game code. */
+static JSValue js_native_ai_class(JSContext *ctx, JSValueConst self, int argc, JSValueConst *argv) {
+    (void)self;
+    if (!argc || !JS_IsString(argv[0])) return JS_ThrowTypeError(ctx, "expected AI class name");
+    size_t length;
+    const char *name = JS_ToCStringLen(ctx, &length, argv[0]);
+    if (!name) return JS_EXCEPTION;
+    const uint64_t first = 0x849974f8ULL, last = 0x84c85dd0ULL;
+    JSValue matches = JS_NewArray(ctx);
+    if (JS_IsException(matches) || !length || length > 255 || memchr(name, 0, length) ||
+        !js_mem_ok(first - 16, last - first + 16 + 128 * 8)) goto done;
+    uint8_t *base = hos_guest_base();
+    if (!base) goto done;
+    uint32_t found = 0;
+    for (uint64_t address = first; address <= last; address += 8) {
+        uint64_t header[3], getter;
+        memcpy(header, base + address - 16, sizeof header);
+        if (header[0] || header[1] || header[2] < 0x80020000 || header[2] >= 0x83c67000) continue;
+        memcpy(&getter, base + address + 19 * 8, sizeof getter);
+        uint32_t code[3];
+        if (getter < 0x80020000 || getter > 0x83c67000 - sizeof code ||
+            !js_mem_read(getter, code, sizeof code)) continue;
+        if ((code[0] & 0x9f00001fU) != 0x90000000U || (code[1] & 0xffc003ffU) != 0x91000000U ||
+            code[2] != 0xd65f03c0U) continue;
+        int32_t pages = (int32_t)(((code[0] >> 5) & 0x7ffff) * 4 + ((code[0] >> 29) & 3));
+        if (pages & (1 << 20)) pages -= 1 << 21;
+        uint64_t text = (getter & ~0xfffULL) + (int64_t)pages * 4096 + ((code[1] >> 10) & 0xfff);
+        if (text < 0x83c67000 || text + length + 1 > 0x8486d000 ||
+            !js_mem_ok(text, length + 1) || memcmp(base + text, name, length + 1)) continue;
+        JSValue entry = JS_NewObject(ctx), methods = JS_NewArray(ctx);
+        for (unsigned slot = 0; slot < 128; slot++) {
+            uint64_t fn;
+            memcpy(&fn, base + address + slot * 8, sizeof fn);
+            if (fn < 0x80020000 || fn >= 0x83c67000) break;
+            JS_SetPropertyUint32(ctx, methods, slot, a64_lookup(fn) ? JS_NewBigUint64(ctx, fn) : JS_NULL);
+        }
+        JS_SetPropertyStr(ctx, entry, "vtable", JS_NewBigUint64(ctx, address));
+        JS_SetPropertyStr(ctx, entry, "methods", methods);
+        JS_SetPropertyUint32(ctx, matches, found++, entry);
+    }
+done:
+    JS_FreeCString(ctx, name);
+    return matches;
+}
+
+/* libc++abi ships with Longshot's LLVM toolchain. */
+extern char *__cxa_demangle(const char *, char *, size_t *, int *);
+static JSValue js_native_demangle_symbol(JSContext *ctx, JSValueConst self, int argc, JSValueConst *argv) {
+    (void)self;
+    if (!argc || !JS_IsString(argv[0])) return JS_ThrowTypeError(ctx, "expected a native symbol name");
+    size_t length;
+    const char *name = JS_ToCStringLen(ctx, &length, argv[0]);
+    if (!name) return JS_EXCEPTION;
+    JSValue result = JS_NULL;
+    if (length >= 2 && length <= 4096 && !strncmp(name, "_Z", 2) && !memchr(name, 0, length)) {
+        int status;
+        char *pretty = __cxa_demangle(name, NULL, NULL, &status);
+        if (pretty && status == 0) result = JS_NewString(ctx, pretty);
+        free(pretty);
+    }
+    JS_FreeCString(ctx, name);
+    return result;
+}
+
 static JSValue js_native_list_functions(JSContext *ctx, JSValueConst self, int argc, JSValueConst *argv) {
     (void)self;
     double start = 0, limit = 128;
@@ -1001,6 +1066,8 @@ void js_register_memory(JSContext *ctx, JSValue ns_mem, JSValue ns_native) {
     JS_SetPropertyStr(ctx, ns_mem, "alloc", JS_NewCFunction(ctx, js_mem_alloc, "alloc", 1));
     JS_SetPropertyStr(ctx, ns_mem, "free", JS_NewCFunction(ctx, js_mem_free, "free", 1));
 
+    JS_SetPropertyStr(ctx, ns_native, "getAiClass", JS_NewCFunction(ctx, js_native_ai_class, "getAiClass", 1));
+    JS_SetPropertyStr(ctx, ns_native, "demangleSymbol", JS_NewCFunction(ctx, js_native_demangle_symbol, "demangleSymbol", 1));
     JS_SetPropertyStr(ctx, ns_native, "listFunctions", JS_NewCFunction(ctx, js_native_list_functions, "listFunctions", 2));
     JS_SetPropertyStr(ctx, ns_native, "hasFunction", JS_NewCFunction(ctx, js_native_has_fn, "hasFunction", 1));
     JS_SetPropertyStr(ctx, ns_native, "call", JS_NewCFunction(ctx, js_native_call, "call", 2));
@@ -1010,6 +1077,23 @@ void js_register_memory(JSContext *ctx, JSValue ns_mem, JSValue ns_native) {
 
     JSValue addrs = JS_NewObject(ctx);
     static const struct { const char *name; uint64_t val; } kAddrs[] = {
+        {"PouchCountQuery", 0x82a3c260ULL},
+        {"BancChangeEventArgQuery", 0x829df380ULL},
+        {"TimelineStart", 0x83b5bfb0ULL},
+        {"MostRecentEventSkipQuery", 0x80de6cb0ULL},
+        {"TimeManagerSetTime", 0x80f0e640ULL},
+        {"PlayerCameraUpdate", 0x80644c80ULL},
+        {"TextPaneAdvance", 0x80b1e140ULL},
+        {"OcarinaNoteWaitStart", 0x828a9190ULL},
+        {"OcarinaNoteWaitTick", 0x828a9280ULL},
+        {"VoiceResourceUpdate", 0x80a9ca30ULL},
+        {"MoviePlayerUpdate", 0x83b7c710ULL},
+        {"AnimationEntryAdvance", 0x802cfca0ULL},
+        {"SkeletonPoseTimeUpdate", 0x80944aa0ULL},
+        {"FrameStepUpdate", 0x80706be0ULL},
+        {"GlobalStepUpdate", 0x83b6ea90ULL},
+        {"GetSystemTick", 0x85106370ULL},
+        {"GetSystemTickFrequency", 0x851063a0ULL},
         {"GameDataMgrSlot", 0x84c9e180ULL},
         {"EventMgrSlot", 0x84c9e090ULL},
         {"WorldMgrSlot", 0x84c9e898ULL},

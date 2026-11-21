@@ -369,6 +369,9 @@ int main(void) {
     (void)g_inv_count;
     (void)g_want_mouse;
 
+    eval_must("native.getAiClass('Unknown').length", "0");
+    eval_must("native.demangleSymbol('_ZN2nn2os13GetSystemTickEv')", "nn::os::GetSystemTick()");
+    eval_must("String(native.demangleSymbol('plain'))", "null");
     eval_must("(() => { const p = native.listFunctions(0, 1); return [p.total,p.next === null,p.addresses[0] === 0x80123400n].join(',') })()", "1,true,true");
     eval_must("(() => { let n=0; const old=events.on('old',()=>{}); old(); const off=events.on('new',()=>n++); old(); events.emit('new'); off(); return n===1?'pass':'fail' })()", "pass");
     eval_must("(() => { for(let i=0;i<63;i++) if(!game.world.setTime(12)) return 'early'; return [game.inventory.set('Arrow',5),game.world.setTime(12)].join(',') })()", "true,false");

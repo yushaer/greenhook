@@ -56,7 +56,7 @@ $ExeOut = "$WorkDir\test_js_engine.exe"
     "$Repo\host\js_io.c" `
     "$Repo\host\js_ui.c" `
     "$Repo\tests\test_js_engine.c" `
-    -o $ExeOut -luser32 -lkernel32 -lm
+    -o $ExeOut -static -lc++abi -lc++ -lunwind -luser32 -lkernel32 -lm
 if ($LASTEXITCODE -ne 0) { throw "Failed compiling tests/test_js_engine.c" }
 
 & $ExeOut

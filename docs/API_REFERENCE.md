@@ -533,3 +533,79 @@ Install the Developer ZIP and open the installed `scripts` folder. The SDK READM
 | `writeResource(path, bytes, options?)` | Accepts decompressed bytes and wraps them for a .zs destination. The default saves a file under scripts_data/romfs-overrides and registers a redirect. Pass `{memory:true}` for a session override. Check the returned boolean. |
 | `installSavedOverrides()`, `removeSavedOverride(path)` | Restore saved redirects at script startup and return the number installed, or remove the saved override for one path. A scene may retain an already loaded resource until re-entry. |
 | `resourceSize(path)`, `setResourceSizes(sizes)` | Read the resource allocation in bytes (null if unlisted), or raise listed minima using a Map or path-to-size object. The result lists updated and missing paths. The running game can retain its old size table. Restore the saved redirect on the next launch before loading larger resources. |
+
+## Discovering game classes and named native functions
+
+| Method | Result |
+| --- | --- |
+| `actorClassEntries()` from `greenhook/data` | Iterates installed ActorInfo definitions as `{actor, className, record}`. Several actors can use the same class. The record retains the original BYML metadata. Consume a large iterator incrementally across frames. |
+| `openAiDefinitions()` from `greenhook/data` | Reads the installed AI node definition map, or returns null when absent. Use `get(nodeName)` for one definition or `entries()` to discover names, inputs and tags. The fields vary by node. These names identify nodes used inside game graphs. |
+| `openNativeModule(module)` from `greenhook/data` | Snapshots the dynamic symbol and string tables from guest memory for rtld, main, subsdk0 or sdk on the supported 3.0.0 image. Returns null for unmapped tables. A module object holds up to about 2.6 MiB of data until released. |
+| `module.page(start = 0, limit = 64)` | Scans 1–256 table slots and returns `{symbols, next}`. Each entry contains the raw symbol, a demangled name when available, and a callable guest address. Follow next even after an empty page. Null ends the scan. Overloads and aliases can have separate entries. |
+| `native.demangleSymbol(symbol)` | Decodes a mangled C++ name, including encoded parameters, or returns null. Ordinary C exports keep their original name in module pages. |
+
+The dynamic tables describe exported functions in the application, media library and platform SDK. Most internal gameplay routines have no exported symbol. `native.listFunctions()` still enumerates their translated addresses. Class records, AI node names and native exports come from different tables. The game does not provide a universal mapping between them. A demangled member name usually omits its return type and the implicit receiver.
+
+```js
+import { openNativeModule } from "greenhook/data";
+
+// Search one page per presented frame so an overlay stays responsive.
+async function findSdkMethods(fragment) {
+    const sdk = openNativeModule("sdk");
+    const matches = [];
+    if (!sdk) return matches;
+    let cursor = 0;
+    for (;;) {
+        const page = sdk.page(cursor, 128);
+        matches.push(...page.symbols.filter(s => s.name.includes(fragment)));
+        if (page.next === null) return matches;
+        cursor = page.next;
+        await nextFrame();
+    }
+}
+```
+
+### Resolving AI classes to native methods
+
+`native.getAiClass(name)` searches the supported game image for vtables whose slot 19 returns the exact class name. It returns an array because multiple tables can share a name. A miss returns an empty array. Each result has a guest `vtable` address and a zero-based `methods` array. A null slot means the pointer has no translated function in the dispatch table. Look up a class once and keep the result. Class lookup scans the image and belongs outside frame callbacks.
+
+The 3.0.0 dump matched 4,225 names from its 5,531 AI definitions using this layout. Some definitions have no matching native class. The slots correspond to native implementations, including inherited ones. The game’s graph input definitions describe graph parameters. A method taking a game-owned query object expects that object to exist and contain initialized graph state.
+
+```js
+import { native } from "greenhook";
+
+const query = native.getAiClass("QueryGetPouchContentNumByActorName")
+    .find(entry => entry.methods.includes(native.addresses.PouchCountQuery));
+if (query) {
+    const slot = query.methods.indexOf(native.addresses.PouchCountQuery);
+    console.log("Pouch count query", slot, query.methods[slot]?.toString(16));
+}
+```
+
+For this build the pouch query uses slot 39 at 0x82a3c260. The Banc change query has a different vtable and uses slot 39 at 0x829df380. The ocarina action's start and tick use separate slots. To observe a graph action, pass its verified executable address to `native.hook`. To make a direct call, supply the ABI and live receiver appropriate to that particular method. Actor pointers refer to a different object type.
+
+Use `bindAiMethod(className, slot, parameterTypes, returnType)` from `greenhook/data` to create a typed callable for a known scalar method. The resulting function takes a receiver callback followed by the explicit method arguments. The SDK runs the receiver callback in a guest context, checks its current vtable against the class, supplies x0, then dispatches. An unmapped pointer, wrong vtable or unresolved slot fails the call. The mod is responsible for acquiring a live graph object and observing its lifetime. For the verified class-name getter, the signature is `bindAiMethod("QueryGetPouchContentNumByActorName", 19, [], "ptr")`. Read the returned guest C string to obtain the class name.
+
+### Additional addresses in Longshot 3.0.0
+
+Access each entry as `native.addresses.Name`. The first fifteen names below describe gameplay paths identified from Longshot’s translated call sites and patches. Use game-owned action objects for graph methods. Where the full register contract is unknown, observe an existing call before attempting direct invocation. For timekeeping, `bindGameFunction(native.addresses.GetSystemTick, [], "u64")` provides a no-argument wrapper. Divide a tick difference by the frequency to measure elapsed seconds.
+
+| Name | Guest address | Behavior |
+| --- | --- | --- |
+| `PouchCountQuery` | `0x82a3c260` | Runs the event graph query for an inventory count. Its receiver is a game-owned query object. |
+| `BancChangeEventArgQuery` | `0x829df380` | Reads parameters of a Banc change event from its game-owned request context. |
+| `TimelineStart` | `0x83b5bfb0` | Starts a timeline. game.onTimelineStart exposes the name and cancellation flag. |
+| `MostRecentEventSkipQuery` | `0x80de6cb0` | Evaluates the graph query for the most recent event skip. |
+| `TimeManagerSetTime` | `0x80f0e640` | Receives the time manager in x0, seconds in w1, 1 in w2 and 0xffffffff in w3 from the world SetTime method. |
+| `PlayerCameraUpdate` | `0x80644c80` | Updates the player camera. This is the update Longshot patches for camera speed. |
+| `TextPaneAdvance` | `0x80b1e140` | Advances the letter animation on a game text pane. |
+| `OcarinaNoteWaitStart` | `0x828a9190` | Starts the ocarina note-wait action and reports it to Longshot. |
+| `OcarinaNoteWaitTick` | `0x828a9280` | Ticks the ocarina action and evaluates its input gates. |
+| `VoiceResourceUpdate` | `0x80a9ca30` | Updates the voice resource using the saved voice-language option. |
+| `MoviePlayerUpdate` | `0x83b7c710` | Updates the movie player frame count used by timelines. |
+| `AnimationEntryAdvance` | `0x802cfca0` | Advances animation entry clocks using their speed and start/end range. |
+| `SkeletonPoseTimeUpdate` | `0x80944aa0` | Writes the pose time used to draw a skeleton. |
+| `FrameStepUpdate` | `0x80706be0` | Updates the frame step that advances the game clock. |
+| `GlobalStepUpdate` | `0x83b6ea90` | Updates the global step read by other game systems. |
+| `GetSystemTick` | `0x85106370` | Returns the current Longshot system tick in x0. Takes no arguments. |
+| `GetSystemTickFrequency` | `0x851063a0` | Returns ticks per second in x0. Takes no arguments. |

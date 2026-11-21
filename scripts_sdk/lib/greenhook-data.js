@@ -762,3 +762,90 @@ export function bindGameFunction(address, parameters, returns) {
         });
     };
 }
+
+// NSO dynamic string and ELF64 symbol table locations in the supported Longshot 3.0.0 image.
+const nativeModules = new Map([
+    ["rtld",    [0x80000000n, 0x80003108n, 0x55,     0x800030c0n, 0x48]],
+    ["main",    [0x80020000n, 0x83c94cb8n, 0xe310,   0x83c8d7a0n, 0x7518]],
+    ["subsdk0", [0x84ec0000n, 0x84f52950n, 0xe723,   0x84f4c3c8n, 0x6588]],
+    ["sdk",     [0x84fa0000n, 0x85975fd8n, 0x1dbf60, 0x858cdc90n, 0xa8348]],
+]);
+
+export function openNativeModule(module) {
+    const layout = nativeModules.get(module);
+    if (!layout) throw new RangeError("Unknown native module");
+    if (globalThis.Greenhook.gameBuild !== "e0f3ccfa") throw new Error("Unsupported game build");
+    const [base, stringAddress, stringSize, tableAddress, tableSize] = layout;
+    const {memory, native} = globalThis;
+    if (!memory.isMapped(tableAddress, tableSize) || !memory.isMapped(stringAddress, stringSize)) return null;
+    const table = memory.readBytes(tableAddress, tableSize);
+    const strings = memory.readBytes(stringAddress, stringSize);
+    const view = new DataView(table.buffer, table.byteOffset, table.byteLength);
+    const slots = tableSize / 24;
+    return {
+        slots,
+        page(start = 0, limit = 64) {
+            if (!Number.isSafeInteger(start) || start < 0 || start > slots ||
+                !Number.isInteger(limit) || limit < 1 || limit > 256) throw new RangeError("Invalid symbol page");
+            const end = Math.min(start + limit, slots), symbols = [];
+            for (let index = start; index < end; index++) {
+                const at = index * 24;
+                if ((view.getUint8(at + 4) & 15) !== 2 || !view.getUint16(at + 6, true)) continue;
+                const nameOffset = view.getUint32(at, true);
+                if (!nameOffset || nameOffset >= strings.length) continue;
+                const address = base + view.getBigUint64(at + 8, true);
+                if (!native.hasFunction(address)) continue;
+                const terminator = strings.indexOf(0, nameOffset);
+                if (terminator < 0) throw new RangeError("Unterminated native symbol name");
+                const symbol = utf8.decode(strings.subarray(nameOffset, terminator));
+                symbols.push({symbol, name: native.demangleSymbol(symbol) ?? symbol, address});
+            }
+            return {symbols, next: end < slots ? end : null};
+        },
+    };
+}
+
+export function openAiDefinitions() {
+    const dir = "AI/NodeDefinition";
+    const files = globalThis.game.romfs.listDir(dir).filter(name => name.endsWith(".aidefn.byml.zs"));
+    if (!files.length) return null;
+    if (files.length !== 1) throw new Error("Ambiguous AI node definition database");
+    const bytes = readResource(dir + "/" + files[0]);
+    if (!bytes) return null;
+    const root = openByml(bytes);
+    if (root.kind !== "map") throw new TypeError("Expected an AI definition map");
+    return root;
+}
+
+export function* actorClassEntries() {
+    const files = listTables().filter(name => name.startsWith("ActorInfo."));
+    if (!files.length) return;
+    if (files.length !== 1) throw new Error("Ambiguous ActorInfo database");
+    const table = openTable(files[0]);
+    if (!table) return;
+    for (const [, record] of table.entries()) {
+        const actor = record.get("__RowId"), className = record.get("ClassName");
+        if (typeof actor === "string" && typeof className === "string") yield {actor, className, record};
+    }
+}
+
+export function bindAiMethod(className, slot, parameters, returns) {
+    if (!Number.isSafeInteger(slot) || slot < 0 || slot >= 128) throw new RangeError("Invalid AI method slot");
+    const targets = new Map();
+    for (const entry of globalThis.native.getAiClass(className)) {
+        const address = entry.methods[slot];
+        if (address) targets.set(entry.vtable, bindGameFunction(address, ["ptr", ...parameters], returns));
+    }
+    if (!targets.size) throw new ReferenceError("Unresolved AI method: " + className + " slot " + slot);
+    return (getReceiver, ...args) => {
+        if (typeof getReceiver !== "function") throw new TypeError("Expected a live receiver callback");
+        return globalThis.game.defer(() => {
+            const receiver = getReceiver();
+            if (typeof receiver !== "bigint" || !receiver || !globalThis.memory.isMapped(receiver, 8))
+                throw new ReferenceError("AI receiver is unavailable");
+            const method = targets.get(globalThis.memory.readU64(receiver));
+            if (!method) throw new TypeError("AI receiver has a different vtable");
+            return method(receiver, ...args);
+        });
+    };
+}

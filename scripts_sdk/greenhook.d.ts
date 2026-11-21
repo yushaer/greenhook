@@ -636,6 +636,10 @@ interface HookCpuContext {
 interface NativeNamespace {
     /** Page through the installed executable's translated guest methods. Limits are 1â€“1024. */
     listFunctions(start?: number, limit?: number): { addresses: bigint[]; total: number; next: number | null } | null;
+    /** Resolve AI node vtables by exact class name. Entries contain native addresses in zero-based virtual slot order. */
+    getAiClass(name: string): { vtable: bigint; methods: (bigint | null)[] }[];
+    /** Decode an Itanium C++ symbol to a qualified name and parameters. Returns null for undecodable names. */
+    demangleSymbol(symbol: string): string | null;
     hasFunction(addr: AddressLike): boolean;
     /** Invoke a translated function inside game.defer or onPlayerUpdate. indirectResult supplies x8 for structure returns. */
     call(addr: AddressLike, args?: { indirectResult?: AddressLike; x?: (number | bigint)[]; f?: number[]; d?: number[] }): {
@@ -648,6 +652,40 @@ interface NativeNamespace {
     unhook(handleOrAddr: number | AddressLike): boolean;
     createCallback(fn: (...args: bigint[]) => bigint | number | boolean | void): bigint;
     readonly addresses: {
+        /** Runs the event graph query for an inventory count. Its receiver is a game-owned query object. */
+        readonly PouchCountQuery: bigint;
+        /** Reads parameters of a Banc change event from its game-owned request context. */
+        readonly BancChangeEventArgQuery: bigint;
+        /** Starts a timeline. game.onTimelineStart exposes the name and cancellation flag. */
+        readonly TimelineStart: bigint;
+        /** Evaluates the graph query for the most recent event skip. */
+        readonly MostRecentEventSkipQuery: bigint;
+        /** Receives the time manager in x0, seconds in w1, 1 in w2 and 0xffffffff in w3 from the world SetTime method. */
+        readonly TimeManagerSetTime: bigint;
+        /** Updates the player camera. This is the update Longshot patches for camera speed. */
+        readonly PlayerCameraUpdate: bigint;
+        /** Advances the letter animation on a game text pane. */
+        readonly TextPaneAdvance: bigint;
+        /** Starts the ocarina note-wait action and reports it to Longshot. */
+        readonly OcarinaNoteWaitStart: bigint;
+        /** Ticks the ocarina action and evaluates its input gates. */
+        readonly OcarinaNoteWaitTick: bigint;
+        /** Updates the voice resource using the saved voice-language option. */
+        readonly VoiceResourceUpdate: bigint;
+        /** Updates the movie player frame count used by timelines. */
+        readonly MoviePlayerUpdate: bigint;
+        /** Advances animation entry clocks using their speed and start/end range. */
+        readonly AnimationEntryAdvance: bigint;
+        /** Writes the pose time used to draw a skeleton. */
+        readonly SkeletonPoseTimeUpdate: bigint;
+        /** Updates the frame step that advances the game clock. */
+        readonly FrameStepUpdate: bigint;
+        /** Updates the global step read by other game systems. */
+        readonly GlobalStepUpdate: bigint;
+        /** Returns the current Longshot system tick in x0. Takes no arguments. */
+        readonly GetSystemTick: bigint;
+        /** Returns ticks per second in x0. Takes no arguments. */
+        readonly GetSystemTickFrequency: bigint;
         readonly GameDataMgrSlot: bigint;
         readonly EventMgrSlot: bigint;
         readonly WorldMgrSlot: bigint;
@@ -745,6 +783,13 @@ declare module "greenhook/data" {
         get(key: string | number): ResourceValue | undefined;
         entries(): IterableIterator<[string | number, ResourceValue]>;
     }
+    export interface NativeSymbol { symbol: string; name: string; address: bigint }
+    /** Snapshot one image module's export tables. Page cursors count raw symbol slots. */
+    export function openNativeModule(module: "rtld" | "main" | "subsdk0" | "sdk"): { slots: number; page(start?: number, limit?: number): { symbols: NativeSymbol[]; next: number | null } } | null;
+    /** Read the installed AI node metadata keyed by graph node name. */
+    export function openAiDefinitions(): ResourceNode | null;
+    /** Iterate ActorInfo records that declare both an actor identifier and a class name. */
+    export function actorClassEntries(): IterableIterator<{ actor: string; className: string; record: ResourceNode }>;
     export type BymlNumber = { type: "i32" | "u32" | "f32" | "f64"; value: number } | { type: "i64" | "u64"; value: bigint };
     export type BymlValue = null | boolean | string | number | bigint | Uint8Array | BymlNumber | BymlValue[] | { [key: string]: BymlValue };
     export interface BymlDocument { root: BymlValue[] | { [key: string]: BymlValue }; version: number; littleEndian: boolean }
@@ -771,6 +816,8 @@ declare module "greenhook/data" {
     type ScalarValue<T> = T extends "void" ? void : T extends "bool" ? boolean : T extends "i64" | "u64" | "ptr" ? bigint : number;
     /** Bind a verified scalar register signature. Each invocation runs in game.defer and resolves to the decoded result. */
     export function bindGameFunction<P extends readonly ScalarType[], R extends ScalarType | "void">(address: AddressLike, parameters: readonly [...P], returns: R): (...values: { [I in keyof P]: ScalarValue<P[I]> }) => Promise<ScalarValue<R>>;
+    /** Bind a scalar AI method by class and virtual slot. Resolve a live graph instance inside the guest callback. */
+    export function bindAiMethod<P extends readonly ScalarType[], R extends ScalarType | "void">(className: string, slot: number, parameters: readonly [...P], returns: R): (getReceiver: () => bigint, ...values: { [I in keyof P]: ScalarValue<P[I]> }) => Promise<ScalarValue<R>>;
     /** Sorted resource paths for all installed placement variants in one Banc directory. */
     export function listPlacementFiles(map: string): string[];
     /** Clone a placed actor under a new placement ID and position for future loads. Returns false if the file, template or override slot is unavailable. */

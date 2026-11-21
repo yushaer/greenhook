@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { zstdDecompressSync } from "node:zlib";
-import { addActorPlacement, bindGameFunction, callActorMethod, editResource, listPlacementFiles, openByml, removeActorPlacement, trackActors } from "../scripts_sdk/lib/greenhook-data.js";
+import { addActorPlacement, bindAiMethod, bindGameFunction, callActorMethod, editResource, openNativeModule, listPlacementFiles, openByml, removeActorPlacement, trackActors } from "../scripts_sdk/lib/greenhook-data.js";
 
 // A one-element BYML array containing a signed integer.
 for (const little of [false, true]) {
@@ -132,4 +132,32 @@ assert.equal(await bind(55n, 1.25, -1, 3.5, true), -1);
 assert.throws(() => bind(55n, 1, 2 ** 31, 2, false), RangeError);
 assert.throws(() => bindGameFunction(55n, Array(9).fill("ptr"), "void"), /Stack/);
 assert.throws(() => bindGameFunction(99n, [], "void"), /Unknown/);
-console.log("Game data, placement and native wrapper tests passed");
+
+const table = new Uint8Array(72), strings = new TextEncoder().encode("\0example\0");
+const view = new DataView(table.buffer);
+view.setUint32(24, 1, true);
+view.setUint8(28, 0x12);
+view.setUint16(30, 1, true);
+view.setBigUint64(32, 0x100n, true);
+globalThis.Greenhook = {gameBuild: "e0f3ccfa"};
+globalThis.memory = {isMapped: () => true, readBytes: addr => addr === 0x800030c0n ? table : strings};
+globalThis.native = {hasFunction: addr => addr === 0x80000100n, demangleSymbol: () => null};
+const mod = openNativeModule("rtld");
+assert.deepEqual(mod.page(0, 1), {symbols: [], next: 1});
+assert.deepEqual(mod.page(1, 2), {symbols: [{symbol: "example", name: "example", address: 0x80000100n}], next: null});
+assert.throws(() => mod.page(0, 257), RangeError);
+
+const live = 1000n, vtable = 1500n, address = 2000n;
+globalThis.native = {
+    hasFunction: a => a === address,
+    getAiClass: () => [{vtable, methods: [address]}],
+    call: (a, args) => { assert.equal(a, address); assert.deepEqual(args.x, [live, 12]); return {x0: 9n}; },
+};
+globalThis.memory = {isMapped: a => a === live, readU64: () => vtable};
+const aiMethod = bindAiMethod("Test", 0, ["u32"], "u32");
+assert.equal(await aiMethod(() => live, 12), 9);
+await assert.rejects(aiMethod(() => 0n, 12), /unavailable/);
+globalThis.memory.readU64 = () => vtable + 8n;
+await assert.rejects(aiMethod(() => live, 12), /different vtable/);
+assert.throws(() => bindAiMethod("Test", 1, [], "void"), /Unresolved/);
+console.log("Game data, AI method and native symbol tests passed");

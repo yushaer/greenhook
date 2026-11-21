@@ -353,6 +353,10 @@ interface GameActorsNamespace {
     inspect(ptr: AddressLike): (ActorSnapshot & { instanceId: number; statusCode: number; name: string }) | null;
     /** Write world coordinates to a live actor. Link uses the player movement path. Other actors receive a direct transform write which their own update can overwrite. */
     setPos(ptr: AddressLike, x: number, y: number, z: number): boolean;
+    /** Read a live actor's yaw in radians from its transform, or null if it cannot be read. */
+    getFacing(ptr: AddressLike): number | null;
+    /** Turn a live actor to a yaw in radians. The rotation becomes a pure yaw: pitch and roll are dropped, per-axis scale is kept. Link uses the player facing path. Like setPos, the actor's own update can overwrite it. */
+    setFacing(ptr: AddressLike, radians: number): boolean;
 }
 
 interface PadStateSnapshot {

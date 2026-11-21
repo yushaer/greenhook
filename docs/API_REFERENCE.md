@@ -158,6 +158,8 @@ Gameplay actions that run at the next player update return `true` when queued an
 - `getMethods(actor: AddressLike, firstSlot: number, count: number): (bigint | null)[] | null` — Resolve 1–128 consecutive vtable slots starting at a nonnegative integer slot. An unreadable range returns null. Individual untranslated entries are null. Slot signatures depend on the actor class and build.
 - `inspect(ptr: AddressLike): (ActorSnapshot & { instanceId: number; statusCode: number; name: string }) | null` — Read a snapshot for a current actor address, or null if the header cannot be read. Obtain addresses from actor callbacks and refresh them after map changes.
 - `setPos(ptr: AddressLike, x: number, y: number, z: number): boolean` — Write world coordinates to a live actor. Link uses the player movement path. Other actors receive a direct transform write which their own update can overwrite.
+- `getFacing(ptr: AddressLike): number | null` — Read a live actor’s yaw in radians from its transform rotation, or null if it cannot be read. `inspect()` and `onActorUpdate` snapshots also include `facing`.
+- `setFacing(ptr: AddressLike, radians: number): boolean` — Turn a live actor to a yaw in radians. The rotation becomes a pure yaw: pitch and roll are dropped and each axis keeps its scale. Link uses the player facing path. As with `setPos`, the actor’s own update can overwrite it.
 
 ### `game.input`
 

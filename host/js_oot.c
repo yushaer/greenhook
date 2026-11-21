@@ -1783,6 +1783,10 @@ static JSValue js_actors_getPlayer(JSContext *ctx, JSValueConst this_val, int ar
     return o;
 }
 
+/* Actor transform: world position (3 floats) at +0x31c, followed by a row-major 3x3 rotation at +0x328.
+   Yaw about +Y is atan2(R[0][2], R[2][2]), the same elements the player facing path reads (+816, +840). */
+#define ACTOR_ROT 0x328u
+
 static JSValue actor_snapshot(JSContext *ctx, uint64_t ptr) {
     if (!js_mem_ok(ptr, 864)) return JS_NULL;
     uint64_t vt = 0, comp = 0, res = 0;
@@ -1808,6 +1812,10 @@ static JSValue actor_snapshot(JSContext *ctx, uint64_t ptr) {
     JS_SetPropertyStr(ctx, pv, "y", JS_NewFloat64(ctx, p[1]));
     JS_SetPropertyStr(ctx, pv, "z", JS_NewFloat64(ctx, p[2]));
     JS_SetPropertyStr(ctx, o, "pos", pv);
+    float r02 = 0.0f, r22 = 1.0f;
+    js_mem_f32(ptr + ACTOR_ROT + 8, &r02);
+    js_mem_f32(ptr + ACTOR_ROT + 32, &r22);
+    JS_SetPropertyStr(ctx, o, "facing", JS_NewFloat64(ctx, (double)atan2f(r02, r22)));
     return o;
 }
 
@@ -1858,6 +1866,42 @@ static JSValue js_actors_setPos(JSContext *ctx, JSValueConst this_val, int argc,
     if (ptr == g_last_actor) return js_player_setPos(ctx, this_val, 3, argv + 1);
     float pos[3] = {(float)x, (float)y, (float)z};
     return JS_NewBool(ctx, js_mem_write(ptr + 0x31c, pos, sizeof pos));
+}
+
+static JSValue js_actors_getFacing(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    (void)this_val;
+    uint64_t ptr = 0;
+    if (argc < 1 || js_to_u64(ctx, argv[0], &ptr) < 0) return JS_ThrowTypeError(ctx, "actors.getFacing(ptr)");
+    float r02 = 0.0f, r22 = 1.0f;
+    if (!js_mem_f32(ptr + ACTOR_ROT + 8, &r02) || !js_mem_f32(ptr + ACTOR_ROT + 32, &r22)) return JS_NULL;
+    return JS_NewFloat64(ctx, (double)atan2f(r02, r22));
+}
+
+/* Replaces the rotation with a pure yaw, keeping each axis' length so scaled actors stay scaled. Pitch and
+   roll are discarded. Link goes through the player path, which also updates the saved map rotation. */
+static JSValue js_actors_setFacing(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    uint64_t ptr = 0;
+    double rad = 0;
+    if (argc < 2 || js_to_u64(ctx, argv[0], &ptr) < 0 || JS_ToFloat64(ctx, &rad, argv[1]) < 0 || !isfinite(rad))
+        return JS_ThrowTypeError(ctx, "actors.setFacing(ptr, radians)");
+    AcquireSRWLockShared(&g_oot_lock);
+    const uint64_t player = g_last_actor;
+    ReleaseSRWLockShared(&g_oot_lock);
+    if (ptr && ptr == player) return js_player_setFacing(ctx, this_val, 1, argv + 1);
+    float m[9];
+    if (!js_mem_read(ptr + ACTOR_ROT, m, sizeof m)) return JS_FALSE;
+    float scale[3];
+    for (int c = 0; c < 3; c++) {
+        const float len = sqrtf(m[c] * m[c] + m[3 + c] * m[3 + c] + m[6 + c] * m[6 + c]);
+        scale[c] = isfinite(len) && len > 1e-6f ? len : 1.0f;
+    }
+    const float s = sinf((float)rad), co = cosf((float)rad);
+    const float out[9] = {
+        co * scale[0], 0.0f,     s * scale[2],
+        0.0f,          scale[1], 0.0f,
+        -s * scale[0], 0.0f,     co * scale[2],
+    };
+    return JS_NewBool(ctx, js_mem_write(ptr + ACTOR_ROT, out, sizeof out));
 }
 
 void js_register_oot(JSContext *ctx, JSValue ns_game) {
@@ -1944,6 +1988,8 @@ void js_register_oot(JSContext *ctx, JSValue ns_game) {
     JS_SetPropertyStr(ctx, actors, "getMethods", JS_NewCFunction(ctx, js_actors_methods, "getMethods", 3));
     JS_SetPropertyStr(ctx, actors, "inspect", JS_NewCFunction(ctx, js_actors_inspect, "inspect", 1));
     JS_SetPropertyStr(ctx, actors, "setPos", JS_NewCFunction(ctx, js_actors_setPos, "setPos", 4));
+    JS_SetPropertyStr(ctx, actors, "getFacing", JS_NewCFunction(ctx, js_actors_getFacing, "getFacing", 1));
+    JS_SetPropertyStr(ctx, actors, "setFacing", JS_NewCFunction(ctx, js_actors_setFacing, "setFacing", 2));
 
     JS_SetPropertyStr(ctx, ns_game, "player", player);
     JS_SetPropertyStr(ctx, ns_game, "inventory", inv);

@@ -910,6 +910,20 @@ globalThis.SceneEditor = {
     remove: hash => { if (!placements.length) loadScene(); const p = placements.find(q => q.hash === hash); if (p) deletePlacement(p); return Boolean(p); },
     revertArea: () => { if (!placements.length) loadScene(); for (const path of new Set(placements.map(p => p.path))) { delete edits[path]; dirty.add(path); } saveEdits(); loadScene(); },
     pending: () => [...dirty],
+    /** Objects in the loaded area: hash, type, position, spawned flag. */
+    list: () => { if (!placements.length) loadScene(); return placements.map(p => ({ hash: p.hash, gyaml: p.gyaml, pos: value(p, "translate"), spawned: Boolean(p.spawn) })); },
+    /** @param {string | null} hash */
+    select: hash => { selected = hash ? placements.find(p => p.hash === hash) ?? null : null; rebuildPanel(); return Boolean(selected); },
+    /** @param {{eye:{x:number,y:number,z:number}, yaw?:number, pitch?:number}} pose */
+    setCamera: pose => { cam.eye = vec(pose.eye); if (pose.yaw !== undefined) cam.yaw = pose.yaw; if (pose.pitch !== undefined) cam.pitch = pose.pitch; if (active) pushCamera(); },
+    getCamera: () => ({ eye: [...cam.eye], yaw: cam.yaw, pitch: cam.pitch }),
+    /** @param {string | null} gyaml */
+    setSpawnType: gyaml => {
+        spawnType = gyaml;
+        const i = spawnTypes.findIndex(t => t.gyaml === gyaml);
+        if (i >= 0) spawnPage = Math.floor(i / PAGE);
+        rebuildPanel();
+    },
 };
 
 game.onUnload(() => { offActors(); tracker.stop(); exit(); });

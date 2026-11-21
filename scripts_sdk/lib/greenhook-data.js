@@ -60,6 +60,11 @@ export function openByml(bytes) {
         }
         return {
             kind: array ? "array" : "map", length,
+            /** BYML type tag of an entry (0xd2 float, 0xc1 map, ...), or undefined when missing. */
+            typeOf(k) {
+                const i = slot(k);
+                return i < 0 ? undefined : array ? bytes[at + 4 + i] : bytes[at + 7 + 8 * i];
+            },
             get(k) {
                 const i = slot(k);
                 return i < 0 ? undefined : item(i);
@@ -181,6 +186,404 @@ export function editResource(path, edit) {
     const result = edit(data);
     if (result && typeof result.then === "function") throw new TypeError("editResource callback must be synchronous");
     return globalThis.game.romfs.setVirtualFile(path, path.endsWith(".zs") ? storedFrame(data) : data);
+}
+
+// ---- Whole-document BYML editing ----
+// decodeByml returns plain values: strings, booleans, null, Uint8Array for binary data, arrays, plain
+// objects for maps, and { type, value } for numbers so their exact BYML type survives a round trip
+// (type is "i32", "f32", "u32", "i64", "u64" or "f64"). encodeByml writes such a tree back, including
+// new entries, removed entries and new strings. Plain JS numbers encode as i32 when integral, else f32;
+// plain bigints as u64 when nonnegative, else i64.
+const NUMBER_TYPES = { i32: 0xd1, f32: 0xd2, u32: 0xd3, i64: 0xd4, u64: 0xd5, f64: 0xd6 };
+const NUMBER_NAMES = { 0xd1: "i32", 0xd2: "f32", 0xd3: "u32", 0xd4: "i64", 0xd5: "u64", 0xd6: "f64" };
+
+function isBymlNumber(v) {
+    if (!v || typeof v !== "object" || Array.isArray(v) || v instanceof Uint8Array) return false;
+    const keys = Object.keys(v);
+    return keys.length === 2 && "type" in v && "value" in v && typeof v.type === "string" &&
+        Object.prototype.hasOwnProperty.call(NUMBER_TYPES, v.type);
+}
+
+export const byml = {
+    i32: value => ({ type: "i32", value }),
+    f32: value => ({ type: "f32", value }),
+    u32: value => ({ type: "u32", value }),
+    i64: value => ({ type: "i64", value: BigInt(value) }),
+    u64: value => ({ type: "u64", value: BigInt(value) }),
+    f64: value => ({ type: "f64", value }),
+    /** The number inside a decoded numeric value, or the value itself. */
+    value: v => isBymlNumber(v) ? v.value : v,
+    isNumber: isBymlNumber,
+};
+
+/** Deep copy of a decoded BYML value (the runtime has no structuredClone). */
+export function cloneByml(v) {
+    if (v instanceof Uint8Array) return v.slice();
+    if (Array.isArray(v)) return v.map(cloneByml);
+    if (v && typeof v === "object") {
+        const out = {};
+        for (const [k, x] of Object.entries(v)) out[k] = cloneByml(x);
+        return out;
+    }
+    return v;
+}
+
+export function decodeByml(bytes) {
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    const magic = view.getUint16(0);
+    if (magic !== 0x5942 && magic !== 0x4259) throw new TypeError("Expected BYML");
+    const le = magic === 0x5942;
+    function walk(v, type) {
+        if (type === 0xc0) return [...v.entries()].map(([i, x]) => walk(x, v.typeOf(i)));
+        if (type === 0xc1) {
+            const out = {};
+            for (const [k, x] of v.entries()) out[k] = walk(x, v.typeOf(k));
+            return out;
+        }
+        if (type === 0xa1) return v.slice();
+        if (type in NUMBER_NAMES) return { type: NUMBER_NAMES[type], value: v };
+        return v;
+    }
+    const root = openByml(bytes);
+    return { version: view.getUint16(2, le), littleEndian: le, root: walk(root, root.kind === "array" ? 0xc0 : 0xc1) };
+}
+
+export function encodeByml(doc) {
+    const le = doc.littleEndian !== false, version = doc.version ?? 7, root = doc.root;
+    if (!root || typeof root !== "object" || isBymlNumber(root) || root instanceof Uint8Array)
+        throw new TypeError("BYML root must be an array or map");
+    const enc = new TextEncoder();
+    const keySet = new Set(), strSet = new Set();
+    function typeOf(v) {
+        if (v === null || v === undefined) return 0xff;
+        if (typeof v === "string") return 0xa0;
+        if (typeof v === "boolean") return 0xd0;
+        if (typeof v === "number") {
+            if (!Number.isFinite(v)) throw new TypeError("BYML numbers must be finite");
+            return Number.isInteger(v) && v >= -2147483648 && v <= 2147483647 ? 0xd1 : 0xd2;
+        }
+        if (typeof v === "bigint") return v >= 0n ? 0xd5 : 0xd4;
+        if (v instanceof Uint8Array) return 0xa1;
+        if (Array.isArray(v)) return 0xc0;
+        if (isBymlNumber(v)) return NUMBER_TYPES[v.type];
+        if (typeof v === "object") return 0xc1;
+        throw new TypeError("Unsupported BYML value: " + typeof v);
+    }
+    (function collect(v) {
+        const t = typeOf(v);
+        if (t === 0xa0) strSet.add(v);
+        else if (t === 0xc0) v.forEach(collect);
+        else if (t === 0xc1) for (const [k, x] of Object.entries(v)) { keySet.add(k); collect(x); }
+    })(root);
+    // Keys and strings are sorted by UTF-8 bytes; readers binary-search the key table.
+    const byteOrder = (a, b) => {
+        const x = enc.encode(a), y = enc.encode(b);
+        for (let i = 0; i < Math.min(x.length, y.length); i++) if (x[i] !== y[i]) return x[i] - y[i];
+        return x.length - y.length;
+    };
+    const keys = [...keySet].sort(byteOrder), strs = [...strSet].sort(byteOrder);
+    const keyIndex = new Map(keys.map((k, i) => [k, i])), strIndex = new Map(strs.map((s, i) => [s, i]));
+
+    let buf = new Uint8Array(1 << 16), view = new DataView(buf.buffer), pos = 0;
+    function reserve(n) {
+        if (pos + n <= buf.length) return;
+        let size = buf.length;
+        while (size < pos + n) size *= 2;
+        const next = new Uint8Array(size);
+        next.set(buf);
+        buf = next;
+        view = new DataView(buf.buffer);
+    }
+    const align = n => { const p = Math.ceil(pos / n) * n; reserve(p - pos); pos = p; };
+    function u24(at, v) {
+        if (v > 0xffffff) throw new RangeError("BYML container too large");
+        if (le) { view.setUint16(at, v & 0xffff, true); view.setUint8(at + 2, v >>> 16); }
+        else { view.setUint8(at, v >>> 16); view.setUint16(at + 1, v & 0xffff, false); }
+    }
+    function stringTable(list) {
+        if (!list.length) return 0;
+        align(4);
+        const at = pos, head = 4 + 4 * (list.length + 1);
+        reserve(head);
+        pos += head;
+        view.setUint8(at, 0xc2);
+        u24(at + 1, list.length);
+        list.forEach((s, i) => {
+            const b = enc.encode(s);
+            view.setUint32(at + 4 + 4 * i, pos - at, le);
+            reserve(b.length + 1);
+            buf.set(b, pos);
+            buf[pos + b.length] = 0;
+            pos += b.length + 1;
+        });
+        view.setUint32(at + 4 + 4 * list.length, pos - at, le);
+        align(4);
+        return at;
+    }
+    // Identical containers and 64-bit values are written once and shared, as the game's own files
+    // do. The game reserves memory per file from its resource size table, so size matters.
+    const canonIds = new Map(), memo = new WeakMap(), written = new Map();
+    const bits = new DataView(new ArrayBuffer(8));
+    function canon(v, t) {
+        switch (t) {
+        case 0xa0: return "s" + strIndex.get(v);
+        case 0xd0: return v ? "T" : "F";
+        case 0xff: return "N";
+        case 0xd1: case 0xd2: case 0xd3: {
+            const n = isBymlNumber(v) ? v.value : v;
+            if (t === 0xd2) { bits.setFloat32(0, n); return "f" + bits.getUint32(0); }
+            return (t === 0xd1 ? "i" : "u") + n;
+        }
+        case 0xa1: return null; // binary blobs are rare; never shared
+        }
+        if (v && typeof v === "object" && memo.has(v)) return memo.get(v);
+        let key;
+        if (t === 0xc0) key = "A" + v.map(x => { const xt = typeOf(x); return canon(x, xt) ?? "?"; }).join(",");
+        else if (t === 0xc1) key = "M" + Object.entries(v).sort((a, b) => keyIndex.get(a[0]) - keyIndex.get(b[0]))
+            .map(([k, x]) => { const xt = typeOf(x); return keyIndex.get(k) + "=" + (canon(x, xt) ?? "?"); }).join(",");
+        else {
+            const n = isBymlNumber(v) ? v.value : v;
+            if (t === 0xd6) { bits.setFloat64(0, Number(n)); key = "D" + bits.getBigUint64(0); }
+            else key = (t === 0xd4 ? "L" : "U") + BigInt(n);
+        }
+        if (key.includes("?")) key = null; // contains an unshareable blob
+        let id = key === null ? null : canonIds.get(key);
+        if (key !== null && id === undefined) { id = "#" + canonIds.size; canonIds.set(key, id); }
+        if (v && typeof v === "object") memo.set(v, id);
+        return id;
+    }
+    // Returns the parent's 32-bit word for a value, or null for inline numbers.
+    function word(v, t) {
+        if (t === 0xd1 || t === 0xd2 || t === 0xd3) return null;
+        if (t === 0xa0 || t === 0xd0 || t === 0xff) return writeOut(v, t);
+        const id = canon(v, t);
+        if (id !== null && written.has(id)) return written.get(id);
+        const at = writeOut(v, t);
+        if (id !== null) written.set(id, at);
+        return at;
+    }
+    // Writes the out-of-line part of a value.
+    function writeOut(v, t) {
+        switch (t) {
+        case 0xa0: return strIndex.get(v);
+        case 0xd0: return v ? 1 : 0;
+        case 0xd1: case 0xd2: case 0xd3: return null;
+        case 0xff: return 0;
+        case 0xd4: case 0xd5: case 0xd6: {
+            align(4); // the game's own files align 64-bit values to 4 bytes
+            const at = pos, n = isBymlNumber(v) ? v.value : v;
+            reserve(8);
+            pos += 8;
+            if (t === 0xd6) view.setFloat64(at, Number(n), le);
+            else if (t === 0xd4) view.setBigInt64(at, BigInt.asIntN(64, BigInt(n)), le);
+            else view.setBigUint64(at, BigInt.asUintN(64, BigInt(n)), le);
+            return at;
+        }
+        case 0xa1: {
+            align(4);
+            const at = pos;
+            reserve(4 + v.length);
+            view.setUint32(at, v.length, le);
+            buf.set(v, at + 4);
+            pos += 4 + v.length;
+            return at;
+        }
+        default: return node(v, t);
+        }
+    }
+    function putInline(at, v, t) {
+        const n = isBymlNumber(v) ? v.value : v;
+        if (typeof n !== "number" || !Number.isFinite(n)) throw new TypeError("BYML 32-bit numbers must be finite");
+        if (t === 0xd1) view.setInt32(at, n, le);
+        else if (t === 0xd2) view.setFloat32(at, n, le);
+        else view.setUint32(at, n >>> 0, le);
+    }
+    function node(v, t) {
+        align(4);
+        const at = pos;
+        if (t === 0xc0) {
+            const n = v.length, values = 4 + Math.ceil(n / 4) * 4;
+            reserve(values + 4 * n);
+            pos += values + 4 * n;
+            view.setUint8(at, 0xc0);
+            u24(at + 1, n);
+            v.forEach((x, i) => {
+                const xt = typeOf(x);
+                buf[at + 4 + i] = xt;
+                const w = word(x, xt);
+                if (w === null) putInline(at + values + 4 * i, x, xt);
+                else view.setUint32(at + values + 4 * i, w, le);
+            });
+        } else {
+            const entries = Object.entries(v).sort((a, b) => keyIndex.get(a[0]) - keyIndex.get(b[0]));
+            reserve(4 + 8 * entries.length);
+            pos += 4 + 8 * entries.length;
+            view.setUint8(at, 0xc1);
+            u24(at + 1, entries.length);
+            entries.forEach(([k, x], i) => {
+                const xt = typeOf(x), e = at + 4 + 8 * i;
+                u24(e, keyIndex.get(k));
+                buf[e + 3] = xt;
+                const w = word(x, xt);
+                if (w === null) putInline(e + 4, x, xt);
+                else view.setUint32(e + 4, w, le);
+            });
+        }
+        return at;
+    }
+
+    reserve(16);
+    pos = 16;
+    buf.set(le ? [0x59, 0x42] : [0x42, 0x59]);
+    view.setUint16(2, version, le);
+    // Compute each offset before writing it: writing can grow (replace) the buffer and its view.
+    const keyTable = stringTable(keys);
+    const strTable = stringTable(strs);
+    // The game's writer stores every 64-bit value in one pool between the string table and the
+    // node tree, in first-use order; the game does not load files laid out otherwise.
+    (function pool(v) {
+        const t = typeOf(v);
+        if (t === 0xc0) v.forEach(pool);
+        else if (t === 0xc1) Object.entries(v).sort((a, b) => keyIndex.get(a[0]) - keyIndex.get(b[0])).forEach(([, x]) => pool(x));
+        else if (t === 0xd4 || t === 0xd5 || t === 0xd6) word(v, t);
+    })(root);
+    const rootAt = node(root, typeOf(root));
+    view.setUint32(4, keyTable, le);
+    view.setUint32(8, strTable, le);
+    view.setUint32(12, rootAt, le);
+    return buf.slice(0, pos);
+}
+
+// ---- Resource size table ----
+// The game allocates each resource from System/Resource/*.rsizetable.zs (CRC32 of the path without
+// ".zs" -> bytes). An entry is the stock decompressed size plus a small fixed overhead, so a file that
+// grows is truncated on load. The table is read when the game starts: patch it from a script's top
+// level and restart once before serving larger files.
+const CRC_TABLE = (() => {
+    const t = new Uint32Array(256);
+    for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; }
+    return t;
+})();
+function crc32(s) {
+    let c = 0xffffffff;
+    for (const b of new TextEncoder().encode(s)) c = CRC_TABLE[(c ^ b) & 255] ^ (c >>> 8);
+    return (c ^ 0xffffffff) >>> 0;
+}
+
+function sizeTablePath() {
+    const name = globalThis.game.romfs.listDir("System/Resource").find(n => n.endsWith(".rsizetable.zs"));
+    if (!name) throw new Error("No resource size table in System/Resource");
+    return "System/Resource/" + name;
+}
+
+function parseSizeTable(bytes) {
+    const v = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    if (new TextDecoder().decode(bytes.subarray(0, 6)) !== "RESTBL") throw new TypeError("Expected RESTBL");
+    const strSize = v.getUint32(10, true), crcCount = v.getUint32(14, true), nameCount = v.getUint32(18, true);
+    const names = 22 + 8 * crcCount;
+    if (names + nameCount * (strSize + 4) > bytes.length) throw new RangeError("Invalid RESTBL extents");
+    // Returns the byte offset of the size word for a RomFS path, or -1.
+    function slot(path) {
+        const key = path.replace(/\.zs$/, "");
+        for (let i = 0; i < nameCount; i++) {
+            const at = names + i * (strSize + 4);
+            const end = bytes.subarray(at, at + strSize).indexOf(0);
+            if (new TextDecoder().decode(bytes.subarray(at, end < 0 ? at + strSize : at + end)) === key) return at + strSize;
+        }
+        const h = crc32(key);
+        let lo = 0, hi = crcCount;
+        while (lo < hi) {
+            const mid = (lo + hi) >>> 1, c = v.getUint32(22 + 8 * mid, true);
+            if (c === h) return 22 + 8 * mid + 4;
+            if (c < h) lo = mid + 1; else hi = mid;
+        }
+        return -1;
+    }
+    return { view: v, slot };
+}
+
+/** Allocation size the game uses for a RomFS path, or null when the table has no entry. */
+export function resourceSize(path) {
+    const t = parseSizeTable(readResource(sizeTablePath()));
+    const at = t.slot(path);
+    return at < 0 ? null : t.view.getUint32(at, true);
+}
+
+/**
+ * Raises allocation sizes: `sizes` maps RomFS paths to minimum byte counts. Serves the patched table
+ * through writeResource and returns { path, updated, missing }. Takes effect for a table the game reads
+ * afterwards, which is normally at startup.
+ */
+export function setResourceSizes(sizes) {
+    const path = sizeTablePath();
+    globalThis.game.romfs.clearOverride(path);
+    const bytes = readResource(path).slice();
+    const t = parseSizeTable(bytes);
+    const updated = [], missing = [];
+    for (const [p, size] of sizes instanceof Map ? sizes : Object.entries(sizes)) {
+        if (!Number.isSafeInteger(size) || size < 0 || size > 0xffffffff) throw new RangeError("Invalid size for " + p);
+        const at = t.slot(p);
+        if (at < 0) { missing.push(p); continue; }
+        if (t.view.getUint32(at, true) < size) { t.view.setUint32(at, size, true); updated.push(p); }
+    }
+    if (!writeResource(path, bytes)) throw new Error("Could not override " + path);
+    return { path, updated, missing };
+}
+
+/**
+ * Serves `bytes` (decompressed content) for RomFS `path`. By default the data is written to
+ * scripts_data/romfs-overrides/<path> and the game path is redirected to that host file, so every
+ * loader thread opens a real file (the asynchronous area loader rejects in-memory handles).
+ * Pass { memory: true } for a setVirtualFile override instead.
+ */
+export function writeResource(path, bytes, { memory = false } = {}) {
+    if (typeof path !== "string" || !path || /(^|[\\/])\.\.([\\/]|$)|^[\\/]|:/.test(path))
+        throw new TypeError("Expected a relative RomFS path");
+    const { romfs } = globalThis.game;
+    const data = path.endsWith(".zs") ? storedFrame(bytes) : bytes;
+    if (memory) return romfs.setVirtualFile(path, data);
+    const rel = "romfs-overrides/" + path.replace(/\\/g, "/");
+    const { fs } = globalThis;
+    fs.mkdir(rel.slice(0, rel.lastIndexOf("/")));
+    fs.writeBytes(rel, data);
+    romfs.clearOverride(path);
+    const manifest = readManifest();
+    manifest[path] = rel;
+    fs.writeJson(MANIFEST, manifest);
+    return romfs.redirect(path, hostPath(rel));
+}
+
+// Files written by writeResource persist under scripts_data/romfs-overrides and are listed in a
+// manifest, so a script can re-register them at the very start of the next launch, before the game
+// reads them. Registering a redirect does not read RomFS, so it works before RomFS is mounted.
+const MANIFEST = "romfs-overrides/manifest.json";
+function readManifest() {
+    try {
+        const m = globalThis.fs.exists(MANIFEST) ? globalThis.fs.readJson(MANIFEST) : null;
+        return m && typeof m === "object" ? m : {};
+    } catch { return {}; }
+}
+function hostPath(rel) {
+    return globalThis.Greenhook.dataDir.replace(/[\\/]+$/, "") + "\\" + rel.replace(/\//g, "\\");
+}
+
+/** Re-registers every saved writeResource override. Call it from a script's top level. Returns the count. */
+export function installSavedOverrides() {
+    let n = 0;
+    for (const [path, rel] of Object.entries(readManifest())) {
+        if (typeof rel === "string" && globalThis.fs.exists(rel) && globalThis.game.romfs.redirect(path, hostPath(rel))) n++;
+    }
+    return n;
+}
+
+/** Removes a saved override and its file. The running game keeps any copy it already loaded. */
+export function removeSavedOverride(path) {
+    const manifest = readManifest(), rel = manifest[path];
+    globalThis.game.romfs.clearOverride(path);
+    if (typeof rel === "string" && globalThis.fs.exists(rel)) globalThis.fs.remove(rel);
+    delete manifest[path];
+    globalThis.fs.writeJson(MANIFEST, manifest);
+    return typeof rel === "string";
 }
 
 // These are observations from the shared transform update. A quiet actor can leave the set while still alive.

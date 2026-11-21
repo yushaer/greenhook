@@ -320,15 +320,57 @@ export function encodeByml(doc) {
         align(4);
         return at;
     }
-    // Writes the out-of-line part of a value; returns the parent's 32-bit word, or null for inline numbers.
+    // Identical containers and 64-bit values are written once and shared, as the game's own files
+    // do. The game reserves memory per file from its resource size table, so size matters.
+    const canonIds = new Map(), memo = new WeakMap(), written = new Map();
+    const bits = new DataView(new ArrayBuffer(8));
+    function canon(v, t) {
+        switch (t) {
+        case 0xa0: return "s" + strIndex.get(v);
+        case 0xd0: return v ? "T" : "F";
+        case 0xff: return "N";
+        case 0xd1: case 0xd2: case 0xd3: {
+            const n = isBymlNumber(v) ? v.value : v;
+            if (t === 0xd2) { bits.setFloat32(0, n); return "f" + bits.getUint32(0); }
+            return (t === 0xd1 ? "i" : "u") + n;
+        }
+        case 0xa1: return null; // binary blobs are rare; never shared
+        }
+        if (v && typeof v === "object" && memo.has(v)) return memo.get(v);
+        let key;
+        if (t === 0xc0) key = "A" + v.map(x => { const xt = typeOf(x); return canon(x, xt) ?? "?"; }).join(",");
+        else if (t === 0xc1) key = "M" + Object.entries(v).sort((a, b) => keyIndex.get(a[0]) - keyIndex.get(b[0]))
+            .map(([k, x]) => { const xt = typeOf(x); return keyIndex.get(k) + "=" + (canon(x, xt) ?? "?"); }).join(",");
+        else {
+            const n = isBymlNumber(v) ? v.value : v;
+            if (t === 0xd6) { bits.setFloat64(0, Number(n)); key = "D" + bits.getBigUint64(0); }
+            else key = (t === 0xd4 ? "L" : "U") + BigInt(n);
+        }
+        if (key.includes("?")) key = null; // contains an unshareable blob
+        let id = key === null ? null : canonIds.get(key);
+        if (key !== null && id === undefined) { id = "#" + canonIds.size; canonIds.set(key, id); }
+        if (v && typeof v === "object") memo.set(v, id);
+        return id;
+    }
+    // Returns the parent's 32-bit word for a value, or null for inline numbers.
     function word(v, t) {
+        if (t === 0xd1 || t === 0xd2 || t === 0xd3) return null;
+        if (t === 0xa0 || t === 0xd0 || t === 0xff) return writeOut(v, t);
+        const id = canon(v, t);
+        if (id !== null && written.has(id)) return written.get(id);
+        const at = writeOut(v, t);
+        if (id !== null) written.set(id, at);
+        return at;
+    }
+    // Writes the out-of-line part of a value.
+    function writeOut(v, t) {
         switch (t) {
         case 0xa0: return strIndex.get(v);
         case 0xd0: return v ? 1 : 0;
         case 0xd1: case 0xd2: case 0xd3: return null;
         case 0xff: return 0;
         case 0xd4: case 0xd5: case 0xd6: {
-            align(8);
+            align(4); // the game's own files align 64-bit values to 4 bytes
             const at = pos, n = isBymlNumber(v) ? v.value : v;
             reserve(8);
             pos += 8;
@@ -397,11 +439,95 @@ export function encodeByml(doc) {
     // Compute each offset before writing it: writing can grow (replace) the buffer and its view.
     const keyTable = stringTable(keys);
     const strTable = stringTable(strs);
+    // The game's writer stores every 64-bit value in one pool between the string table and the
+    // node tree, in first-use order; the game does not load files laid out otherwise.
+    (function pool(v) {
+        const t = typeOf(v);
+        if (t === 0xc0) v.forEach(pool);
+        else if (t === 0xc1) Object.entries(v).sort((a, b) => keyIndex.get(a[0]) - keyIndex.get(b[0])).forEach(([, x]) => pool(x));
+        else if (t === 0xd4 || t === 0xd5 || t === 0xd6) word(v, t);
+    })(root);
     const rootAt = node(root, typeOf(root));
     view.setUint32(4, keyTable, le);
     view.setUint32(8, strTable, le);
     view.setUint32(12, rootAt, le);
     return buf.slice(0, pos);
+}
+
+// ---- Resource size table ----
+// The game allocates each resource from System/Resource/*.rsizetable.zs (CRC32 of the path without
+// ".zs" -> bytes). An entry is the stock decompressed size plus a small fixed overhead, so a file that
+// grows is truncated on load. The table is read when the game starts: patch it from a script's top
+// level and restart once before serving larger files.
+const CRC_TABLE = (() => {
+    const t = new Uint32Array(256);
+    for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; }
+    return t;
+})();
+function crc32(s) {
+    let c = 0xffffffff;
+    for (const b of new TextEncoder().encode(s)) c = CRC_TABLE[(c ^ b) & 255] ^ (c >>> 8);
+    return (c ^ 0xffffffff) >>> 0;
+}
+
+function sizeTablePath() {
+    const name = globalThis.game.romfs.listDir("System/Resource").find(n => n.endsWith(".rsizetable.zs"));
+    if (!name) throw new Error("No resource size table in System/Resource");
+    return "System/Resource/" + name;
+}
+
+function parseSizeTable(bytes) {
+    const v = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    if (new TextDecoder().decode(bytes.subarray(0, 6)) !== "RESTBL") throw new TypeError("Expected RESTBL");
+    const strSize = v.getUint32(10, true), crcCount = v.getUint32(14, true), nameCount = v.getUint32(18, true);
+    const names = 22 + 8 * crcCount;
+    if (names + nameCount * (strSize + 4) > bytes.length) throw new RangeError("Invalid RESTBL extents");
+    // Returns the byte offset of the size word for a RomFS path, or -1.
+    function slot(path) {
+        const key = path.replace(/\.zs$/, "");
+        for (let i = 0; i < nameCount; i++) {
+            const at = names + i * (strSize + 4);
+            const end = bytes.subarray(at, at + strSize).indexOf(0);
+            if (new TextDecoder().decode(bytes.subarray(at, end < 0 ? at + strSize : at + end)) === key) return at + strSize;
+        }
+        const h = crc32(key);
+        let lo = 0, hi = crcCount;
+        while (lo < hi) {
+            const mid = (lo + hi) >>> 1, c = v.getUint32(22 + 8 * mid, true);
+            if (c === h) return 22 + 8 * mid + 4;
+            if (c < h) lo = mid + 1; else hi = mid;
+        }
+        return -1;
+    }
+    return { view: v, slot };
+}
+
+/** Allocation size the game uses for a RomFS path, or null when the table has no entry. */
+export function resourceSize(path) {
+    const t = parseSizeTable(readResource(sizeTablePath()));
+    const at = t.slot(path);
+    return at < 0 ? null : t.view.getUint32(at, true);
+}
+
+/**
+ * Raises allocation sizes: `sizes` maps RomFS paths to minimum byte counts. Serves the patched table
+ * through writeResource and returns { path, updated, missing }. Takes effect for a table the game reads
+ * afterwards, which is normally at startup.
+ */
+export function setResourceSizes(sizes) {
+    const path = sizeTablePath();
+    globalThis.game.romfs.clearOverride(path);
+    const bytes = readResource(path).slice();
+    const t = parseSizeTable(bytes);
+    const updated = [], missing = [];
+    for (const [p, size] of sizes instanceof Map ? sizes : Object.entries(sizes)) {
+        if (!Number.isSafeInteger(size) || size < 0 || size > 0xffffffff) throw new RangeError("Invalid size for " + p);
+        const at = t.slot(p);
+        if (at < 0) { missing.push(p); continue; }
+        if (t.view.getUint32(at, true) < size) { t.view.setUint32(at, size, true); updated.push(p); }
+    }
+    if (!writeResource(path, bytes)) throw new Error("Could not override " + path);
+    return { path, updated, missing };
 }
 
 /**

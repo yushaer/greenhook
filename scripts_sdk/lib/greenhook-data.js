@@ -849,3 +849,40 @@ export function bindAiMethod(className, slot, parameters, returns) {
         });
     };
 }
+
+// Describe only complete, side-effect-free AArch64 instruction sequences ending in RET.
+export function describeNativeLeaf(address) {
+    if (typeof address !== "bigint") throw new TypeError("Expected a bigint guest address");
+    if (!globalThis.native.hasFunction(address) || !globalThis.memory.isMapped(address, 12)) return null;
+    const code = globalThis.memory.readBytes(address, 12);
+    const view = new DataView(code.buffer, code.byteOffset, code.byteLength);
+    const op = view.getUint32(0, true), next = view.getUint32(4, true), ret = 0xd65f03c0;
+    if (op === ret) return "Returns immediately without writing a result register.";
+    const matches = (mask, bits) => ((op & mask) >>> 0) === bits;
+    if (next === ret) {
+        if (matches(0xff80001f, 0xd2800000) || matches(0xffc0001f, 0x52800000)) {
+            const value = BigInt((op >>> 5) & 0xffff) << BigInt(16 * ((op >>> 21) & 3));
+            return ((op >>> 31) ? "x0" : "w0") + " returns constant " + value + ".";
+        }
+        if (matches(0xff8003ff, 0x91000000)) {
+            const offset = ((op >>> 10) & 0xfff) * ((op & 0x400000) ? 4096 : 1);
+            return "x0 returns the input x0 address plus " + offset + " bytes.";
+        }
+        const loads = [
+            [0x39400000, 1, "w0"], [0x79400000, 2, "w0"], [0xb9400000, 4, "w0"],
+            [0xf9400000, 8, "x0"], [0xbd400000, 4, "s0"], [0xfd400000, 8, "d0"],
+        ];
+        for (const [bits, bytes, register] of loads) {
+            if (matches(0xffc003ff, bits)) return register + " returns a " + bytes +
+                "-byte load from input x0 + " + (((op >>> 10) & 0xfff) * bytes) + ".";
+        }
+    }
+    if (matches(0x9f00001f, 0x90000000) && ((next & 0xffc003ff) >>> 0) === 0x91000000 &&
+        view.getUint32(8, true) === ret) {
+        const immediate = (((op >>> 5) & 0x7ffff) << 2) | ((op >>> 29) & 3);
+        const pages = BigInt((immediate << 11) >> 11);
+        const target = (address & ~0xfffn) + pages * 4096n + BigInt((next >>> 10) & 0xfff);
+        return "x0 returns guest address 0x" + target.toString(16) + ".";
+    }
+    return null;
+}

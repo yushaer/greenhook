@@ -783,6 +783,8 @@ declare module "greenhook/data" {
         get(key: string | number): ResourceValue | undefined;
         entries(): IterableIterator<[string | number, ResourceValue]>;
     }
+    /** Describe a recognized complete guest leaf function without calling it. Returns null for unknown shapes. */
+    export function describeNativeLeaf(address: bigint): string | null;
     export interface NativeSymbol { symbol: string; name: string; address: bigint }
     /** Snapshot one image module's export tables. Page cursors count raw symbol slots. */
     export function openNativeModule(module: "rtld" | "main" | "subsdk0" | "sdk"): { slots: number; page(start?: number, limit?: number): { symbols: NativeSymbol[]; next: number | null } } | null;

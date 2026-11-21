@@ -1,0 +1,160 @@
+address	name	symbol
+0x84ecccd0	movie::detail::MediaDecoderImpl::GetAudioFrameFormatChangedEvent(nn::os::SystemEventType**)	_ZN5movie6detail16MediaDecoderImpl31GetAudioFrameFormatChangedEventEPPN2nn2os15SystemEventTypeE
+0x84ec50e0	movie::VideoFrame::GetBitDepth(int*, movie::PixelFormat)	_ZN5movie10VideoFrame11GetBitDepthEPiNS_11PixelFormatE
+0x84ec6f20	movie::detail::AudioDecoderImpl::AllocateBuffers()	_ZN5movie6detail16AudioDecoderImpl15AllocateBuffersEv
+0x84ec0b80	movie::AudioDecoder::Stop()	_ZN5movie12AudioDecoder4StopEv
+0x84ecd410	movie::detail::MediaDecoderImpl::ReleaseVideoFrame(movie::VideoFrame*)	_ZN5movie6detail16MediaDecoderImpl17ReleaseVideoFrameEPNS_10VideoFrameE
+0x84ec5090	movie::VideoFrame::SetPixelPlaneData(void const*, unsigned long, movie::PixelPlane)	_ZN5movie10VideoFrame17SetPixelPlaneDataEPKvmNS_10PixelPlaneE
+0x84ec51c0	movie::detail::MediaState::~MediaState()	_ZN5movie6detail10MediaStateD2Ev
+0x84ed1030	movie::detail::BitReader::SkipSE()	_ZN5movie6detail9BitReader6SkipSEEv
+0x84edbde0	movie::detail::StopWatch::StopWatch()	_ZN5movie6detail9StopWatchC1Ev
+0x84ec1fd0	movie::MediaDecoder::SetUriMedia(char const*, int)	_ZN5movie12MediaDecoder11SetUriMediaEPKci
+0x84ecff60	movie::detail::VideoDecoderEventManager::Initialize()	_ZN5movie6detail24VideoDecoderEventManager10InitializeEv
+0x84ed0b30	movie::detail::BitReader::BitsLeft() const	_ZNK5movie6detail9BitReader8BitsLeftEv
+0x84edc3c0	movie::detail::Dictionary::~Dictionary()	_ZN5movie6detail10DictionaryD2Ev
+0x84ec36c0	movie::VideoDecoder::Flush()	_ZN5movie12VideoDecoder5FlushEv
+0x84ed10e0	movie::detail::BitReader::SkipBits(unsigned int)	_ZN5movie6detail9BitReader8SkipBitsEj
+0x84ec39a0	movie::VideoDecoder::GetOutputFrameProperties(nn::movie::MediaProperty*)	_ZN5movie12VideoDecoder24GetOutputFramePropertiesEPN2nn5movie13MediaPropertyE
+0x84ec8340	movie::detail::AudioDecoderImpl::AcquireInputBufferIndex(int*, int*)	_ZN5movie6detail16AudioDecoderImpl23AcquireInputBufferIndexEPiS2_
+0x84ec1d50	movie::MediaDecoder::Finalize()	_ZN5movie12MediaDecoder8FinalizeEv
+0x84ec20b0	movie::MediaDecoder::SelectTrack(int)	_ZN5movie12MediaDecoder11SelectTrackEi
+0x84ec52a0	movie::detail::Message::GetWaitTimeMs()	_ZN5movie6detail7Message13GetWaitTimeMsEv
+0x84ed0220	movie::detail::VideoDecoderEventManager::Resume()	_ZN5movie6detail24VideoDecoderEventManager6ResumeEv
+0x84eca1e0	movie::detail::OpusAudioDecoder::OpusAudioDecoder()	_ZN5movie6detail16OpusAudioDecoderC2Ev
+0x84ed2ed0	movie::detail::FileByteStream::ProcessRead(movie::detail::FileByteStream::ReadAsyncResult*)	_ZN5movie6detail14FileByteStream11ProcessReadEPNS1_15ReadAsyncResultE
+0x84ec5220	movie::detail::Message::Reset()	_ZN5movie6detail7Message5ResetEv
+0x84ec9330	movie::detail::AudioDecoderImpl::DeallocateInputBuffers()	_ZN5movie6detail16AudioDecoderImpl22DeallocateInputBuffersEv
+0x84ec9f80	movie::detail::AudioDecoderState::AudioDecoderState()	_ZN5movie6detail17AudioDecoderStateC2Ev
+0x84ed0890	movie::detail::BufferReader::ReadInt32(int*)	_ZN5movie6detail12BufferReader9ReadInt32EPi
+0x84ed5be0	movie::detail::TaskQueue::StartIfNecessary()	_ZN5movie6detail9TaskQueue16StartIfNecessaryEv
+0x84ed0720	movie::detail::BufferReader::ReadUInt8(unsigned char*)	_ZN5movie6detail12BufferReader9ReadUInt8EPh
+0x84ed57c0	movie::detail::TaskQueue::ShutdownSocketEventHandler(movie::detail::TaskQueue::EventHandler*)	_ZN5movie6detail9TaskQueue26ShutdownSocketEventHandlerEPNS1_12EventHandlerE
+0x84ec0450	movie::AudioDecoder::~AudioDecoder()	_ZN5movie12AudioDecoderD2Ev
+0x84ec7df0	movie::detail::AudioDecoderImpl::GetAudioFrameReadyEvent(nn::os::SystemEventType**)	_ZN5movie6detail16AudioDecoderImpl23GetAudioFrameReadyEventEPPN2nn2os15SystemEventTypeE
+0x84ed1490	movie::detail::ByteStreamOnBuffer::ByteStreamOnBuffer(movie::IAllocator*, movie::ITaskQueue*, unsigned char const*, unsigned long)	_ZN5movie6detail18ByteStreamOnBufferC2EPNS_10IAllocatorEPNS_10ITaskQueueEPKhm
+0x84ecb2f0	movie::detail::ConfigurationData::ConfigurationData()	_ZN5movie6detail17ConfigurationDataC2Ev
+0x84ed38e0	movie::MemoryBuffer::Grow(unsigned long)	_ZN5movie12MemoryBuffer4GrowEm
+0x84ec0ad0	movie::AudioDecoder::GetFormatChangedEvent(nn::os::SystemEventType**)	_ZN5movie12AudioDecoder21GetFormatChangedEventEPPN2nn2os15SystemEventTypeE
+0x84ec2460	movie::MediaDecoder::GetVideoFormatChangedEvent(nn::os::SystemEventType**)	_ZN5movie12MediaDecoder26GetVideoFormatChangedEventEPPN2nn2os15SystemEventTypeE
+0x84f39f50	opus_multistream_encoder_ctl	opus_multistream_encoder_ctl
+0x84ed13e0	movie::CreateByteStreamOnBuffer(movie::IByteStream**, void const*, unsigned long, movie::ITaskQueue*, movie::IAllocator*)	_ZN5movie24CreateByteStreamOnBufferEPPNS_11IByteStreamEPKvmPNS_10ITaskQueueEPNS_10IAllocatorE
+0x84ed3220	movie::CreateMemoryBuffer(movie::IBuffer**, unsigned long, movie::IAllocator*)	_ZN5movie18CreateMemoryBufferEPPNS_7IBufferEmPNS_10IAllocatorE
+0x84edca60	movie::detail::Dictionary::GetString(char const**, char const*) const	_ZNK5movie6detail10Dictionary9GetStringEPPKcS3_
+0x84ecb3a0	movie::detail::ConfigurationData::Initialize(nn::movie::detail::AllocatorInfo*, nn::movie::MediaProperty const*, char const*, unsigned long)	_ZN5movie6detail17ConfigurationData10InitializeEPN2nn5movie6detail13AllocatorInfoEPKNS3_13MediaPropertyEPKcm
+0x84ecdf60	movie::detail::MediaDecoderState::MediaDecoderState()	_ZN5movie6detail17MediaDecoderStateC2Ev
+0x84ed0710	movie::detail::BufferReader::BufferReader(unsigned char const*, unsigned long)	_ZN5movie6detail12BufferReaderC1EPKhm
+0x84ed9dc0	movie::detail::SerialTaskQueue::SerialTaskQueue(movie::IAllocator*, movie::ITaskQueue*)	_ZN5movie6detail15SerialTaskQueueC2EPNS_10IAllocatorEPNS_10ITaskQueueE
+0x84ec4090	movie::VideoDecoder::SetThreadCoreMask(unsigned long)	_ZN5movie12VideoDecoder17SetThreadCoreMaskEm
+0x84ec9ee0	movie::detail::AudioInputBuffer::AudioInputBuffer()	_ZN5movie6detail16AudioInputBufferC1Ev
+0x84ecd900	movie::detail::MediaDecoderImpl::ProcessVideoInputBufferEvent()	_ZN5movie6detail16MediaDecoderImpl28ProcessVideoInputBufferEventEv
+0x84ecfd20	movie::detail::SubmitDecoderInputBuffer(unsigned long*, movie::detail::VideoDecoderTypes*, void const*, unsigned long, nn::TimeSpan, bool)	_ZN5movie6detail24SubmitDecoderInputBufferEPmPNS0_17VideoDecoderTypesEPKvmN2nn8TimeSpanEb
+0x84ed1600	movie::detail::ByteStreamOnBuffer::~ByteStreamOnBuffer()	_ZN5movie6detail18ByteStreamOnBufferD0Ev
+0x84ed4140	movie::CreateTaskQueue(movie::ITaskQueue**, movie::IAllocator*, unsigned int, unsigned int)	_ZN5movie15CreateTaskQueueEPPNS_10ITaskQueueEPNS_10IAllocatorEjj
+0x84ed9160	movie::detail::TaskQueue::ProcessEventUnregistration(bool*)	_ZN5movie6detail9TaskQueue26ProcessEventUnregistrationEPb
+0x84ecb880	movie::detail::MediaDecoderImpl::MediaDecoderImpl()	_ZN5movie6detail16MediaDecoderImplC1Ev
+0x84edd220	movie::detail::Dictionary::GetBool(bool*, char const*) const	_ZNK5movie6detail10Dictionary7GetBoolEPbPKc
+0x84ec5180	movie::GetVideoFramePreSyncHandle(movie::VideoFrame const*)	_ZN5movie26GetVideoFramePreSyncHandleEPKNS_10VideoFrameE
+0x84ec5b30	movie::detail::AacAudioDecoder::GetAudioFrameRequirements(nn::movie::MediaProperty*)	_ZN5movie6detail15AacAudioDecoder25GetAudioFrameRequirementsEPN2nn5movie13MediaPropertyE
+0x84ec5bc0	movie::detail::AacAudioDecoder::Decode(unsigned long*, unsigned long*, short*, unsigned long, void const*, unsigned long)	_ZN5movie6detail15AacAudioDecoder6DecodeEPmS2_PsmPKvm
+0x84ed3df0	movie::detail::Sample::IsEOSSample() const	_ZNK5movie6detail6Sample11IsEOSSampleEv
+0x84ed5750	movie::detail::TaskQueue::WorkerThread::DestroyThread()	_ZN5movie6detail9TaskQueue12WorkerThread13DestroyThreadEv
+0x84ec4f80	movie::VideoFrame::VideoFrame()	_ZN5movie10VideoFrameC2Ev
+0x84ec52c0	movie::detail::Message::TimedWait(long)	_ZN5movie6detail7Message9TimedWaitEl
+0x84ec8bc0	movie::detail::AudioDecoderImpl::StartAudioDecoderEvent()	_ZN5movie6detail16AudioDecoderImpl22StartAudioDecoderEventEv
+0x84ecb270	movie::detail::VorbisAudioDecoder::Flush()	_ZN5movie6detail18VorbisAudioDecoder5FlushEv
+0x84ee5340	opus_get_version_string	opus_get_version_string
+0x84ec5170	movie::VideoFrame::Clear()	_ZN5movie10VideoFrame5ClearEv
+0x84ed0790	movie::detail::BufferReader::ReadInt16(short*)	_ZN5movie6detail12BufferReader9ReadInt16EPs
+0x84ed6800	movie::detail::TaskQueue::CancelTask(unsigned long)	_ZN5movie6detail9TaskQueue10CancelTaskEm
+0x84ec27a0	movie::CreateSample(movie::ISample**, movie::IAllocator*)	_ZN5movie12CreateSampleEPPNS_7ISampleEPNS_10IAllocatorE
+0x84ed00c0	movie::detail::VideoDecoderEventManager::UnregisterSyncPointCallback()	_ZN5movie6detail24VideoDecoderEventManager27UnregisterSyncPointCallbackEv
+0x84ec5dc0	movie::detail::AacAudioDecoder::GetAudioFrameProperties(nn::movie::MediaProperty*)	_ZN5movie6detail15AacAudioDecoder23GetAudioFramePropertiesEPN2nn5movie13MediaPropertyE
+0x84ec9180	movie::detail::AudioDecoderImpl::AllocateInputBuffers()	_ZN5movie6detail16AudioDecoderImpl20AllocateInputBuffersEv
+0x84f2ed10	opus_repacketizer_create	opus_repacketizer_create
+0x84ec6a90	movie::detail::AudioDecoderImpl::CheckOutputFormat(movie::AudioDecoderOutputFormat) const	_ZNK5movie6detail16AudioDecoderImpl17CheckOutputFormatENS_24AudioDecoderOutputFormatE
+0x84ec9c50	movie::detail::AudioInputBuffer::Finalize()	_ZN5movie6detail16AudioInputBuffer8FinalizeEv
+0x84ec9da0	movie::detail::AudioDecoderImpl::AcquireDecodeInputBufferIndex(int*)	_ZN5movie6detail16AudioDecoderImpl29AcquireDecodeInputBufferIndexEPi
+0x84ed06d0	movie::detail::Allocator::Allocate(unsigned long, unsigned long)	_ZN5movie6detail9Allocator8AllocateEmm
+0x84ed3690	movie::MemoryBuffer::MemoryBuffer(movie::IAllocator*, unsigned long, bool)	_ZN5movie12MemoryBufferC2EPNS_10IAllocatorEmb
+0x84ed7340	movie::detail::TaskQueue::RegisterSemaphoreAcquiredHandler(movie::ITaskQueueRegistrationToken**, nn::os::SemaphoreType*, movie::ITask*)	_ZN5movie6detail9TaskQueue32RegisterSemaphoreAcquiredHandlerEPPNS_27ITaskQueueRegistrationTokenEPN2nn2os13SemaphoreTypeEPNS_5ITaskE
+0x84edbb30	movie::detail::TaskQueueManager::TaskQueueManager()	_ZN5movie6detail16TaskQueueManagerC2Ev
+0x84ec51a0	movie::GetVideoFramePostSyncHandle(movie::VideoFrame const*)	_ZN5movie27GetVideoFramePostSyncHandleEPKNS_10VideoFrameE
+0x84ed1320	movie::detail::NalBitReader::FillReservoir()	_ZN5movie6detail12NalBitReader13FillReservoirEv
+0x84ecfcd0	movie::detail::GetDecoderSubmissionReadyEvent(movie::detail::VideoDecoderTypes*)	_ZN5movie6detail30GetDecoderSubmissionReadyEventEPNS0_17VideoDecoderTypesE
+0x84ed1af0	movie::detail::ByteStreamOnBuffer::Close()	_ZN5movie6detail18ByteStreamOnBuffer5CloseEv
+0x84ed9dc0	movie::detail::SerialTaskQueue::SerialTaskQueue(movie::IAllocator*, movie::ITaskQueue*)	_ZN5movie6detail15SerialTaskQueueC1EPNS_10IAllocatorEPNS_10ITaskQueueE
+0x84ec5000	movie::VideoFrame::GetBuffer(void**, unsigned long*)	_ZN5movie10VideoFrame9GetBufferEPPvPm
+0x84ed45c0	movie::detail::TaskQueue::~TaskQueue()	_ZN5movie6detail9TaskQueueD1Ev
+0x84ed93c0	movie::detail::TaskQueue::RegisterThreadEventHandler(movie::IAsyncCallback*)	_ZN5movie6detail9TaskQueue26RegisterThreadEventHandlerEPNS_14IAsyncCallbackE
+0x84eda4a0	movie::detail::SerialTaskQueue::QueueTask(movie::ITaskQueueCancellationToken**, movie::ITask*)	_ZN5movie6detail15SerialTaskQueue9QueueTaskEPPNS_27ITaskQueueCancellationTokenEPNS_5ITaskE
+0x84ec1450	movie::AudioDecoder::SetThreadPriority(int)	_ZN5movie12AudioDecoder17SetThreadPriorityEi
+0x84ed0ca0	movie::detail::BitReader::ParseUE(unsigned int*)	_ZN5movie6detail9BitReader7ParseUEEPj
+0x84ed29c0	movie::detail::FileByteStream::GetStatus() const	_ZNK5movie6detail14FileByteStream9GetStatusEv
+0x84edc140	movie::detail::SystemEvent::Clear()	_ZN5movie6detail11SystemEvent5ClearEv
+0x84ec5190	movie::SetVideoFramePreSyncHandle(movie::VideoFrame*, nn::gs::NativeSyncHandle const&)	_ZN5movie26SetVideoFramePreSyncHandleEPNS_10VideoFrameERKN2nn2gs16NativeSyncHandleE
+0x84eca930	movie::detail::VorbisAudioDecoder::VorbisAudioDecoder()	_ZN5movie6detail18VorbisAudioDecoderC1Ev
+0x84ec88b0	movie::detail::AudioDecoderImpl::AcquireAvailableAudioFrameIndex(int*, int*)	_ZN5movie6detail16AudioDecoderImpl31AcquireAvailableAudioFrameIndexEPiS2_
+0x84edc230	movie::detail::MovieVideoCodecModeToNnCodecImageTilingMode(movie::VideoCodecMode)	_ZN5movie6detail43MovieVideoCodecModeToNnCodecImageTilingModeENS_14VideoCodecModeE
+0x84eca610	movie::detail::OpusAudioDecoder::ConvertOpusDecoderErrorCodeToResult(int) const	_ZNK5movie6detail16OpusAudioDecoder35ConvertOpusDecoderErrorCodeToResultEi
+0x84ecd130	movie::detail::MediaDecoderImpl::IsVideoTrackSelected() const	_ZNK5movie6detail16MediaDecoderImpl20IsVideoTrackSelectedEv
+0x84ed0a20	movie::detail::BufferReader::PeekUInt64(unsigned long*)	_ZN5movie6detail12BufferReader10PeekUInt64EPm
+0x84edac10	movie::detail::SerialTaskQueue::HandleAsyncError(movie::MovieResult)	_ZN5movie6detail15SerialTaskQueue16HandleAsyncErrorENS_11MovieResultE
+0x84ec13a0	movie::AudioDecoder::GetOutputFrameProperties(nn::movie::MediaProperty*)	_ZN5movie12AudioDecoder24GetOutputFramePropertiesEPN2nn5movie13MediaPropertyE
+0x84ed2a10	movie::detail::FileByteStream::GetInterface(void**, int)	_ZN5movie6detail14FileByteStream12GetInterfaceEPPvi
+0x84ec2320	movie::MediaDecoder::GetAudioFrameRequirements(nn::movie::MediaProperty*)	_ZN5movie12MediaDecoder25GetAudioFrameRequirementsEPN2nn5movie13MediaPropertyE
+0x84ec24e0	movie::MediaDecoder::GetVideoFrameProperties(nn::movie::MediaProperty*)	_ZN5movie12MediaDecoder23GetVideoFramePropertiesEPN2nn5movie13MediaPropertyE
+0x84ec3670	movie::VideoDecoder::Stop()	_ZN5movie12VideoDecoder4StopEv
+0x84ecfbf0	movie::detail::StopDecoder(movie::detail::VideoDecoderTypes*)	_ZN5movie6detail11StopDecoderEPNS0_17VideoDecoderTypesE
+0x84ec4120	movie::VideoDecoder::GetThreadPriority()	_ZN5movie12VideoDecoder17GetThreadPriorityEv
+0x84ed05b0	movie::detail::Allocator::Initialize()	_ZN5movie6detail9Allocator10InitializeEv
+0x84edbab0	movie::detail::TaskQueueManager::GetInstance()	_ZN5movie6detail16TaskQueueManager11GetInstanceEv
+0x84f28710	opus_encoder_get_size	opus_encoder_get_size
+0x84ed0110	movie::detail::VideoDecoderEventManager::Stop()	_ZN5movie6detail24VideoDecoderEventManager4StopEv
+0x84ecb1a0	movie::detail::VorbisAudioDecoder::GetAudioFrameProperties(nn::movie::MediaProperty*)	_ZN5movie6detail18VorbisAudioDecoder23GetAudioFramePropertiesEPN2nn5movie13MediaPropertyE
+0x84ed09e0	movie::detail::BufferReader::ReadUInt64(unsigned long*)	_ZN5movie6detail12BufferReader10ReadUInt64EPm
+0x84ed6060	movie::detail::TaskQueue::QueueOneShotTimerTask(movie::ITaskQueueCancellationToken**, nn::TimeSpan, movie::ITask*)	_ZN5movie6detail9TaskQueue21QueueOneShotTimerTaskEPPNS_27ITaskQueueCancellationTokenEN2nn8TimeSpanEPNS_5ITaskE
+0x84ec0ea0	movie::AudioDecoder::RegisterAudioFrame(movie::AudioFrame**, int)	_ZN5movie12AudioDecoder18RegisterAudioFrameEPPNS_10AudioFrameEi
+0x84ecd760	movie::detail::MediaDecoderImpl::Stop()	_ZN5movie6detail16MediaDecoderImpl4StopEv
+0x84ed27c0	movie::detail::FileByteStream::~FileByteStream()	_ZN5movie6detail14FileByteStreamD0Ev
+0x84f27ca0	opus_packet_get_nb_channels	opus_packet_get_nb_channels
+0x84ed99d0	movie::detail::TaskQueue::EventHandler::EventHandler(movie::IAllocator*, int, nn::socket::FdSet*, nn::socket::FdSet*, nn::socket::FdSet*, nn::socket::TimeVal*, unsigned long, movie::IAsyncCallback*)	_ZN5movie6detail9TaskQueue12EventHandlerC2EPNS_10IAllocatorEiPN2nn6socket5FdSetES8_S8_PNS6_7TimeValEmPNS_14IAsyncCallbackE
+0x84eded40	movie::CreateAsyncCallbackRegistrationToken(movie::IAsyncCallbackRegistrationToken**, movie::IAllocator*)	_ZN5movie36CreateAsyncCallbackRegistrationTokenEPPNS_31IAsyncCallbackRegistrationTokenEPNS_10IAllocatorE
+0x84ecf6d0	movie::detail::VideoDecoderBuffer::CalculateBufferRequirement(unsigned long*, unsigned long*, unsigned short, unsigned short, nn::codec::VideoDecoderOutputFormat, nn::codec::ImageTilingMode)	_ZN5movie6detail18VideoDecoderBuffer26CalculateBufferRequirementEPmS2_ttN2nn5codec24VideoDecoderOutputFormatENS4_15ImageTilingModeE
+0x84eca290	movie::detail::OpusAudioDecoder::Finalize()	_ZN5movie6detail16OpusAudioDecoder8FinalizeEv
+0x84ecc9f0	movie::detail::MediaDecoderImpl::SeekTo(nn::TimeSpan, nn::movie::SeekMode)	_ZN5movie6detail16MediaDecoderImpl6SeekToEN2nn8TimeSpanENS2_5movie8SeekModeE
+0x84ec51b0	movie::SetVideoFramePostSyncHandle(movie::VideoFrame*, nn::gs::NativeSyncHandle const&)	_ZN5movie27SetVideoFramePostSyncHandleEPNS_10VideoFrameERKN2nn2gs16NativeSyncHandleE
+0x84ec28d0	movie::VideoDecoder::Initialize(void*, unsigned long, nn::movie::MediaMimeType, movie::VideoDecoderOutputFormat, movie::VideoCodecMode)	_ZN5movie12VideoDecoder10InitializeEPvmN2nn5movie13MediaMimeTypeENS_24VideoDecoderOutputFormatENS_14VideoCodecModeE
+0x84ec3560	movie::VideoDecoder::GetOutputReadyEvent(nn::os::SystemEventType**)	_ZN5movie12VideoDecoder19GetOutputReadyEventEPPN2nn2os15SystemEventTypeE
+0x84ed8f60	movie::detail::TaskQueue::ProcessEventRegistration(bool*)	_ZN5movie6detail9TaskQueue24ProcessEventRegistrationEPb
+0x84f2f660	opus_packet_unpad	opus_packet_unpad
+0x84ec21b0	movie::MediaDecoder::GetSeekCompletedEvent(nn::os::SystemEventType**)	_ZN5movie12MediaDecoder21GetSeekCompletedEventEPPN2nn2os15SystemEventTypeE
+0x84eccc10	movie::detail::MediaDecoderImpl::GetAudioFrameReadyEvent(nn::os::SystemEventType**)	_ZN5movie6detail16MediaDecoderImpl23GetAudioFrameReadyEventEPPN2nn2os15SystemEventTypeE
+0x84ed1720	movie::detail::ByteStreamOnBuffer::IsEndOfStream(bool*)	_ZN5movie6detail18ByteStreamOnBuffer13IsEndOfStreamEPb
+0x84ed87d0	movie::detail::TaskQueue::GetNextTaskToInvoke()	_ZN5movie6detail9TaskQueue19GetNextTaskToInvokeEv
+0x84edbfd0	movie::detail::SystemEvent::~SystemEvent()	_ZN5movie6detail11SystemEventD1Ev
+0x84ec90d0	movie::detail::AudioDecoderImpl::ReleaseAudioFrame()	_ZN5movie6detail16AudioDecoderImpl17ReleaseAudioFrameEv
+0x84eca220	movie::detail::OpusAudioDecoder::~OpusAudioDecoder()	_ZN5movie6detail16OpusAudioDecoderD1Ev
+0x84ed1060	movie::detail::BitReader::SkipScalingList(unsigned int)	_ZN5movie6detail9BitReader15SkipScalingListEj
+0x84f26a20	opus_decoder_create	opus_decoder_create
+0x84ec1b40	movie::AudioFrame::SetSampleRate(int)	_ZN5movie10AudioFrame13SetSampleRateEi
+0x84eca9b0	movie::detail::VorbisAudioDecoder::Initialize(nn::movie::detail::AllocatorInfo*, movie::AudioDecoderOutputFormat)	_ZN5movie6detail18VorbisAudioDecoder10InitializeEPN2nn5movie6detail13AllocatorInfoENS_24AudioDecoderOutputFormatE
+0x84ed06c0	movie::detail::Allocator::Allocate(unsigned long)	_ZN5movie6detail9Allocator8AllocateEm
+0x84ed0a50	movie::detail::BufferReader::ReadBuffer(unsigned char*, unsigned long)	_ZN5movie6detail12BufferReader10ReadBufferEPhm
+0x84ec18a0	movie::AudioFrame::AudioFrame()	_ZN5movie10AudioFrameC2Ev
+0x84ecfc40	movie::detail::FlushDecoder(movie::detail::VideoDecoderTypes*)	_ZN5movie6detail12FlushDecoderEPNS0_17VideoDecoderTypesE
+0x84ed0140	movie::detail::VideoDecoderEventManager::Loop()	_ZN5movie6detail24VideoDecoderEventManager4LoopEv
+0x84ed04a0	movie::detail::Allocator::~Allocator()	_ZN5movie6detail9AllocatorD2Ev
+0x84ed0b00	movie::detail::BufferReader::Reset(unsigned char const*, unsigned long)	_ZN5movie6detail12BufferReader5ResetEPKhm
+0x84ec0200	_fini	_fini
+0x84ec1220	movie::AudioDecoder::ReleaseAudioFrame(movie::AudioFrame*)	_ZN5movie12AudioDecoder17ReleaseAudioFrameEPNS_10AudioFrameE
+0x84ec3500	movie::VideoDecoder::GetInputReadyEvent(nn::os::SystemEventType**)	_ZN5movie12VideoDecoder18GetInputReadyEventEPPN2nn2os15SystemEventTypeE
+0x84ec5330	movie::detail::AacAudioDecoder::AacAudioDecoder()	_ZN5movie6detail15AacAudioDecoderC1Ev
+0x84ec6a80	movie::detail::AudioDecoderImpl::CheckDecoderMode(movie::AudioCodecMode) const	_ZNK5movie6detail16AudioDecoderImpl16CheckDecoderModeENS_14AudioCodecModeE
+0x84ecb320	movie::detail::ConfigurationData::~ConfigurationData()	_ZN5movie6detail17ConfigurationDataD1Ev
+0x84ecf380	movie::detail::ConvertAv1CodecLevelToNnMovieLevel(unsigned int)	_ZN5movie6detail34ConvertAv1CodecLevelToNnMovieLevelEj
+0x84ed05a0	movie::detail::Allocator::GetInterface(void**, int)	_ZN5movie6detail9Allocator12GetInterfaceEPPvi
+0x84ed7cd0	movie::detail::TaskQueue::UpdateSocketEventHandler(movie::ITaskQueueRegistrationToken*, int, nn::socket::FdSet*, nn::socket::FdSet*, nn::socket::FdSet*, nn::socket::TimeVal*)	_ZN5movie6detail9TaskQueue24UpdateSocketEventHandlerEPNS_27ITaskQueueRegistrationTokenEiPN2nn6socket5FdSetES7_S7_PNS5_7TimeValE
+0x84ed67b0	movie::detail::TaskQueue::CancelTask(movie::ITaskQueueCancellationToken*)	_ZN5movie6detail9TaskQueue10CancelTaskEPNS_27ITaskQueueCancellationTokenE
+0x84eda080	movie::detail::SerialTaskQueue::Finalize()	_ZN5movie6detail15SerialTaskQueue8FinalizeEv
+0x84ec70c0	movie::detail::AudioDecoderImpl::DeallocateBuffers()	_ZN5movie6detail16AudioDecoderImpl17DeallocateBuffersEv
+0x84ed3580	movie::MemoryBuffer::MemoryBuffer(movie::IAllocator*, unsigned long)	_ZN5movie12MemoryBufferC1EPNS_10IAllocatorEm

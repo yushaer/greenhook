@@ -1366,12 +1366,13 @@ static JSValue js_fs_writeText(JSContext *ctx, JSValueConst this_val, int argc, 
     if (!txt) return JS_EXCEPTION;
     ensure_parent_dirs(host);
     FILE *f = fopen(host, "wb");
+    int written = 0;
     if (f) {
-        if (len) fwrite(txt, 1, len, f);
-        fclose(f);
+        written = fwrite(txt, 1, len, f) == len;
+        if (fclose(f) != 0) written = 0;
     }
     JS_FreeCString(ctx, txt);
-    return JS_NewBool(ctx, f != NULL);
+    return JS_NewBool(ctx, written);
 }
 
 static JSValue js_fs_readBytes(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {

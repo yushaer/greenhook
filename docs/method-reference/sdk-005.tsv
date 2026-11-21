@@ -1,0 +1,513 @@
+address	name	symbol
+0x85196490	nn::audio::detail::InputStreamImpl::InputStreamImpl()	_ZN2nn5audio6detail15InputStreamImplC1Ev
+0x851e8a90	nn::audio::server::BehaviorInfo::SetForceDownsizeTo6ChannelEnabled(bool)	_ZN2nn5audio6server12BehaviorInfo33SetForceDownsizeTo6ChannelEnabledEb
+0x854a82c0	nandroid::MPEG4Writer::getMpeg4Time()	_ZN8nandroid11MPEG4Writer12getMpeg4TimeEv
+0x85535100	nn::nsd::GetSettingUrl(nn::nsd::Url*)	_ZN2nn3nsd13GetSettingUrlEPNS0_3UrlE
+0x85583060	nn::vi2::GetTimestampRecorderReleaseFence(nn::vi2::TimestampRecorderType const*)	_ZN2nn3vi232GetTimestampRecorderReleaseFenceEPKNS0_21TimestampRecorderTypeE
+0x8566a0b0	nn::hid::GetSupportedNpadStyleSet()	_ZN2nn3hid24GetSupportedNpadStyleSetEv
+0x856d2760	nerd::linear_algebra::LMatrix<float, 21l, 21l, nerd::linear_algebra::LMatrixType::Triangular<false, nerd::linear_algebra::LMatrixType::Dense<true>>> nerd::linear_algebra::LLowerCholeskyDecomposition<float, 21l>(nerd::linear_algebra::LMatrix<float, 21l, 21l, nerd::linear_algebra::LMatrixType::Dense<true>>)	_ZN4nerd14linear_algebra27LLowerCholeskyDecompositionIfLl21EEENS0_7LMatrixIT_XT0_EXT0_ENS0_11LMatrixType10TriangularILb0ENS4_5DenseILb1EEEEEEENS2_IS3_XT0_EXT0_ES7_EE
+0x851222b0	nn::socket::FreeIfMAddrs(nn::socket::IfMAddrs*)	_ZN2nn6socket12FreeIfMAddrsEPNS0_8IfMAddrsE
+0x8506cef0	nn::fs::save::ExclusiveFile::DoFlush()	_ZN2nn2fs4save13ExclusiveFile7DoFlushEv
+0x85452b60	nn::mii::detail::Ver3StoreDataRaw::GetNoseScale() const	_ZNK2nn3mii6detail16Ver3StoreDataRaw12GetNoseScaleEv
+0x85109000	nn::os::detail::InternalCriticalSection::GetOwner(unsigned int*) const	_ZNK2nn2os6detail23InternalCriticalSection8GetOwnerEPj
+0x851c4220	nn::audio::detail::OutputRecorderImpl::GetFilledFrameCount() const	_ZNK2nn5audio6detail18OutputRecorderImpl19GetFilledFrameCountEv
+0x8551cea0	nandroid::String16::remove(unsigned long, unsigned long)	_ZN8nandroid8String166removeEmm
+0x8566f230	nn::hid::VibrationTarget::GetVibrationDeviceHandle()	_ZN2nn3hid15VibrationTarget24GetVibrationDeviceHandleEv
+0x853fad50	nn::friends::detail::ShimLibraryGlobal::CreateDaemonSuspendSessionService(nn::friends::detail::ipc::IDaemonSuspendSessionService**)	_ZN2nn7friends6detail17ShimLibraryGlobal33CreateDaemonSuspendSessionServiceEPPNS1_3ipc28IDaemonSuspendSessionServiceE
+0x8540af40	nn::gpu::sdk::GetGpuNativeImageHandle(nn::gpu::sdk::GpuNativeImageType const*)	_ZN2nn3gpu3sdk23GetGpuNativeImageHandleEPKNS1_18GpuNativeImageTypeE
+0x854671c0	nn::movie::HlsMediaExtractor::SetInMemoryMedia(void const*, unsigned long)	_ZN2nn5movie17HlsMediaExtractor16SetInMemoryMediaEPKvm
+0x85485f40	nandroid::addVorbisCodecInfo(AMediaFormat*, void const*, unsigned long)	_ZN8nandroid18addVorbisCodecInfoEP12AMediaFormatPKvm
+0x85004aa0	nn::image::ExifExtractor::ExifExtractor(void*, unsigned long)	_ZN2nn5image13ExifExtractorC2EPvm
+0x853a4980	nn::err::ShowError(nn::err::ErrorCode, nn::err::ErrorContext const&, nn::err::CallerIdentifier const&)	_ZN2nn3err9ShowErrorENS0_9ErrorCodeERKNS0_12ErrorContextERKNS0_16CallerIdentifierE
+0x85445bb0	nn::mii::CharInfoVisualParamAccessor::GetEyeX() const	_ZNK2nn3mii27CharInfoVisualParamAccessor7GetEyeXEv
+0x8514be30	nn::account::CreateExternalNetworkServiceAccountRegistrar(nn::account::ExternalNetworkServiceAccountRegistrar*, void*, unsigned long)	_ZN2nn7account44CreateExternalNetworkServiceAccountRegistrarEPNS0_38ExternalNetworkServiceAccountRegistrarEPvm
+0x8545a8f0	nn::mii::detail::Ver3StoreDataRaw::SetPadding6(int)	_ZN2nn3mii6detail16Ver3StoreDataRaw11SetPadding6Ei
+0x857bf1d0	std::__1::codecvt<wchar_t, char, __mbstate_t>::~codecvt()	_ZNSt3__17codecvtIwc11__mbstate_tED0Ev
+0x851d2b40	nn::audio::SinkManager::IsValidSinkInfo(nn::audio::SinkInfo const*) const	_ZNK2nn5audio11SinkManager15IsValidSinkInfoEPKNS0_8SinkInfoE
+0x85249cf0	int nn::audio::util::detail::BandlimitedInterpolationImpl::Resample<float, float>(float* const*, int, float const* const*, int)	_ZN2nn5audio4util6detail28BandlimitedInterpolationImpl8ResampleIffTpTniJEEEiPKPT0_iPKPKT_i
+0x852f0510	nn::codec::GetDrcInfo(int)	_ZN2nn5codec10GetDrcInfoEi
+0x85514b50	nandroid::ColorUtils::getHDRStaticInfoFromFormat(nandroid::sp<nandroid::AMessage> const&, nandroid::HDRStaticInfo*)	_ZN8nandroid10ColorUtils26getHDRStaticInfoFromFormatERKNS_2spINS_8AMessageEEEPNS_13HDRStaticInfoE
+0x854fa060	mkvparser::VideoTrack::Seek(long long, mkvparser::BlockEntry const*&) const	_ZNK9mkvparser10VideoTrack4SeekExRPKNS_10BlockEntryE
+0x85549ef0	nn::prepo::PlayReport::~PlayReport()	_ZN2nn5prepo10PlayReportD2Ev
+0x855590a0	nn::settings::detail::RemoveChatTranscriptionSettings(nn::settings::system::ChatTranscriptionSettingsEx*, int*, nn::account::Uid const&)	_ZN2nn8settings6detail31RemoveChatTranscriptionSettingsEPNS0_6system27ChatTranscriptionSettingsExEPiRKNS_7account3UidE
+0x856869d0	nn::hid::system::FinalizeUsbFirmwareUpdate()	_ZN2nn3hid6system25FinalizeUsbFirmwareUpdateEv
+0x85716040	nn::web::SetScreenShotEnabled(nn::web::ShowWebPageArg*)	_ZN2nn3web20SetScreenShotEnabledEPNS0_14ShowWebPageArgE
+0x854d78a0	nandroid::ATSParser::Program::getSource(nandroid::ATSParser::SourceType)	_ZN8nandroid9ATSParser7Program9getSourceENS0_10SourceTypeE
+0x85560060	nn::settings::detail::SetQuestFlag(bool)	_ZN2nn8settings6detail12SetQuestFlagEb
+0x856cddc0	nerd::gyro_pointing::GyroPointingKalmanFilter::AddVariableCovariances(nerd::Unit::BaseQuantity<float, std::__1::ratio<0l, 1l>, std::__1::ratio<0l, 1l>, std::__1::ratio<0l, 1l>, std::__1::ratio<1l, 1l>, std::__1::ratio<0l, 1l>>)	_ZN4nerd13gyro_pointing24GyroPointingKalmanFilter22AddVariableCovariancesENS_4Unit12BaseQuantityIfNSt3__15ratioILl0ELl1EEEJS6_S6_NS5_ILl1ELl1EEES6_EEE
+0x8505b4c0	nn::diag::detail::DevNotifyImpl(nn::diag::DevNotificationHeader&&, char const*, ...)	_ZN2nn4diag6detail13DevNotifyImplEONS0_21DevNotificationHeaderEPKcz
+0x851539a0	nn::account::DeviceMigrationOperatingUserAuthenticationProcedure::DeviceMigrationOperatingUserAuthenticationProcedure()	_ZN2nn7account51DeviceMigrationOperatingUserAuthenticationProcedureC2Ev
+0x8547e1b0	nn::movie::detail::Message::SetWaitTimeMs(long)	_ZN2nn5movie6detail7Message13SetWaitTimeMsEl
+0x85716700	nn::web::ShowYouTubeVideoArg::SetMediaPlayerClosedCaptionControlEnabled(bool)	_ZN2nn3web19ShowYouTubeVideoArg41SetMediaPlayerClosedCaptionControlEnabledEb
+0x85003210	nn::image::JpegDecoder::JpegDecoder(nn::MemoryResource*)	_ZN2nn5image11JpegDecoderC1EPNS_14MemoryResourceE
+0x85467bf0	nn::movie::MediaExtractor::MediaExtractor()	_ZN2nn5movie14MediaExtractorC2Ev
+0x8551d130	nandroid::SortedVectorImpl::~SortedVectorImpl()	_ZN8nandroid16SortedVectorImplD1Ev
+0x8556c790	nn::ssl::detail::ISslServiceFactory::Finalize()	_ZN2nn3ssl6detail18ISslServiceFactory8FinalizeEv
+0x85669400	nn::hid::detail::ParseVibrationFile(nn::hid::VibrationFileInfo*, nn::hid::detail::VibrationFileParserContextImpl*, void const*, unsigned long)	_ZN2nn3hid6detail18ParseVibrationFileEPNS0_17VibrationFileInfoEPNS1_30VibrationFileParserContextImplEPKvm
+0x857c2860	std::__1::__codecvt_utf16<char32_t, false>::do_length(__mbstate_t&, char const*, char const*, unsigned long) const	_ZNKSt3__115__codecvt_utf16IDiLb0EE9do_lengthER11__mbstate_tPKcS5_m
+0x850cad40	nn::fs::detail::IsGlobalFileDataCacheEnabled()	_ZN2nn2fs6detail28IsGlobalFileDataCacheEnabledEv
+0x852c7a50	nn::codec::opus::FinalizeOpusEncoderImpl(nn::codec::OpusEncoderType*)	_ZN2nn5codec4opus23FinalizeOpusEncoderImplEPNS0_15OpusEncoderTypeE
+0x85786360	std::__1::valarray<unsigned long>::~valarray()	_ZNSt3__18valarrayImED2Ev
+0x85052780	setsockopt	setsockopt
+0x85104d10	nn::os::SdkConditionVariableType::TimedWait(nn::os::SdkRecursiveMutexType&, nn::TimeSpan)	_ZN2nn2os24SdkConditionVariableType9TimedWaitERNS0_21SdkRecursiveMutexTypeENS_8TimeSpanE
+0x8543c420	nn::htcs::detail::virtual_socket_collection::Find(int, int*)	_ZN2nn4htcs6detail25virtual_socket_collection4FindEiPi
+0x85569bd0	nn::ssl::Connection::Write(char const*, int*, unsigned int)	_ZN2nn3ssl10Connection5WriteEPKcPij
+0x857c1070	std::__1::codecvt<char32_t, char8_t, __mbstate_t>::~codecvt()	_ZNSt3__17codecvtIDiDu11__mbstate_tED0Ev
+0x8520dde0	nn::audio::dsp::ConvertFormat1(float*, int const*, int)	_ZN2nn5audio3dsp14ConvertFormat1EPfPKii
+0x854f3370	mkvparser::ContentEncoding::GetCompressionByIndex(unsigned long) const	_ZNK9mkvparser15ContentEncoding21GetCompressionByIndexEm
+0x85522c20	nn::nfp::GetDeviceState(nn::nfp::DeviceHandle const&)	_ZN2nn3nfp14GetDeviceStateERKNS0_12DeviceHandleE
+0x8566e880	nn::hid::VibrationPlayer::~VibrationPlayer()	_ZN2nn3hid15VibrationPlayerD1Ev
+0x85119100	nn::sf::cmif::server::CmifServerDomainManager::Domain::ReserveEntry(nn::sf::cmif::CmifDomainObjectId*, int)	_ZN2nn2sf4cmif6server23CmifServerDomainManager6Domain12ReserveEntryEPNS1_18CmifDomainObjectIdEi
+0x8568c820	nn::hid::system::detail::SetOverlayNmousePointerRanges(int, int)	_ZN2nn3hid6system6detail29SetOverlayNmousePointerRangesEii
+0x8544c520	nn::mii::detail::CoreDataRaw::SetGlassType(int)	_ZN2nn3mii6detail11CoreDataRaw12SetGlassTypeEi
+0x854c9720	nandroid::M3UParser::MediaGroup::countTracks() const	_ZNK8nandroid9M3UParser10MediaGroup11countTracksEv
+0x85556170	nn::settings::system::GetTextToSpeechVoiceVolume()	_ZN2nn8settings6system26GetTextToSpeechVoiceVolumeEv
+0x8568e960	nn::hid::system::InitializeCButton()	_ZN2nn3hid6system17InitializeCButtonEv
+0x8577f7c0	std::__1::basic_string<wchar_t, std::__1::char_traits<wchar_t>, std::__1::allocator<wchar_t>>::~basic_string()	_ZNSt3__112basic_stringIwNS_11char_traitsIwEENS_9allocatorIwEEED1Ev
+0x8510b100	nn::os::detail::MemoryHeapManager::AllocateFromHeap(unsigned long*, unsigned long)	_ZN2nn2os6detail17MemoryHeapManager16AllocateFromHeapEPmm
+0x85122320	nn::socket::NoSfEventFdTrigger(int)	_ZN2nn6socket18NoSfEventFdTriggerEi
+0x85148660	nn::account::ShowAnalyticsOptInForTargetMarketing(nn::account::Uid const&)	_ZN2nn7account36ShowAnalyticsOptInForTargetMarketingERKNS0_3UidE
+0x85555cd0	nn::settings::system::GetWirelessCertificationHtmlFileSize()	_ZN2nn8settings6system36GetWirelessCertificationHtmlFileSizeEv
+0x85121980	nn::socket::Connect(int, nn::socket::SockAddr const*, unsigned int)	_ZN2nn6socket7ConnectEiPKNS0_8SockAddrEj
+0x851532a0	nn::account::NintendoAccountLinkageStateUpdateProcedure::operator=(nn::account::NintendoAccountLinkageStateUpdateProcedure&&)	_ZN2nn7account42NintendoAccountLinkageStateUpdateProcedureaSEOS1_
+0x854d9df0	nandroid::ATSParser::parseTS(nandroid::ABitReader*, nandroid::ATSParser::SyncEvent*)	_ZN8nandroid9ATSParser7parseTSEPNS_10ABitReaderEPNS0_9SyncEventE
+0x855336c0	nn::nifm::Request::GetSystemEvent()	_ZN2nn4nifm7Request14GetSystemEventEv
+0x8525a910	nn::audio::devmgr::detail::SetVirtualDeviceGainImpl(nn::audio::detail::NameStorage<255> const&, nn::audio::devmgr::DeviceFunctionality, float, nn::TimeSpan)	_ZN2nn5audio6devmgr6detail24SetVirtualDeviceGainImplERKNS0_6detail11NameStorageILi255EEENS1_19DeviceFunctionalityEfNS_8TimeSpanE
+0x85730f30	cimagf	cimagf
+0x85748ea0	wcsncmp	wcsncmp
+0x8578ad80	std::__1::basic_istream<char, std::__1::char_traits<char>>::operator>>(std::__1::ios_base& (*)(std::__1::ios_base&))	_ZNSt3__113basic_istreamIcNS_11char_traitsIcEEErsEPFRNS_8ios_baseES5_E
+0x8553adc0	nn::oe::RestartProgram(void const*, unsigned long)	_ZN2nn2oe14RestartProgramEPKvm
+0x8557ed10	nn::vi::detail::DefaultDisplay::DuplicateVsyncEvent(nn::os::SystemEventType*)	_ZN2nn2vi6detail14DefaultDisplay19DuplicateVsyncEventEPNS_2os15SystemEventTypeE
+0x85049d90	nn::async::detail::ExecutionScheduler::~ExecutionScheduler()	_ZN2nn5async6detail18ExecutionSchedulerD1Ev
+0x85548bd0	nn::srepo::detail::StructGenerator::AddKeyValue(unsigned long*, char const*, bool, unsigned char*, unsigned long, unsigned long)	_ZN2nn5srepo6detail15StructGenerator11AddKeyValueEPmPKcbPhmm
+0x85749cf0	asctime_r	asctime_r
+0x8555c820	nn::settings::detail::SetAutoUpdateEnableFlag(bool)	_ZN2nn8settings6detail23SetAutoUpdateEnableFlagEb
+0x8559e960	NvRmChannelMapRelocs	NvRmChannelMapRelocs
+0x850be1a0	nn::fs::HierarchicalRomFileTable::CreateFile(unsigned int*, char const*, nn::fs::RomFileInfo const&, nn::fs::HierarchicalRomFileTable::CacheContext*)	_ZN2nn2fs24HierarchicalRomFileTable10CreateFileEPjPKcRKNS0_11RomFileInfoEPNS1_12CacheContextE
+0x850c1bc0	nn::fs::Path::InitializeWithNormalization(char const*, unsigned long)	_ZN2nn2fs4Path27InitializeWithNormalizationEPKcm
+0x853a77a0	nn::err::detail::ExpHeapBase::~ExpHeapBase()	_ZN2nn3err6detail11ExpHeapBaseD0Ev
+0x854b1cf0	nandroid::MPEG4Writer::Track::getStartTimeOffsetScaledTime() const	_ZNK8nandroid11MPEG4Writer5Track28getStartTimeOffsetScaledTimeEv
+0x855550d0	nn::settings::system::ConvertToProductModel(nn::settings::system::ProductModel*, nn::settings::system::ProductModelName const&)	_ZN2nn8settings6system21ConvertToProductModelEPNS1_12ProductModelERKNS1_16ProductModelNameE
+0x8568baf0	nn::hid::system::detail::ClearJcmsUsedFlag(unsigned int, nn::hid::JcmsType)	_ZN2nn3hid6system6detail17ClearJcmsUsedFlagEjNS0_8JcmsTypeE
+0x8568d1d0	nn::hid::system::detail::GetNpadsWithNfc(int*, unsigned int*, int)	_ZN2nn3hid6system6detail15GetNpadsWithNfcEPiPji
+0x8568d300	nn::hid::system::detail::GetMcuVersionForNfc(nn::hid::system::McuVersionDataForNfc*, nn::hid::system::AbstractedPadId)	_ZN2nn3hid6system6detail19GetMcuVersionForNfcEPNS1_20McuVersionDataForNfcENS1_15AbstractedPadIdE
+0x85144ee0	nn::socket::resolver::DisableResolverCalls()	_ZN2nn6socket8resolver20DisableResolverCallsEv
+0x854484d0	nn::mii::detail::BufferAllocator::AlignUp(unsigned long)	_ZN2nn3mii6detail15BufferAllocator7AlignUpEm
+0x85582740	nn::vi2::ReadBufferPoolImage(void*, unsigned long, nn::vi2::BufferPoolType const*, unsigned long, unsigned short, unsigned short, unsigned short, unsigned short)	_ZN2nn3vi219ReadBufferPoolImageEPvmPKNS0_14BufferPoolTypeEmtttt
+0x8578f560	non-virtual thunk to std::__1::basic_iostream<char, std::__1::char_traits<char>>::~basic_iostream()	_ZThn16_NSt3__114basic_iostreamIcNS_11char_traitsIcEEED0Ev
+0x850bd500	nn::fs::detail::InitializeFileSystemCreatorInterfaces()	_ZN2nn2fs6detail37InitializeFileSystemCreatorInterfacesEv
+0x854a40d0	nandroid::MediaSource::~MediaSource()	_ZN8nandroid11MediaSourceD1Ev
+0x85537db0	nn::oe::BeginBlockingHomeButtonShortPressed(nn::TimeSpan)	_ZN2nn2oe35BeginBlockingHomeButtonShortPressedENS_8TimeSpanE
+0x856870a0	nn::hidconfig::DeleteButtonConfigStorageLeft(int)	_ZN2nn9hidconfig29DeleteButtonConfigStorageLeftEi
+0x85730f40	cimagl	cimagl
+0x85003b00	nn::image::JpegDecoder::GetExifData(void const**, unsigned long*, void const*, unsigned long)	_ZN2nn5image11JpegDecoder11GetExifDataEPPKvPmS3_m
+0x85265850	nn::capsrv::SaveScreenShotForApplication(nn::capsrv::ApplicationAlbumEntry*, void const*, unsigned long, nn::capsrv::ScreenShotAttribute const&, nn::capsrv::ApplicationData const&, unsigned int)	_ZN2nn6capsrv28SaveScreenShotForApplicationEPNS0_21ApplicationAlbumEntryEPKvmRKNS0_19ScreenShotAttributeERKNS0_15ApplicationDataEj
+0x85448540	nn::mii::detail::CalculateSizeAndAlignment::~CalculateSizeAndAlignment()	_ZN2nn3mii6detail25CalculateSizeAndAlignmentD1Ev
+0x85005bc0	nndetailImagePng_png_do_expand_palette_rgb8_neon	nndetailImagePng_png_do_expand_palette_rgb8_neon
+0x8514a1c0	nn::account::ListQualifiedUsers(int*, nn::account::Uid*, int)	_ZN2nn7account18ListQualifiedUsersEPiPNS0_3UidEi
+0x854cabf0	nandroid::M3UParser::meta()	_ZN8nandroid9M3UParser4metaEv
+0x85122c40	nn::socket::resolver::serializer::FreeAddrinfoContents(addrinfo&)	_ZN2nn6socket8resolver10serializer20FreeAddrinfoContentsER8addrinfo
+0x8549b780	nandroid::AMessage::findMessage(char const*, nandroid::sp<nandroid::AMessage>*) const	_ZNK8nandroid8AMessage11findMessageEPKcPNS_2spIS0_EE
+0x85545e60	nn::srepo::detail::ArrayGenerator::IsSameStructType(nn::srepo::Struct const&, unsigned char*, unsigned long)	_ZN2nn5srepo6detail14ArrayGenerator16IsSameStructTypeERKNS0_6StructEPhm
+0x856e5a00	nerd_gillette_internal::otete::jaimev1::DecodeHandROK(nerd_gillette_internal::otete::jaimev1::HandInPacket&, unsigned char const*, unsigned long, unsigned long*, nerd_gillette_internal::otete::jaimev1::IntensityInPacket const&)	_ZN22nerd_gillette_internal5otete7jaimev113DecodeHandROKERNS1_12HandInPacketEPKhmPmRKNS1_17IntensityInPacketE
+0x857ac4b0	std::__1::moneypunct<char, false>::do_decimal_point() const	_ZNKSt3__110moneypunctIcLb0EE16do_decimal_pointEv
+0x85066750	nn::fs::detail::IsMounted(bool*, char const*)	_ZN2nn2fs6detail9IsMountedEPbPKc
+0x850c2c60	nn::fs::PathFormatter::SkipMountName(char const**, unsigned long*, char const*)	_ZN2nn2fs13PathFormatter13SkipMountNameEPPKcPmS3_
+0x852c8670	nn::codec::GetOpusEncoderBitRate(nn::codec::OpusEncoderType const*)	_ZN2nn5codec21GetOpusEncoderBitRateEPKNS0_15OpusEncoderTypeE
+0x854d7c60	nandroid::ATSParser::Stream::Stream(nandroid::ATSParser::Program*, unsigned int, nandroid::ATSParser::StreamInfo const&)	_ZN8nandroid9ATSParser6StreamC2EPNS0_7ProgramEjRKNS0_10StreamInfoE
+0x85689240	nn::hid::system::SendConnectionTrigger(nn::bluetooth::Address)	_ZN2nn3hid6system21SendConnectionTriggerENS_9bluetooth7AddressE
+0x85044da0	nn::util::UriPart::GetLength() const	_ZNK2nn4util7UriPart9GetLengthEv
+0x85122100	nn::socket::GetHostByAddr(void const*, unsigned int, int, nn::socket::ResolverOption const*, unsigned long)	_ZN2nn6socket13GetHostByAddrEPKvjiPKNS0_14ResolverOptionEm
+0x85554bc0	nn::settings::system::GetMiiAuthorId(nn::util::Uuid*)	_ZN2nn8settings6system14GetMiiAuthorIdEPNS_4util4UuidE
+0x85710690	nn::streamplay::detail::NmouseSharedMemoryStorage::AppendInfoAndClearState(nn::streamplay::detail::GuestNmouseInfoState const&)	_ZN2nn10streamplay6detail25NmouseSharedMemoryStorage23AppendInfoAndClearStateERKNS1_20GuestNmouseInfoStateE
+0x85782260	std::__1::stof(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long*)	_ZNSt3__14stofERKNS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEEPm
+0x857c3a20	std::__1::numpunct_byname<char>::numpunct_byname(char const*, unsigned long)	_ZNSt3__115numpunct_bynameIcEC1EPKcm
+0x857bc280	std::__1::locale::locale(std::__1::locale const&, char const*, int)	_ZNSt3__16localeC1ERKS0_PKci
+0x856b71e0	auto nerd::linear_algebra::LMakeBackwardAutoDiff<-256l, float, 18l>(nerd::linear_algebra::LBAutoDiffGraph<float, -256l>*, nerd::linear_algebra::LVector<float, 18l, false, nerd::linear_algebra::LVectorType::Dense> const&)	_ZN4nerd14linear_algebra21LMakeBackwardAutoDiffILln256EfLl18EEEDaPNS0_15LBAutoDiffGraphIT0_XT_EEERKNS0_7LVectorIS3_XT1_ELb0ENS0_11LVectorType5DenseEEE
+0x85716fc0	nn::web::detail::ShowOfflinePageArgDetail::SetSystemDataId(unsigned char*, nn::ncm::SystemDataId const&)	_ZN2nn3web6detail24ShowOfflinePageArgDetail15SetSystemDataIdEPhRKNS_3ncm12SystemDataIdE
+0x853029e0	nn::codec::GetAacDecoderSampleRate(nn::codec::AacDecoderType const*)	_ZN2nn5codec23GetAacDecoderSampleRateEPKNS0_14AacDecoderTypeE
+0x850f6eb0	nn::nlibsdk::heap::TlsHeapCentral::SplitSpan_(nn::nlibsdk::heap::Span*, unsigned long, nn::nlibsdk::heap::Span*)	_ZN2nn7nlibsdk4heap14TlsHeapCentral10SplitSpan_EPNS1_4SpanEmS4_
+0x851c3620	nn::audio::GetOutputRecorderCapacityFrameCount(nn::audio::OutputRecorderType const*)	_ZN2nn5audio35GetOutputRecorderCapacityFrameCountEPKNS0_18OutputRecorderTypeE
+0x854a2f90	virtual thunk to nandroid::InMemoryFileSource::~InMemoryFileSource()	_ZTv0_n24_N8nandroid18InMemoryFileSourceD1Ev
+0x854e61c0	nandroid::RefBase::~RefBase()	_ZN8nandroid7RefBaseD0Ev
+0x84fee980	nndetailImageJpeg_jpeg_idct_ifast(jpeg_decompress_struct*, jpeg_component_info*, short*, unsigned char**, unsigned int)	_Z33nndetailImageJpeg_jpeg_idct_ifastP22jpeg_decompress_structP19jpeg_component_infoPsPPhj
+0x850f8bc0	nn::nlibsdk::heap::TlsHeapCentral::AllocSpanPage_()	_ZN2nn7nlibsdk4heap14TlsHeapCentral14AllocSpanPage_Ev
+0x8539da90	nn::ec::detail::ShowShopApplicationInformationForUpgradeImpl(nn::ec::detail::LaunchMode, nn::ec::NsUid, nn::account::Uid const&, nn::ec::UpgradeEdition, nn::ec::SourceId, char const*)	_ZN2nn2ec6detail44ShowShopApplicationInformationForUpgradeImplENS1_10LaunchModeENS0_5NsUidERKNS_7account3UidENS0_14UpgradeEditionENS0_8SourceIdEPKc
+0x8550f110	nandroid::ID3::Iterator::next()	_ZN8nandroid3ID38Iterator4nextEv
+0x855423b0	nn::pctl::IsCameraPermissionRequesting(nn::account::Uid const&)	_ZN2nn4pctl28IsCameraPermissionRequestingERKNS_7account3UidE
+0x8524a100	nn::audio::util::detail::BandlimitedInterpolationImpl::PreCalculateInterpolationWeights()	_ZN2nn5audio4util6detail28BandlimitedInterpolationImpl32PreCalculateInterpolationWeightsEv
+0x85531730	nn::nifm::SetLocalNetworkMode(bool)	_ZN2nn4nifm19SetLocalNetworkModeEb
+0x8569f950	nerd::sensors::SensorState::Reset()	_ZN4nerd7sensors11SensorState5ResetEv
+0x850b2650	nn::fs::SetSdCardSimulationEvent(nn::fs::SimulatingDeviceTargetOperation, nn::Result, bool)	_ZN2nn2fs24SetSdCardSimulationEventENS0_31SimulatingDeviceTargetOperationENS_6ResultEb
+0x852ec8c0	nn::codec::GetRam_aacEnc_QCout(int)	_ZN2nn5codec19GetRam_aacEnc_QCoutEi
+0x854e4ab0	nandroid::HlsSampleDecryptor::HlsSampleDecryptor()	_ZN8nandroid18HlsSampleDecryptorC1Ev
+0x8558fee0	NvOsFflush	NvOsFflush
+0x854ef4b0	mkvparser::Segment::DoneParsing() const	_ZNK9mkvparser7Segment11DoneParsingEv
+0x851f1e90	nn::audio::ResetAuxBuffer(nn::audio::AuxBufferInfo*)	_ZN2nn5audio14ResetAuxBufferEPNS0_13AuxBufferInfoE
+0x854be040	nandroid::ALookup<unsigned char, OMX_VIDEO_MPEG2PROFILETYPE>::ALookup(std::initializer_list<std::__1::pair<unsigned char, OMX_VIDEO_MPEG2PROFILETYPE>>, void*, unsigned long)	_ZN8nandroid7ALookupIh26OMX_VIDEO_MPEG2PROFILETYPEEC2ESt16initializer_listINSt3__14pairIhS1_EEEPvm
+0x85261be0	nn::bcat::DeliveryCacheFile::GetDigest()	_ZN2nn4bcat17DeliveryCacheFile9GetDigestEv
+0x8546dce0	nn::movie::detail::MediaExtractorImpl::IsCacheFull(bool*, bool*)	_ZN2nn5movie6detail18MediaExtractorImpl11IsCacheFullEPbS3_
+0x84fe8a50	nndetailImageJpeg_jpeg_new_colormap	nndetailImageJpeg_jpeg_new_colormap
+0x85539940	nn::oe::TryUpgradeLimitedApplicationLicense()	_ZN2nn2oe35TryUpgradeLimitedApplicationLicenseEv
+0x8554eac0	nn::settings::fwdbg::SetSettingsItemValue(char const*, char const*, void const*, unsigned long)	_ZN2nn8settings5fwdbg20SetSettingsItemValueEPKcS3_PKvm
+0x8503fb40	nn::util::GetOscBundlePacketBuffer(void const**, unsigned long*, nn::util::OscBundleParserType const*)	_ZN2nn4util24GetOscBundlePacketBufferEPPKvPmPKNS0_19OscBundleParserTypeE
+0x85197340	nn::audio::AnalyzeLoudness(nn::audio::LoudnessCalculatorType*, short const*, int)	_ZN2nn5audio15AnalyzeLoudnessEPNS0_22LoudnessCalculatorTypeEPKsi
+0x852ccbf0	nn::codec::opus::hw::GetHardwareOpusDecoderManagerTotalIoBufferCountImpl(nn::codec::HardwareOpusDecoderManagerType const*)	_ZN2nn5codec4opus2hw51GetHardwareOpusDecoderManagerTotalIoBufferCountImplEPKNS0_30HardwareOpusDecoderManagerTypeE
+0x853f9740	nn::friends::NotificationQueue::GetUid() const	_ZNK2nn7friends17NotificationQueue6GetUidEv
+0x8545d860	nn::mii::ImageDatabase::Reload()	_ZN2nn3mii13ImageDatabase6ReloadEv
+0x8549e6b0	nandroid::AString::setTo(char const*, unsigned long)	_ZN8nandroid7AString5setToEPKcm
+0x85669520	nn::hid::detail::RetrieveVibrationValue(nn::hid::VibrationValue*, int, nn::hid::detail::VibrationFileParserContextImpl*)	_ZN2nn3hid6detail22RetrieveVibrationValueEPNS0_14VibrationValueEiPNS1_30VibrationFileParserContextImplE
+0x85714dd0	nn::web::ShowWebPageArg::ShowWebPageArg(char const*)	_ZN2nn3web14ShowWebPageArgC2EPKc
+0x8571a050	getc	getc
+0x8511fbb0	nn::sf::hipc::server::GetCurrentClientInfo()	_ZN2nn2sf4hipc6server20GetCurrentClientInfoEv
+0x8503f830	nn::util::MessagePackWriter::WriteBinary8Header(unsigned char)	_ZN2nn4util17MessagePackWriter18WriteBinary8HeaderEh
+0x85445a90	nn::mii::CharInfoVisualParamAccessor::GetEyeScale() const	_ZNK2nn3mii27CharInfoVisualParamAccessor11GetEyeScaleEv
+0x85579e40	nn::time::detail::SharedMemoryClient::CalculateSystemClockCurrentTimespec(timespec*, nn::time::SystemClockContext const&)	_ZN2nn4time6detail18SharedMemoryClient35CalculateSystemClockCurrentTimespecEP8timespecRKNS0_18SystemClockContextE
+0x84fd7b40	nndetailImageJpeg_jpeg_crop_scanline	nndetailImageJpeg_jpeg_crop_scanline
+0x85068320	nn::fs::DeleteFile(char const*)	_ZN2nn2fs10DeleteFileEPKc
+0x851826e0	nn::applet::NotificationReceiver::~NotificationReceiver()	_ZN2nn6applet20NotificationReceiverD1Ev
+0x852c8810	nn::codec::GetOpusPacketSampleCountInPacket(int*, unsigned char const*, unsigned long, int)	_ZN2nn5codec32GetOpusPacketSampleCountInPacketEPiPKhmi
+0x852d08f0	nn::codec::UnregisterAv1DecoderBuffer(nn::codec::Av1DecoderType*, unsigned int)	_ZN2nn5codec26UnregisterAv1DecoderBufferEPNS0_14Av1DecoderTypeEj
+0x85738e20	iswprint_l	iswprint_l
+0x85669250	nn::hid::detail::SendVibrationGcErmCommand(nn::hid::VibrationDeviceHandle const&, nn::hid::VibrationGcErmCommand const&)	_ZN2nn3hid6detail25SendVibrationGcErmCommandERKNS0_21VibrationDeviceHandleERKNS0_21VibrationGcErmCommandE
+0x851038c0	nn::os::TimedJamLightMessageQueue(nn::os::LightMessageQueueType*, unsigned long, nn::TimeSpan)	_ZN2nn2os25TimedJamLightMessageQueueEPNS0_21LightMessageQueueTypeEmNS_8TimeSpanE
+0x8545a260	nn::mii::detail::Ver3StoreDataRaw::SetReserved2(int)	_ZN2nn3mii6detail16Ver3StoreDataRaw12SetReserved2Ei
+0x854bf450	nandroid::LiveSession::BandwidthEstimator::BandwidthEstimator()	_ZN8nandroid11LiveSession18BandwidthEstimatorC1Ev
+0x8554dc70	nn::profiler::ReplyAndReceiveWithUserBufferInterceptEnter(int*, unsigned long, unsigned long, nn::svc::Handle const*, int, nn::svc::Handle, long)	_ZN2nn8profiler43ReplyAndReceiveWithUserBufferInterceptEnterEPimmPKNS_3svc6HandleEiS3_l
+0x85553d40	nn::settings::system::SetDeviceLockStartPenaltyTime(nn::time::ClockSnapshot const&)	_ZN2nn8settings6system29SetDeviceLockStartPenaltyTimeERKNS_4time13ClockSnapshotE
+0x8553a950	nn::oe::IsCpuOverclockEnabled()	_ZN2nn2oe21IsCpuOverclockEnabledEv
+0x85681f40	nn::Result nn::hid::system::detail::GetTouchScreenStatesForSystemProcess<5ul>(int*, nn::hid::TouchScreenState<5ul>*, int)	_ZN2nn3hid6system6detail36GetTouchScreenStatesForSystemProcessILm5EEENS_6ResultEPiPNS0_16TouchScreenStateIXT_EEEi
+0x856e06f0	nn::irsensor::detail::InternalErrorHandler::~InternalErrorHandler()	_ZN2nn8irsensor6detail20InternalErrorHandlerD1Ev
+0x857bc210	std::__1::locale::locale(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)	_ZNSt3__16localeC2ERKNS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEE
+0x85187770	nn::audio::ListAudioIns(nn::audio::AudioInInfo*, int)	_ZN2nn5audio12ListAudioInsEPNS0_11AudioInInfoEi
+0x85577c00	nn::time::ClockSnapshot::GetStandardNetworkSystemClockCalendarAdditionalInfo() const	_ZNK2nn4time13ClockSnapshot51GetStandardNetworkSystemClockCalendarAdditionalInfoEv
+0x857c3680	std::__1::numpunct<char>::numpunct(unsigned long)	_ZNSt3__18numpunctIcEC1Em
+0x85020ea0	nndetailImagePng_png_handle_iTXt	nndetailImagePng_png_handle_iTXt
+0x8504dc60	nn::async::Executable::Execute(nn::async::CancellationToken const&)	_ZN2nn5async10Executable7ExecuteERKNS0_17CancellationTokenE
+0x853a8120	nn::err::detail::SerializedContextSeries::Initialize(std::__1::unique_ptr<void, nn::err::detail::MemoryResourceDeleter>, unsigned long)	_ZN2nn3err6detail23SerializedContextSeries10InitializeENSt3__110unique_ptrIvNS1_21MemoryResourceDeleterEEEm
+0x8550a3a0	nandroid::SampleTable::buildSampleEntriesTable()	_ZN8nandroid11SampleTable23buildSampleEntriesTableEv
+0x8553db30	nn::pctl::GetPlayTimerEventToRequestSuspension()	_ZN2nn4pctl36GetPlayTimerEventToRequestSuspensionEv
+0x8554a1f0	nn::prepo::Struct::Add(char const*, bool)	_ZN2nn5prepo6Struct3AddEPKcb
+0x850efcc0	nnmem_nlib_memchr_range_not	nnmem_nlib_memchr_range_not
+0x851532f0	nn::account::NintendoAccountLinkageStateUpdateProcedure::Swap(nn::account::NintendoAccountLinkageStateUpdateProcedure&)	_ZN2nn7account42NintendoAccountLinkageStateUpdateProcedure4SwapERS1_
+0x85189990	nn::audio::CreateAudioOutManagerByHipc()	_ZN2nn5audio27CreateAudioOutManagerByHipcEv
+0x854819e0	nandroid::MatroskaSource::start()	_ZN8nandroid14MatroskaSource5startEv
+0x8554a150	nn::prepo::Struct::Add(char const*, double)	_ZN2nn5prepo6Struct3AddEPKcd
+0x85717700	nn::web::detail::WebSessionImpl::requestExit()	_ZN2nn3web6detail14WebSessionImpl11requestExitEv
+0x8575f3c0	void std::__1::__sort<std::__1::__less<short, short>&, short*>(short*, short*, std::__1::__less<short, short>&)	_ZNSt3__16__sortIRNS_6__lessIssEEPsEEvT0_S5_T_
+0x857ab110	std::__1::time_get<wchar_t, std::__1::istreambuf_iterator<wchar_t, std::__1::char_traits<wchar_t>>>::__get_month(int&, std::__1::istreambuf_iterator<wchar_t, std::__1::char_traits<wchar_t>>&, std::__1::istreambuf_iterator<wchar_t, std::__1::char_traits<wchar_t>>, unsigned int&, std::__1::ctype<wchar_t> const&) const	_ZNKSt3__18time_getIwNS_19istreambuf_iteratorIwNS_11char_traitsIwEEEEE11__get_monthERiRS4_S4_RjRKNS_5ctypeIwEE
+0x853a7410	nn::err::detail::UnmountErrorMessageSystemData()	_ZN2nn3err6detail29UnmountErrorMessageSystemDataEv
+0x8554a100	nn::prepo::Struct::Add(char const*, float)	_ZN2nn5prepo6Struct3AddEPKcf
+0x8568e770	nn::hid::system::EnableAppletToGetTouchScreen(nn::applet::AppletResourceUserId const&, bool)	_ZN2nn3hid6system28EnableAppletToGetTouchScreenERKNS_6applet20AppletResourceUserIdEb
+0x85027fb0	nndetailImagePng_png_set_filter	nndetailImagePng_png_set_filter
+0x854eebc0	mkvparser::CuePoint::CuePoint(long, long long)	_ZN9mkvparser8CuePointC1Elx
+0x854fe6f0	mkvparser::SimpleBlock::GetKind() const	_ZNK9mkvparser11SimpleBlock7GetKindEv
+0x84faa710	nn::crypto::detail::EccMaths<(nn::crypto::detail::EccCurveType)2>::AddModN(unsigned int*, unsigned int const*, unsigned int const*)	_ZN2nn6crypto6detail8EccMathsILNS1_12EccCurveTypeE2EE7AddModNEPjPKjS7_
+0x85480130	nandroid::HlsMediaHttpConnection::~HlsMediaHttpConnection()	_ZN8nandroid22HlsMediaHttpConnectionD2Ev
+0x854c90e0	nandroid::Vector<nandroid::LiveSession::BandwidthItem>::do_move_backward(void*, void const*, unsigned long) const	_ZNK8nandroid6VectorINS_11LiveSession13BandwidthItemEE16do_move_backwardEPvPKvm
+0x8550b6e0	nandroid::ESDS::~ESDS()	_ZN8nandroid4ESDSD2Ev
+0x8569f4a0	nn::imu::FullSensorState::SnapStableOrientationToBestEstimate()	_ZN2nn3imu15FullSensorState35SnapStableOrientationToBestEstimateEv
+0x851192e0	nn::sf::cmif::server::CmifServerDomainManager::Domain::UnReserveEntry(nn::sf::cmif::CmifDomainObjectId const*, int)	_ZN2nn2sf4cmif6server23CmifServerDomainManager6Domain14UnReserveEntryEPKNS1_18CmifDomainObjectIdEi
+0x85499e40	nandroid::AMessage::findAsFloat(char const*, float*) const	_ZNK8nandroid8AMessage11findAsFloatEPKcPf
+0x856f46e0	nerd_gillette_internal::otete::jaimev1::DecodeFullSilhouetteROK(nerd_gillette_internal::ContiguousStorageContainerBase<nerd_gillette_internal::NumericalVector<float, 2ul>, true>&, nerd_gillette_internal::otete::InputBitStream&, nerd_gillette_internal::otete::jaimev1::FullSilhouetteCodecData const&, nerd_gillette_internal::NumericalVector<float, 2ul> (*)(nerd_gillette_internal::NumericalVector<short, 2ul>))	_ZN22nerd_gillette_internal5otete7jaimev123DecodeFullSilhouetteROKERNS_30ContiguousStorageContainerBaseINS_15NumericalVectorIfLm2EEELb1EEERNS0_14InputBitStreamERKNS1_23FullSilhouetteCodecDataEPFS4_NS3_IsLm2EEEE
+0x85743280	gets	gets
+0x85071600	nn::fs::save::SaveDataFileSystemCoreImpl::DoCreateDirectory(nn::fs::Path const&)	_ZN2nn2fs4save26SaveDataFileSystemCoreImpl17DoCreateDirectoryERKNS0_4PathE
+0x85459270	nn::mii::detail::Ver3StoreDataRaw::SetMouthAspect(int)	_ZN2nn3mii6detail16Ver3StoreDataRaw14SetMouthAspectEi
+0x854c8e00	nandroid::Vector<nandroid::LiveSession::BandwidthItem>::do_copy(void*, void const*, unsigned long) const	_ZNK8nandroid6VectorINS_11LiveSession13BandwidthItemEE7do_copyEPvPKvm
+0x85712120	nn::web::ShowOfflineHtmlPageArg::SetFooterFixedKind(nn::web::OfflineFooterFixedKind)	_ZN2nn3web22ShowOfflineHtmlPageArg18SetFooterFixedKindENS0_22OfflineFooterFixedKindE
+0x85738910	iswblank_l	iswblank_l
+0x85786920	std::__1::__cxx_atomic_notify_all(void const volatile*)	_ZNSt3__123__cxx_atomic_notify_allEPVKv
+0x84fb4ca0	nn::crypto::detail::Sha1Impl::~Sha1Impl()	_ZN2nn6crypto6detail8Sha1ImplD2Ev
+0x85582db0	nn::vi2::ClearHdrPaperWhiteEvent(nn::vi2::HdrPaperWhiteEventType*)	_ZN2nn3vi223ClearHdrPaperWhiteEventEPNS0_22HdrPaperWhiteEventTypeE
+0x8505e280	nn::fs::dbm::AllocationTable::ReadFreeList(nn::fs::dbm::AllocationTable::TableElement*)	_ZN2nn2fs3dbm15AllocationTable12ReadFreeListEPNS2_12TableElementE
+0x85140420	nn::socket::resolver::client::AllocTracker::Locals()	_ZN2nn6socket8resolver6client12AllocTracker6LocalsEv
+0x851cad90	nn::audio::AddI3dl2Reverb(nn::audio::AudioRendererConfig*, nn::audio::I3dl2ReverbType*, void*, unsigned long, nn::audio::FinalMixType*, int)	_ZN2nn5audio14AddI3dl2ReverbEPNS0_19AudioRendererConfigEPNS0_15I3dl2ReverbTypeEPvmPNS0_12FinalMixTypeEi
+0x8554a050	nn::prepo::Struct::Add(char const*, long)	_ZN2nn5prepo6Struct3AddEPKcl
+0x852b7d10	nncodecLibopus_opus_repacketizer_cat	nncodecLibopus_opus_repacketizer_cat
+0x855a2620	NvRmMemGetSize	NvRmMemGetSize
+0x8555fc00	nn::settings::detail::GetBatteryPercentageFlag(bool*)	_ZN2nn8settings6detail24GetBatteryPercentageFlagEPb
+0x856a1f00	nerd::gyro_pointing::GyroPointing::GetStableOrientation() const	_ZNK4nerd13gyro_pointing12GyroPointing20GetStableOrientationEv
+0x85730f50	clog	clog
+0x85743380	getw	getw
+0x853f3ff0	swap_maxp	swap_maxp
+0x857ec460	std::get_terminate()	_ZSt13get_terminatev
+0x8520c440	nn::audio::dsp::GetRequiredTruePeakLimiterEffectWorkBufferSize(nn::audio::dsp::TruePeakLimiterParameter const&)	_ZN2nn5audio3dsp46GetRequiredTruePeakLimiterEffectWorkBufferSizeERKNS1_24TruePeakLimiterParameterE
+0x852d2c30	nn::codec::InitializeEncoderImagePool(nn::codec::VideoEncoderImagePoolType*, void*, unsigned long, nn::codec::VideoEncoderImagePreference const&, unsigned int)	_ZN2nn5codec26InitializeEncoderImagePoolEPNS0_25VideoEncoderImagePoolTypeEPvmRKNS0_27VideoEncoderImagePreferenceEj
+0x8545cfc0	nn::mii::Database::GetIndex(int*, nn::mii::CharInfo const&) const	_ZNK2nn3mii8Database8GetIndexEPiRKNS0_8CharInfoE
+0x855c6bb0	NvRmGpuDeviceSchedulingDomainOpen	NvRmGpuDeviceSchedulingDomainOpen
+0x850163d0	nndetailImagePng_png_set_read_user_transform_fn	nndetailImagePng_png_set_read_user_transform_fn
+0x85196530	nn::audio::detail::InputStreamImpl::~InputStreamImpl()	_ZN2nn5audio6detail15InputStreamImplD1Ev
+0x854f5200	mkvparser::Track::Info::Copy(mkvparser::Track::Info&) const	_ZNK9mkvparser5Track4Info4CopyERS1_
+0x85789fc0	std::__1::ios_base::__set_failbit_and_consider_rethrow()	_ZNSt3__18ios_base34__set_failbit_and_consider_rethrowEv
+0x853130b0	nn::codec::FDKsprintf(char*, char const*, ...)	_ZN2nn5codec10FDKsprintfEPcPKcz
+0x85704b00	nn::web::detail::SharePageReturnValue2_0::SharePageReturnValue2_0()	_ZN2nn3web6detail23SharePageReturnValue2_0C2Ev
+0x857d23e0	std::__1::regex_error::regex_error(std::__1::regex_constants::error_type)	_ZNSt3__111regex_errorC2ENS_15regex_constants10error_typeE
+0x85304e60	nn::codec::CConcealment_Apply(nn::codec::CConcealmentInfo*, nn::codec::CAacDecoderChannelInfo*, nn::codec::CAacDecoderStaticChannelInfo*, nn::codec::SamplingRateInfo const*, int, unsigned char, int, unsigned int)	_ZN2nn5codec18CConcealment_ApplyEPNS0_16CConcealmentInfoEPNS0_22CAacDecoderChannelInfoEPNS0_28CAacDecoderStaticChannelInfoEPKNS0_16SamplingRateInfoEihij
+0x85523a40	nn::nfp::StopDetection(nn::nfp::DeviceHandle const&)	_ZN2nn3nfp13StopDetectionERKNS0_12DeviceHandleE
+0x851337b0	nn::socket::detail::InetNtop(int, void const*, char*, unsigned int)	_ZN2nn6socket6detail8InetNtopEiPKvPcj
+0x853e60c0	rtgah	rtgah
+0x853f8be0	nn::friends::AddPlayHistory(nn::account::Uid const&, nn::friends::PlayHistoryRegistrationKey const&, nn::friends::InAppScreenName const&, nn::friends::InAppScreenName const&)	_ZN2nn7friends14AddPlayHistoryERKNS_7account3UidERKNS0_26PlayHistoryRegistrationKeyERKNS0_15InAppScreenNameESA_
+0x854de5a0	nandroid::SortedVector<nandroid::key_value_pair_t<unsigned int, nandroid::sp<nandroid::ATSParser::Stream>>>::do_move_backward(void*, void const*, unsigned long) const	_ZNK8nandroid12SortedVectorINS_16key_value_pair_tIjNS_2spINS_9ATSParser6StreamEEEEEE16do_move_backwardEPvPKvm
+0x850da020	nnmem_nlib_memspn	nnmem_nlib_memspn
+0x85417660	nn::grc::InitializeMovieAudioEncodeReadyEvent(nn::os::SystemEventType*, nn::grc::MovieLayer*)	_ZN2nn3grc36InitializeMovieAudioEncodeReadyEventEPNS_2os15SystemEventTypeEPNS0_10MovieLayerE
+0x851223c0	nnsocketRecvFrom	nnsocketRecvFrom
+0x85142690	nn::socket::resolver::tls::Client::SetCurrentHostent(nn::socket::HostEnt*)	_ZN2nn6socket8resolver3tls6Client17SetCurrentHostentEPNS0_7HostEntE
+0x8546e3c0	nn::movie::detail::ExtractorUnwrapper::GetSampleAvailableEvent(nn::os::SystemEventType**, int)	_ZN2nn5movie6detail18ExtractorUnwrapper23GetSampleAvailableEventEPPNS_2os15SystemEventTypeEi
+0x856f8790	HeartRateCaptureState::HeartRateCaptureState()	_ZN21HeartRateCaptureStateC1Ev
+0x851130d0	pthread_attr_init	pthread_attr_init
+0x854471b0	nn::mii::CharInfoVisualParamAccessor::SetMustacheScale(int)	_ZN2nn3mii27CharInfoVisualParamAccessor16SetMustacheScaleEi
+0x85522b00	nn::nfp::Finalize()	_ZN2nn3nfp8FinalizeEv
+0x8578ed80	std::__1::basic_ostream<char, std::__1::char_traits<char>>::operator<<(std::__1::basic_streambuf<char, std::__1::char_traits<char>>*)	_ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEPNS_15basic_streambufIcS2_EE
+0x851d6640	nn::audio::common::NodeStates::GetNodeCount() const	_ZNK2nn5audio6common10NodeStates12GetNodeCountEv
+0x8555f4b0	nn::settings::detail::GetEncryptedSecretDeviceIdFileSize(unsigned long*)	_ZN2nn8settings6detail34GetEncryptedSecretDeviceIdFileSizeEPm
+0x85005380	nndetailImagePng_png_read_filter_row_up_neon	nndetailImagePng_png_read_filter_row_up_neon
+0x8550c960	nandroid::HTTPDownloader::fetchBlock(char const*, nandroid::sp<nandroid::ABuffer>*, long, long, unsigned int, nandroid::String8*, bool)	_ZN8nandroid14HTTPDownloader10fetchBlockEPKcPNS_2spINS_7ABufferEEElljPNS_7String8Eb
+0x85467c00	nn::movie::MediaExtractor::~MediaExtractor()	_ZN2nn5movie14MediaExtractorD2Ev
+0x85560660	nn::settings::detail::GetTitleIconKeepFlag(bool*)	_ZN2nn8settings6detail20GetTitleIconKeepFlagEPb
+0x853a0240	nn::ec::detail::ShopServiceAccessServer::Proxy::CreateServerInterface(nn::sf::SharedPointer<nn::nim::detail::IShopServiceAccessServerInterface> const&, void*, unsigned long, nn::ec::detail::ShopServiceAccessServer::RequestCancelPolicy)	_ZN2nn2ec6detail23ShopServiceAccessServer5Proxy21CreateServerInterfaceERKNS_2sf13SharedPointerINS_3nim6detail33IShopServiceAccessServerInterfaceEEEPvmNS2_19RequestCancelPolicyE
+0x856fb8d0	PulseSignal::GetProgress() const	_ZNK11PulseSignal11GetProgressEv
+0x84fa3400	nncryptoAes192CtrEncryptorSwitchMessage	nncryptoAes192CtrEncryptorSwitchMessage
+0x85191c90	nn::audio::IsActiveOutputDeviceEstimatedLowLatency()	_ZN2nn5audio39IsActiveOutputDeviceEstimatedLowLatencyEv
+0x84ffb1a0	nndetailImageJpeg_jsimd_can_quantize()	_Z36nndetailImageJpeg_jsimd_can_quantizev
+0x8525fd10	nn::bcat::GetDeliveryTaskListForSystem(int*, nn::bcat::TaskInfo*, int)	_ZN2nn4bcat28GetDeliveryTaskListForSystemEPiPNS0_8TaskInfoEi
+0x85466280	nn::movie::detail::ThreadManager::_SetThreadPriorityByComponentType(nn::movie::detail::ThreadInfo::ComponentType, int)	_ZN2nn5movie6detail13ThreadManager33_SetThreadPriorityByComponentTypeENS1_10ThreadInfo13ComponentTypeEi
+0x854cebc0	nandroid::Vector<nandroid::M3UParser::MediaGroup::Media>::do_move_forward(void*, void const*, unsigned long) const	_ZNK8nandroid6VectorINS_9M3UParser10MediaGroup5MediaEE15do_move_forwardEPvPKvm
+0x850d6de0	nn::lmem::detail::GetMemoryBlockHeapGroupId(void const*)	_ZN2nn4lmem6detail25GetMemoryBlockHeapGroupIdEPKv
+0x851f5ba0	nn::audio::dsp::ApplyDoubleBiquadFilterAndMixRamp(int*, int const*, float const*, float const*, nn::audio::BiquadFilterState*, float const*, float const*, nn::audio::BiquadFilterState*, int, float, float)	_ZN2nn5audio3dsp33ApplyDoubleBiquadFilterAndMixRampEPiPKiPKfS6_PNS0_17BiquadFilterStateES6_S6_S8_iff
+0x8544c660	nn::mii::detail::CoreDataRaw::SetMoleType(int)	_ZN2nn3mii6detail11CoreDataRaw11SetMoleTypeEi
+0x8547c960	nn::movie::detail::MediaMuxerImpl::MediaMuxerImpl()	_ZN2nn5movie6detail14MediaMuxerImplC1Ev
+0x85554420	nn::settings::factory::GetGcCertificateFile(unsigned char*, unsigned long)	_ZN2nn8settings7factory20GetGcCertificateFileEPhm
+0x85712ca0	nn::web::OfflineHtmlPageReturnValue::GetLastUrl() const	_ZNK2nn3web26OfflineHtmlPageReturnValue10GetLastUrlEv
+0x85113f60	nnResultGetModule	nnResultGetModule
+0x854e0ce0	nandroid::ElementaryStreamQueue::dequeueAccessUnit()	_ZN8nandroid21ElementaryStreamQueue17dequeueAccessUnitEv
+0x85578340	nn::time::SetStandardLocalSystemClockContext(nn::time::SystemClockContext const&)	_ZN2nn4time34SetStandardLocalSystemClockContextERKNS0_18SystemClockContextE
+0x85024640	nndetailImagePng_png_set_sCAL_s	nndetailImagePng_png_set_sCAL_s
+0x85025c00	nndetailImagePng_png_set_chunk_malloc_max	nndetailImagePng_png_set_chunk_malloc_max
+0x850d65c0	nn::lmem::detail::SetHeapFillVal(int, unsigned int)	_ZN2nn4lmem6detail14SetHeapFillValEij
+0x85553740	nn::settings::factory::GetOta2DeviceKeyFile(unsigned char*, unsigned long)	_ZN2nn8settings7factory20GetOta2DeviceKeyFileEPhm
+0x8566b390	nn::hid::GetNpadOfHighestBatteryLevel(unsigned int*, unsigned int const*, int)	_ZN2nn3hid28GetNpadOfHighestBatteryLevelEPjPKji
+0x8568b2f0	nn::hid::system::detail::GetButtonConfig(nn::hidconfig::ButtonConfigBack*, unsigned int)	_ZN2nn3hid6system6detail15GetButtonConfigEPNS_9hidconfig16ButtonConfigBackEj
+0x856b1600	bool nerd::kalman::ExtendedKalmanFilter<float, nerd::gyro_pointing::GyroPointingKalmanFilter, -33l, false>::ObservationUpdate<3l, 3l, nerd::linear_algebra::LMatrixType::Dense<true>>(nerd::linear_algebra::LVector<float, 3l, false, nerd::linear_algebra::LVectorType::Dense> const&, nerd::linear_algebra::LMatrix<float, 3l, 3l, nerd::linear_algebra::LMatrixType::Dense<true>> const&, nerd::linear_algebra::LMatrix<float, 3l, 3l, nerd::linear_algebra::LMatrixType::Dense<true>> const&, nerd::linear_algebra::LVector<unsigned long, 3l, false, nerd::linear_algebra::LVectorType::Dense> const&, float)	_ZN4nerd6kalman20ExtendedKalmanFilterIfNS_13gyro_pointing24GyroPointingKalmanFilterELln33ELb0EE17ObservationUpdateILl3ELl3ENS_14linear_algebra11LMatrixType5DenseILb1EEEEEbRKNS6_7LVectorIfXT_ELb0ENS6_11LVectorType5DenseEEERKNS6_7LMatrixIfXT_EXT0_ET1_EERKNSG_IfXT_EXT_ES9_EERKNSA_ImXT0_ELb0ESC_EEf
+0x8525e8d0	nn::bcat::DeliveryCacheProgressImpl::NotifyStartConnect()	_ZN2nn4bcat25DeliveryCacheProgressImpl18NotifyStartConnectEv
+0x852fe790	nn::codec::ApplyTools(nn::codec::CAacDecoderChannelInfo**, nn::codec::SamplingRateInfo const*, unsigned int, int)	_ZN2nn5codec10ApplyToolsEPPNS0_22CAacDecoderChannelInfoEPKNS0_16SamplingRateInfoEji
+0x8546de00	nn::movie::detail::MediaExtractorImpl::StreamSourceReadData(void*, long*, long)	_ZN2nn5movie6detail18MediaExtractorImpl20StreamSourceReadDataEPvPll
+0x8569fa80	nerd::sensors::SensorState::GyroPointing()	_ZN4nerd7sensors11SensorState12GyroPointingEv
+0x851258a0	long nn::socket::resolver::serializer::DNSSerializer::FromBuffer<nn::socket::In6Addr>(nn::socket::In6Addr&, unsigned char const*, unsigned long)	_ZN2nn6socket8resolver10serializer13DNSSerializer10FromBufferINS0_7In6AddrEEElRT_PKhm
+0x85152380	nn::account::NintendoAccountAuthorizationRequestContext::GetRawResult()	_ZN2nn7account42NintendoAccountAuthorizationRequestContext12GetRawResultEv
+0x8518a860	nn::audio::RequestResumeAudio(nn::applet::AppletResourceUserId, nn::TimeSpan)	_ZN2nn5audio18RequestResumeAudioENS_6applet20AppletResourceUserIdENS_8TimeSpanE
+0x852cdca0	nn::codec::hwacod::GetHardwareAudioCodecInstanceProcessingDataCount(nn::codec::hwacod::HardwareAudioCodecInstanceType const*)	_ZN2nn5codec6hwacod48GetHardwareAudioCodecInstanceProcessingDataCountEPKNS1_30HardwareAudioCodecInstanceTypeE
+0x85554d30	nn::settings::system::IsMouseEnabled()	_ZN2nn8settings6system14IsMouseEnabledEv
+0x850b8b70	nn::fs::detail::RegisterStartAccessLogPrinterCallback(int (*)(char*, unsigned long))	_ZN2nn2fs6detail37RegisterStartAccessLogPrinterCallbackEPFiPcmE
+0x8571a060	getchar	getchar
+0x85685450	nn::hid::system::detail::GetUniquePadBluetoothAddress(nn::bluetooth::Address*, nn::hid::system::UniquePadId)	_ZN2nn3hid6system6detail28GetUniquePadBluetoothAddressEPNS_9bluetooth7AddressENS1_11UniquePadIdE
+0x85524d50	nn::nfp::client::IsCreatedDebugInterface()	_ZN2nn3nfp6client23IsCreatedDebugInterfaceEv
+0x855964f0	NvOsHeapAllocatorFree	NvOsHeapAllocatorFree
+0x85558ca0	nn::settings::detail::SetChatTranscriptionSettings(nn::settings::system::ChatTranscriptionSettingsEx const*, unsigned long)	_ZN2nn8settings6detail28SetChatTranscriptionSettingsEPKNS0_6system27ChatTranscriptionSettingsExEm
+0x8500e0c0	nndetailImagePng_png_get_sBIT	nndetailImagePng_png_get_sBIT
+0x85073460	nn::fs::dbm::FileSystemObjectTemplate<nn::fs::dbm::DirectoryName, nn::fs::dbm::FileName>::OpenDirectory(unsigned int*, nn::fs::dbm::DirectoryObjectTemplate<nn::fs::dbm::DirectoryName, nn::fs::dbm::FileName>*, char const*)	_ZN2nn2fs3dbm24FileSystemObjectTemplateINS1_13DirectoryNameENS1_8FileNameEE13OpenDirectoryEPjPNS1_23DirectoryObjectTemplateIS3_S4_EEPKc
+0x855688e0	nn::ssl::Connection::Create(nn::ssl::Context*)	_ZN2nn3ssl10Connection6CreateEPNS0_7ContextE
+0x8550a340	nandroid::SampleTable::getSampleSize_l(unsigned int, unsigned long*)	_ZN8nandroid11SampleTable15getSampleSize_lEjPm
+0x8509f5c0	nn::fs::IsHostRootMounted()	_ZN2nn2fs17IsHostRootMountedEv
+0x8544b8a0	nn::mii::detail::CoreDataRaw::SetFavoriteColor(int)	_ZN2nn3mii6detail11CoreDataRaw16SetFavoriteColorEi
+0x854af070	nandroid::MPEG4Writer::Track::getStartTimeOffsetTimeUs() const	_ZNK8nandroid11MPEG4Writer5Track24getStartTimeOffsetTimeUsEv
+0x8566ee10	nn::hid::VibrationPlayer::GetLoopInterval() const	_ZNK2nn3hid15VibrationPlayer15GetLoopIntervalEv
+0x854a02e0	nandroid::MetaDataBase::remove(unsigned int)	_ZN8nandroid12MetaDataBase6removeEj
+0x85557020	nn::settings::detail::GetNextDataUsageOptInGuideTimeStamp(nn::time::PosixTime*, bool*, nn::settings::system::AccountUserSettings*, int, nn::account::Uid const&)	_ZN2nn8settings6detail35GetNextDataUsageOptInGuideTimeStampEPNS_4time9PosixTimeEPbPNS0_6system19AccountUserSettingsEiRKNS_7account3UidE
+0x85577900	nn::time::ClockSnapshot::ClockSnapshot()	_ZN2nn4time13ClockSnapshotC1Ev
+0x8505a1d0	nn::detail::UnexpectedDefaultImpl()	_ZN2nn6detail21UnexpectedDefaultImplEv
+0x850f3160	nnmem_nlib_taskgroup_leave	nnmem_nlib_taskgroup_leave
+0x85111c00	pthread_condattr_getpshared	pthread_condattr_getpshared
+0x85164440	nn::album::GetMovieWriterRequiredWorkMemorySize()	_ZN2nn5album36GetMovieWriterRequiredWorkMemorySizeEv
+0x85578510	nn::time::GetStandardNetworkSystemClockCurrentTimespec(timespec*)	_ZN2nn4time44GetStandardNetworkSystemClockCurrentTimespecEP8timespec
+0x856e1d20	nn::irsensor::detail::IrSensorSession::GetImageTransferProcessorStateDefault(nn::irsensor::ImageTransferProcessorState*, void*, unsigned long, nn::irsensor::IrCameraHandle const&)	_ZN2nn8irsensor6detail15IrSensorSession37GetImageTransferProcessorStateDefaultEPNS0_27ImageTransferProcessorStateEPvmRKNS0_14IrCameraHandleE
+0x85741740	fgetwc_unlocked	fgetwc_unlocked
+0x85149460	nn::account::Initialize()	_ZN2nn7account10InitializeEv
+0x85439110	nn::htcs::Initialize(void* (*)(unsigned long), void (*)(void*, unsigned long), int)	_ZN2nn4htcs10InitializeEPFPvmEPFvS1_mEi
+0x85577300	nn::time::EnsureNetworkClockAvailability()	_ZN2nn4time30EnsureNetworkClockAvailabilityEv
+0x850ae360	nn::fs::OpenSaveDataThumbnailFile(std::__1::unique_ptr<nn::fs::fsa::IFile, std::__1::default_delete<nn::fs::fsa::IFile>>*, unsigned long, nn::fs::UserId)	_ZN2nn2fs25OpenSaveDataThumbnailFileEPNSt3__110unique_ptrINS0_3fsa5IFileENS1_14default_deleteIS4_EEEEmNS0_6UserIdE
+0x8547e640	nandroid::ALooper::GetNowUs()	_ZN8nandroid7ALooper8GetNowUsEv
+0x8566cb70	int nn::hid::GetTouchScreenStates<8ul>(nn::hid::TouchScreenState<8ul>*, int)	_ZN2nn3hid20GetTouchScreenStatesILm8EEEiPNS0_16TouchScreenStateIXT_EEEi
+0x8511cb20	nn::sf::hipc::server::v1::detail::HipcAllInOneServerManagerBase::InitializePortImpl(int, nn::sf::cmif::server::CmifServerObjectInfo&&, nn::svc::Handle)	_ZN2nn2sf4hipc6server2v16detail29HipcAllInOneServerManagerBase18InitializePortImplEiONS0_4cmif6server20CmifServerObjectInfoENS_3svc6HandleE
+0x851e88c0	nn::audio::server::BehaviorInfo::IsDeviceApiVersion2Supported() const	_ZNK2nn5audio6server12BehaviorInfo28IsDeviceApiVersion2SupportedEv
+0x854969e0	nandroid::Vector<nandroid::Trex>::do_construct(void*, unsigned long) const	_ZNK8nandroid6VectorINS_4TrexEE12do_constructEPvm
+0x854768b0	nn::movie::detail::HlsMediaExtractor::AppendMediaSourceData(void const*, unsigned long)	_ZN2nn5movie6detail17HlsMediaExtractor21AppendMediaSourceDataEPKvm
+0x85081080	nn::fs::InitializeWithMultiSessionForTargetTool()	_ZN2nn2fs39InitializeWithMultiSessionForTargetToolEv
+0x850d7af0	nnmem_nlib_getversion	nnmem_nlib_getversion
+0x8516678c	nn::am::GetDisplayController()	_ZN2nn2am20GetDisplayControllerEv
+0x854bd7c0	nandroid::operator<(nandroid::HLSTime const&, nandroid::HLSTime const&)	_ZN8nandroidltERKNS_7HLSTimeES2_
+0x851d6630	nn::audio::common::NodeStates::ResultEnd() const	_ZNK2nn5audio6common10NodeStates9ResultEndEv
+0x854aa310	nandroid::MPEG4Writer::Track::getCodecSpecificDataFromInputFormatIfPossible()	_ZN8nandroid11MPEG4Writer5Track45getCodecSpecificDataFromInputFormatIfPossibleEv
+0x8566d520	nn::hid::SendVibrationValue(nn::hid::VibrationDeviceHandle const&, nn::hid::VibrationValue const&)	_ZN2nn3hid18SendVibrationValueERKNS0_21VibrationDeviceHandleERKNS0_14VibrationValueE
+0x8568c3f0	nn::hid::system::detail::GetNmouseMovementAdjustmentParameters(int*, nn::hid::system::NmouseMovementAdjustmentParameter*, int)	_ZN2nn3hid6system6detail37GetNmouseMovementAdjustmentParametersEPiPNS1_33NmouseMovementAdjustmentParameterEi
+0x85266b04	nn::capsrv::DeleteAlbumContentsFileForApplication(nn::capsrv::ApplicationAlbumEntry const&, unsigned char)	_ZN2nn6capsrv37DeleteAlbumContentsFileForApplicationERKNS0_21ApplicationAlbumEntryEh
+0x8546ddf0	nn::movie::detail::MediaExtractorImpl::GetTaskCompletedResult()	_ZN2nn5movie6detail18MediaExtractorImpl22GetTaskCompletedResultEv
+0x8549fd50	nandroid::MetaData::MetaData(nandroid::MetaDataBase const&)	_ZN8nandroid8MetaDataC2ERKNS_12MetaDataBaseE
+0x85145b60	nn::util::nlib::InputStream::Skip_(unsigned long)	_ZN2nn4util4nlib11InputStream5Skip_Em
+0x8550e700	nandroid::ID3::parseV1(nandroid::DataSourceBase*)	_ZN8nandroid3ID37parseV1EPNS_14DataSourceBaseE
+0x856e0e40	nn::irsensor::detail::IrSensorSession::IsAppletForeground()	_ZN2nn8irsensor6detail15IrSensorSession18IsAppletForegroundEv
+0x857039d0	nn::web::detail::ShowLobbyPageArgWriter::PushToInChannel(nn::applet::LibraryAppletHandle) const	_ZNK2nn3web6detail22ShowLobbyPageArgWriter15PushToInChannelENS_6applet19LibraryAppletHandleE
+0x85148a70	nn::account::detail::SimpleOAuthProcedureBase::SimpleOAuthProcedureBase(nn::account::detail::SimpleOAuthProcedureBase&&)	_ZN2nn7account6detail24SimpleOAuthProcedureBaseC2EOS2_
+0x85150c90	nn::account::NetworkServiceAccountAdministrator::DownloadProfileAsync(nn::account::AsyncContext*)	_ZN2nn7account34NetworkServiceAccountAdministrator20DownloadProfileAsyncEPNS0_12AsyncContextE
+0x851553c0	nn::account::ProfileEditor::SetUserData(char const*, unsigned long)	_ZN2nn7account13ProfileEditor11SetUserDataEPKcm
+0x851d11e0	nn::audio::EffectManager::Add(nn::audio::EffectInfoVersion2**, nn::audio::EffectType, void*, unsigned long, nn::audio::MixInfo*)	_ZN2nn5audio13EffectManager3AddEPPNS0_18EffectInfoVersion2ENS0_10EffectTypeEPvmPNS0_7MixInfoE
+0x853cd200	FracSqrt	FracSqrt
+0x8500ccc0	nndetailImagePng_png_set_longjmp_fn	nndetailImagePng_png_set_longjmp_fn
+0x85578620	nn::time::GetStandardSteadyClockCurrentTimePoint(nn::time::SteadyClockTimePoint*)	_ZN2nn4time38GetStandardSteadyClockCurrentTimePointEPNS0_20SteadyClockTimePointE
+0x85596e80	NvOsConditionDestroy	NvOsConditionDestroy
+0x857861f0	std::__1::system_error::~system_error()	_ZNSt3__112system_errorD1Ev
+0x854686c0	nn::movie::MediaExtractor::GetTrackProperties(nn::movie::MediaProperty*, int)	_ZN2nn5movie14MediaExtractor18GetTrackPropertiesEPNS0_13MediaPropertyEi
+0x85558240	nn::settings::detail::SetOunceProControllerAudioLowLatencyModeEnabled(bool)	_ZN2nn8settings6detail47SetOunceProControllerAudioLowLatencyModeEnabledEb
+0x851c4540	nn::audio::GetDefaultVirtualOutputDevice(nn::audio::AudioDeviceName*)	_ZN2nn5audio29GetDefaultVirtualOutputDeviceEPNS0_15AudioDeviceNameE
+0x85522d00	nn::nfp::GetNpadId(unsigned int*, nn::nfp::DeviceHandle const&)	_ZN2nn3nfp9GetNpadIdEPjRKNS0_12DeviceHandleE
+0x8553b1f0	nn::oe::SetGraphicsTargetFrameRateAuto()	_ZN2nn2oe30SetGraphicsTargetFrameRateAutoEv
+0x854bdd20	nandroid::ALookup<unsigned char, int>::ALookup(std::initializer_list<std::__1::pair<unsigned char, int>>, void*, unsigned long)	_ZN8nandroid7ALookupIhiEC2ESt16initializer_listINSt3__14pairIhiEEEPvm
+0x85527310	nn::ngc::ProfanityFilter::CheckArgumentsText(char const*) const	_ZNK2nn3ngc15ProfanityFilter18CheckArgumentsTextEPKc
+0x850712f0	nn::fs::save::SaveDataFileSystemCoreImpl::DoCreateFile(nn::fs::Path const&, long, int)	_ZN2nn2fs4save26SaveDataFileSystemCoreImpl12DoCreateFileERKNS0_4PathEli
+0x850eddd0	nnmem_nlib_physical_alloc	nnmem_nlib_physical_alloc
+0x8525ab40	nn::audio::devmgr::detail::GetCaptureDeviceGainImpl(float*, nn::audio::detail::NameStorage<255> const&)	_ZN2nn5audio6devmgr6detail24GetCaptureDeviceGainImplEPfRKNS0_6detail11NameStorageILi255EEE
+0x852ec970	nn::codec::GetRequiredMemRam_aacEnc_QCelement()	_ZN2nn5codec34GetRequiredMemRam_aacEnc_QCelementEv
+0x85580140	nn::vi::Layer::NativeWindowListener::OnSetNextOriginMode(nn::gs::sdk::OriginMode)	_ZN2nn2vi5Layer20NativeWindowListener19OnSetNextOriginModeENS_2gs3sdk10OriginModeE
+0x856e2d40	nn::irsensor::RunPointingProcessor(nn::irsensor::IrCameraHandle const&)	_ZN2nn8irsensor20RunPointingProcessorERKNS0_14IrCameraHandleE
+0x84fa44e0	nn::crypto::EccKey<(nn::crypto::detail::EccCurveType)1>::GenerateKeyPair(void*, unsigned long, void*, unsigned long, void const*, unsigned long) const	_ZNK2nn6crypto6EccKeyILNS0_6detail12EccCurveTypeE1EE15GenerateKeyPairEPvmS5_mPKvm
+0x8516a0ac	nn::am::CreateSystemAppletControllerForDebug()	_ZN2nn2am36CreateSystemAppletControllerForDebugEv
+0x854673f0	nn::movie::HlsMediaExtractor::SelectTrack(int)	_ZN2nn5movie17HlsMediaExtractor11SelectTrackEi
+0x851063c0	nn::os::ConvertToTick(nn::TimeSpan)	_ZN2nn2os13ConvertToTickENS_8TimeSpanE
+0x853a1f40	nn::ec::detail::GetShopPageReturnValueFromStorage(nn::ec::detail::ShopPageReturnValue*, nn::applet::StorageHandle const&)	_ZN2nn2ec6detail33GetShopPageReturnValueFromStorageEPNS1_19ShopPageReturnValueERKNS_6applet13StorageHandleE
+0x857895c0	std::__1::ios_base::xalloc()	_ZNSt3__18ios_base6xallocEv
+0x85104990	nn::os::GenerateRandomBytes(void*, unsigned long)	_ZN2nn2os19GenerateRandomBytesEPvm
+0x853f9d50	nn::friends::detail::GetCurrentUser()	_ZN2nn7friends6detail14GetCurrentUserEv
+0x85510290	nandroid::ABitReader::data() const	_ZNK8nandroid10ABitReader4dataEv
+0x85554fc0	nn::settings::system::SetNfcEnabled(bool)	_ZN2nn8settings6system13SetNfcEnabledEb
+0x85656a30	nn::chat::gsv::Initialize()	_ZN2nn4chat3gsv10InitializeEv
+0x85655730	nn::chat::RequestNextLocalCameraImage(nn::gs::NativeSyncHandle*, nn::chat::LocalCameraVideoType*, int, nn::gs::NativeSyncHandle)	_ZN2nn4chat27RequestNextLocalCameraImageEPNS_2gs16NativeSyncHandleEPNS0_20LocalCameraVideoTypeEiS2_
+0x85430f00	nn::gs::external::UnmapNvRmMem(nn::gs::external::NvRmMemHandle, void*, unsigned long)	_ZN2nn2gs8external12UnmapNvRmMemENS1_13NvRmMemHandleEPvm
+0x85439570	nn::htcs::Listen(int, int)	_ZN2nn4htcs6ListenEii
+0x854cede0	nandroid::Vector<nandroid::M3UParser::Item>::do_construct(void*, unsigned long) const	_ZNK8nandroid6VectorINS_9M3UParser4ItemEE12do_constructEPvm
+0x85682220	nn::Result nn::hid::system::detail::GetTouchScreenStatesForSystemProcess<6ul>(int*, nn::hid::TouchScreenState<6ul>*, int)	_ZN2nn3hid6system6detail36GetTouchScreenStatesForSystemProcessILm6EEENS_6ResultEPiPNS0_16TouchScreenStateIXT_EEEi
+0x85122620	nnsocketInetNtohl	nnsocketInetNtohl
+0x85447ea0	nn::mii::CreateId::IsNil() const	_ZNK2nn3mii8CreateId5IsNilEv
+0x854f8780	mkvparser::Projection::Parse(mkvparser::IMkvReader*, long long, long long, mkvparser::Projection**)	_ZN9mkvparser10Projection5ParseEPNS_10IMkvReaderExxPPS0_
+0x855335f0	nn::nifm::Request::Request(nn::nifm::RequestParameters const&, nn::os::EventClearMode)	_ZN2nn4nifm7RequestC2ERKNS0_17RequestParametersENS_2os14EventClearModeE
+0x857ca9c0	std::__1::__time_get_storage<wchar_t>::init(std::__1::ctype<wchar_t> const&)	_ZNSt3__118__time_get_storageIwE4initERKNS_5ctypeIwEE
+0x85097fc0	nn::fs::GetGameCardUpdatePartitionInfo(bool*, nn::fs::GameCardUpdatePartitionInfo*, unsigned int)	_ZN2nn2fs30GetGameCardUpdatePartitionInfoEPbPNS0_27GameCardUpdatePartitionInfoEj
+0x850b5ae0	nn::fs::GetUfsDescriptor(void*, unsigned long, nn::ufs::DescriptorIdn, unsigned char)	_ZN2nn2fs16GetUfsDescriptorEPvmNS_3ufs13DescriptorIdnEh
+0x851061f0	nn::os::GetThreadCurrentPriority(nn::os::ThreadType const*)	_ZN2nn2os24GetThreadCurrentPriorityEPKNS0_10ThreadTypeE
+0x85459450	nn::mii::detail::Ver3StoreDataRaw::SetMustacheType(int)	_ZN2nn3mii6detail16Ver3StoreDataRaw15SetMustacheTypeEi
+0x8573e9b0	wcstombs	wcstombs
+0x85024390	nndetailImagePng_png_set_oFFs	nndetailImagePng_png_set_oFFs
+0x850c2670	nn::fs::Path::Combine(nn::fs::Path const&, nn::fs::Path const&)	_ZN2nn2fs4Path7CombineERKS1_S3_
+0x853c21c0	unload_cff	unload_cff
+0x854a0e70	nandroid::MetaDataBase::typed_data::typed_data(nandroid::MetaDataBase::typed_data const&)	_ZN8nandroid12MetaDataBase10typed_dataC2ERKS1_
+0x85348140	nn::codec::CreateStreamMuxConfig(nn::codec::LATM_STREAM*, nn::codec::FDK_BITSTREAM*, int, nn::codec::CSTpCallBacks*)	_ZN2nn5codec21CreateStreamMuxConfigEPNS0_11LATM_STREAMEPNS0_13FDK_BITSTREAMEiPNS0_13CSTpCallBacksE
+0x85451a60	nn::mii::detail::Ver3StoreDataRaw::GetRoomIndex() const	_ZNK2nn3mii6detail16Ver3StoreDataRaw12GetRoomIndexEv
+0x854eab00	mkvparser::Segment::DoLoadClusterUnknownSize(long long&, long&)	_ZN9mkvparser7Segment24DoLoadClusterUnknownSizeERxRl
+0x84fa5fc0	nn::crypto::detail::BigNum::GetDigitsBits() const	_ZNK2nn6crypto6detail6BigNum13GetDigitsBitsEv
+0x8520f580	void nn::audio::dsp::ApplyMixRamp2<15>(int*, int const*, int, int, int)	_ZN2nn5audio3dsp13ApplyMixRamp2ILi15EEEvPiPKiiii
+0x8542efd0	nn::gs::sdk::CreateNativeMemoryWithTransferMemory(nn::gs::NativeMemoryHandle*, nn::gsdrv::WeakNativeHandle, unsigned long, nn::os::MemoryPermission)	_ZN2nn2gs3sdk36CreateNativeMemoryWithTransferMemoryEPNS0_18NativeMemoryHandleENS_5gsdrv16WeakNativeHandleEmNS_2os16MemoryPermissionE
+0x8543e8c0	nn::htcs::detail::virtual_socket_collection::EventFdWrite(int, unsigned long, int&)	_ZN2nn4htcs6detail25virtual_socket_collection12EventFdWriteEimRi
+0x8544dbe0	nn::mii::detail::GetDefaultMiiForMiiEditor(nn::mii::Gender)	_ZN2nn3mii6detail25GetDefaultMiiForMiiEditorENS0_6GenderE
+0x854d5840	nandroid::SortedVector<nandroid::key_value_pair_t<nandroid::AString, nandroid::sp<nandroid::ABuffer>>>::do_splat(void*, void const*, unsigned long) const	_ZNK8nandroid12SortedVectorINS_16key_value_pair_tINS_7AStringENS_2spINS_7ABufferEEEEEE8do_splatEPvPKvm
+0x8555d0d0	nn::settings::detail::GetGcNxCertificateFileSize(unsigned long*)	_ZN2nn8settings6detail26GetGcNxCertificateFileSizeEPm
+0x85582b70	nn::vi2::sdk::DuplicateVsyncEvent(nn::os::SystemEventType*, nn::vi2::VsyncEventType const*, nn::os::EventClearMode)	_ZN2nn3vi23sdk19DuplicateVsyncEventEPNS_2os15SystemEventTypeEPKNS0_14VsyncEventTypeENS2_14EventClearModeE
+0x855dfba0	NvRmGpuRegOpsSessionExecWithAttr	NvRmGpuRegOpsSessionExecWithAttr
+0x85688310	nn::hid::system::SetSupportedNpadStyleSetAll()	_ZN2nn3hid6system27SetSupportedNpadStyleSetAllEv
+0x85064090	nn::fs::detail::FileAccessor::Write(long, void const*, unsigned long, nn::fs::WriteOption const&)	_ZN2nn2fs6detail12FileAccessor5WriteElPKvmRKNS0_11WriteOptionE
+0x8512d620	nn::socket::detail::Read(int, void*, unsigned long)	_ZN2nn6socket6detail4ReadEiPvm
+0x851ec6d0	nn::audio::server::SinkContext::SinkContext()	_ZN2nn5audio6server11SinkContextC1Ev
+0x85742990	fseek	fseek
+0x854eebc0	mkvparser::CuePoint::CuePoint(long, long long)	_ZN9mkvparser8CuePointC2Elx
+0x8567be30	nn::hid::system::detail::BindJoyDetachOnBluetoothOffEvent(nn::os::SystemEventType*, nn::os::EventClearMode)	_ZN2nn3hid6system6detail32BindJoyDetachOnBluetoothOffEventEPNS_2os15SystemEventTypeENS3_14EventClearModeE
+0x85689440	nn::hid::system::GetRegisteredDeviceCount()	_ZN2nn3hid6system24GetRegisteredDeviceCountEv
+0x85748fc0	wcsrchr	wcsrchr
+0x85122610	nnsocketInetNtohs	nnsocketInetNtohs
+0x850787a0	nn::fs::MountContentStorage(char const*, nn::fs::ContentStorageId)	_ZN2nn2fs19MountContentStorageEPKcNS0_16ContentStorageIdE
+0x850ef2b0	nnmem_nlib_free_	nnmem_nlib_free_
+0x85106380	nn::os::GetSystemTickOrdered()	_ZN2nn2os20GetSystemTickOrderedEv
+0x8514a440	nn::account::OpenUser(nn::account::UserHandle*, nn::account::Uid const&)	_ZN2nn7account8OpenUserEPNS0_10UserHandleERKNS0_3UidE
+0x85748ee0	wcsncpy	wcsncpy
+0x857c36e0	std::__1::numpunct<char>::~numpunct()	_ZNSt3__18numpunctIcED1Ev
+0x850a5b10	nn::fs::MountSaveDataForDebug(char const*)	_ZN2nn2fs21MountSaveDataForDebugEPKc
+0x854437e0	nn::lm::impl::SharedQueue::Producer::GetPopEvent()	_ZN2nn2lm4impl11SharedQueue8Producer11GetPopEventEv
+0x85686db0	nn::hidconfig::IsButtonConfigStorageJoyConGripEmpty(int)	_ZN2nn9hidconfig36IsButtonConfigStorageJoyConGripEmptyEi
+0x85473240	nn::movie::detail::BaseMediaExtractor::GetSampleBufferSize(unsigned long*, int)	_ZN2nn5movie6detail18BaseMediaExtractor19GetSampleBufferSizeEPmi
+0x8570e2b0	nn::streamplay::detail::GetGuestJcmsHandle(nn::streamplay::GuestPadId const&, nn::hid::JcmsType)	_ZN2nn10streamplay6detail18GetGuestJcmsHandleERKNS0_10GuestPadIdENS_3hid8JcmsTypeE
+0x85112960	sem_timedwait	sem_timedwait
+0x8517d9d0	nn::aoc::GetAddOnContentBaseId()	_ZN2nn3aoc21GetAddOnContentBaseIdEv
+0x854454d0	nn::mii::SetNickname(nn::mii::CharInfo*, nn::mii::Nickname const&, nn::mii::FontRegion)	_ZN2nn3mii11SetNicknameEPNS0_8CharInfoERKNS0_8NicknameENS0_10FontRegionE
+0x85552de0	nn::settings::SetDebugPadGenericPadMap(nn::settings::DebugPadGenericPadMapV2 const&)	_ZN2nn8settings24SetDebugPadGenericPadMapERKNS0_23DebugPadGenericPadMapV2E
+0x8566c670	void nn::hid::GetTouchScreenState<2ul>(nn::hid::TouchScreenState<2ul>*)	_ZN2nn3hid19GetTouchScreenStateILm2EEEvPNS0_16TouchScreenStateIXT_EEE
+0x85190a30	nn::audio::GetRequiredBufferSizeForAuxLimiter(nn::TimeSpan, int, int)	_ZN2nn5audio34GetRequiredBufferSizeForAuxLimiterENS_8TimeSpanEii
+0x854504f0	nn::mii::detail::StoreDataRaw::SetNickname(nn::mii::Nickname const&)	_ZN2nn3mii6detail12StoreDataRaw11SetNicknameERKNS0_8NicknameE
+0x851f54e0	nn::audio::dsp::ApplyBiquadFilterAndMixRamp(int*, int const*, float const*, float const*, nn::audio::BiquadFilterState*, int, float, float)	_ZN2nn5audio3dsp27ApplyBiquadFilterAndMixRampEPiPKiPKfS6_PNS0_17BiquadFilterStateEiff
+0x8567a930	nn::hid::system::detail::IsDefaultButtonConfig(bool*, nn::hidconfig::ButtonConfigRight const&)	_ZN2nn3hid6system6detail21IsDefaultButtonConfigEPbRKNS_9hidconfig17ButtonConfigRightE
+0x857ef370	operator delete(void*, std::align_val_t)	_ZdlPvSt11align_val_t
+0x8500dd10	nndetailImagePng_png_get_hIST	nndetailImagePng_png_get_hIST
+0x8514ef70	nn::account::DeviceMigrationUserImporter::IsOperatingUserAnalyticsPermissionInternalAnalysisPermitted(bool*) const	_ZNK2nn7account27DeviceMigrationUserImporter59IsOperatingUserAnalyticsPermissionInternalAnalysisPermittedEPb
+0x85164750	nn::album::FinalizeMovieWriter()	_ZN2nn5album19FinalizeMovieWriterEv
+0x850c2420	nn::fs::Path::AppendChild(char const*)	_ZN2nn2fs4Path11AppendChildEPKc
+0x853fa2b0	nn::friends::detail::AsyncContextInternal::Initialize()	_ZN2nn7friends6detail20AsyncContextInternal10InitializeEv
+0x8550b280	nandroid::DataSourceBase::getUInt64(long, unsigned long*)	_ZN8nandroid14DataSourceBase9getUInt64ElPm
+0x857ceb40	std::__1::locale::facet::~facet()	_ZNSt3__16locale5facetD1Ev
+0x8518f870	nn::audio::GetAuxDelayParameters(nn::audio::AuxDelayType const*)	_ZN2nn5audio21GetAuxDelayParametersEPKNS0_12AuxDelayTypeE
+0x855720a0	nn::swkbd::detail::ModelessKeyboardImpl::Calc()	_ZN2nn5swkbd6detail20ModelessKeyboardImpl4CalcEv
+0x855a2c20	NvRmMemGetNativeImageHandle	NvRmMemGetNativeImageHandle
+0x85447b00	nn::mii::ParamCharInfoAccessor::GetGender() const	_ZNK2nn3mii21ParamCharInfoAccessor9GetGenderEv
+0x851c7a60	nn::audio::GetAuxSampleCount(nn::audio::AuxType const*)	_ZN2nn5audio17GetAuxSampleCountEPKNS0_7AuxTypeE
+0x8544deb0	nn::mii::detail::NfpStoreDataExtentionRaw::SetHairColor(int)	_ZN2nn3mii6detail24NfpStoreDataExtentionRaw12SetHairColorEi
+0x85557200	nn::settings::detail::GetAnalogStickModuleTypeL(unsigned char*)	_ZN2nn8settings6detail25GetAnalogStickModuleTypeLEPh
+0x85109190	nn::os::GetFreeThreadCount()	_ZN2nn2os18GetFreeThreadCountEv
+0x8552d4a0	nn::nifm::detail::ConvertNetworkProfileBasicInfoToNifmFromSf(nn::nifm::NetworkProfileBasicInfo*, nn::nifm::detail::sf::NetworkProfileBasicInfo const&)	_ZN2nn4nifm6detail42ConvertNetworkProfileBasicInfoToNifmFromSfEPNS0_23NetworkProfileBasicInfoERKNS1_2sf23NetworkProfileBasicInfoE
+0x851d4bc0	nn::audio::VoiceInfoManager::UpdateVoiceRelatedParameters(void*, unsigned long*, unsigned long*)	_ZN2nn5audio16VoiceInfoManager28UpdateVoiceRelatedParametersEPvPmS3_
+0x852d0c40	nn::codec::AcquireAv1DecoderOutputBuffer(unsigned int*, nn::gs::NativeSyncHandle*, nn::codec::Av1DecoderType*)	_ZN2nn5codec29AcquireAv1DecoderOutputBufferEPjPNS_2gs16NativeSyncHandleEPNS0_14Av1DecoderTypeE
+0x8558ed90	nn::wsi::vulkan::SetNextHdrDisplayMetadata(void*, nn::wsi::detail::HdrDisplayMetadata const&)	_ZN2nn3wsi6vulkan25SetNextHdrDisplayMetadataEPvRKNS0_6detail18HdrDisplayMetadataE
+0x85104e60	nn::os::SdkRecursiveMutexType::IsLockedByCurrentThread() const	_ZNK2nn2os21SdkRecursiveMutexType23IsLockedByCurrentThreadEv
+0x851337f0	nn::socket::detail::InetAton(char const*, in_addr*)	_ZN2nn6socket6detail8InetAtonEPKcP7in_addr
+0x85122160	nn::socket::GAIStrError(int)	_ZN2nn6socket11GAIStrErrorEi
+0x85469f40	nn::movie::detail::MediaExtractorImpl::DoSetMediaBuffer(std::__1::shared_ptr<void>)	_ZN2nn5movie6detail18MediaExtractorImpl16DoSetMediaBufferENSt3__110shared_ptrIvEE
+0x854c66c0	nandroid::LiveSession::hasDynamicDuration() const	_ZNK8nandroid11LiveSession18hasDynamicDurationEv
+0x854bf1f0	nandroid::ClearMediaHTTP::getMIMEType() const	_ZNK8nandroid14ClearMediaHTTP11getMIMETypeEv
+0x854d5a60	nandroid::ATSParser::SyncEvent::SyncEvent(long)	_ZN8nandroid9ATSParser9SyncEventC2El
+0x856c4b30	auto nerd::linear_algebra::operator*<float, float, 3l, 9l, 9l, nerd::linear_algebra::LMatrixType::Dense<true>, nerd::linear_algebra::LMatrixType::View<nerd::linear_algebra::LVector<unsigned long, 9l, false, nerd::linear_algebra::LVectorType::Dense>&, nerd::linear_algebra::LVector<unsigned long, 9l, false, nerd::linear_algebra::LVectorType::Dense>&>>(nerd::linear_algebra::LMatrix<float, 3l, 9l, nerd::linear_algebra::LMatrixType::Dense<true>> const&, nerd::linear_algebra::LMatrix<float, 9l, 9l, nerd::linear_algebra::LMatrixType::View<nerd::linear_algebra::LVector<unsigned long, 9l, false, nerd::linear_algebra::LVectorType::Dense>&, nerd::linear_algebra::LVector<unsigned long, 9l, false, nerd::linear_algebra::LVectorType::Dense>&>> const&)	_ZN4nerd14linear_algebramlIffLl3ELl9ELl9ENS0_11LMatrixType5DenseILb1EEENS2_4ViewIRNS0_7LVectorImLl9ELb0ENS0_11LVectorType5DenseEEESA_EEEEDaRKNS0_7LMatrixIT_XT1_EXT2_ET4_EERKNSC_IT0_XT2_EXT3_ET5_EE
+0x8506e1d0	nn::fs::save::ExclusiveFileSystem::DoGetEntryType(nn::fs::DirectoryEntryType*, nn::fs::Path const&)	_ZN2nn2fs4save19ExclusiveFileSystem14DoGetEntryTypeEPNS0_18DirectoryEntryTypeERKNS0_4PathE
+0x851d8150	nn::audio::server::AudioRenderSystem::SetUpDependencies()	_ZN2nn5audio6server17AudioRenderSystem17SetUpDependenciesEv
+0x85568df0	nn::ssl::Connection::SetIoMode(nn::ssl::Connection::IoMode)	_ZN2nn3ssl10Connection9SetIoModeENS1_6IoModeE
+0x856dce50	nn::imf::HidStateSet::GetNpadJoyLeftState() const	_ZNK2nn3imf11HidStateSet19GetNpadJoyLeftStateEv
+0x85185b00	nn::audio::ParseAdpcmHeader(nn::audio::AdpcmHeaderInfo*, void const*, unsigned long)	_ZN2nn5audio16ParseAdpcmHeaderEPNS0_15AdpcmHeaderInfoEPKvm
+0x8521e1c0	int nn::audio::util::BandlimitedInterpolation::Resample<int, int, 23, 23>(int* const*, int, int const* const*, int)	_ZN2nn5audio4util24BandlimitedInterpolation8ResampleIiiJLi23ELi23EEEEiPKPT0_iPKPKT_i
+0x854a7c20	nandroid::MPEG4Writer::MediaWrite(void*, unsigned long)	_ZN8nandroid11MPEG4Writer10MediaWriteEPvm
+0x854b2820	nandroid::MPEG4Writer::writeIdatBox()	_ZN8nandroid11MPEG4Writer12writeIdatBoxEv
+0x85048820	nn::util::ConvertStringUtf32ToUtf8(char*, int, unsigned int const*)	_ZN2nn4util24ConvertStringUtf32ToUtf8EPciPKj
+0x8510e830	nn::os::detail::ThreadManagerImplByHorizon::GetThreadContextUnsafe(nn::os::ThreadContextInfoAarch64*, nn::os::ThreadType const*)	_ZN2nn2os6detail26ThreadManagerImplByHorizon22GetThreadContextUnsafeEPNS0_24ThreadContextInfoAarch64EPKNS0_10ThreadTypeE
+0x851c5fd0	nn::audio::detail::OutputStreamImpl::GetGain() const	_ZNK2nn5audio6detail16OutputStreamImpl7GetGainEv
+0x85447dc0	nn::mii::ParamCharInfoAccessor::GetMoleType() const	_ZNK2nn3mii21ParamCharInfoAccessor11GetMoleTypeEv
+0x85480da0	nandroid::StreamSource::~StreamSource()	_ZN8nandroid12StreamSourceD2Ev
+0x85738950	iswcntrl_l	iswcntrl_l
+0x8506dfb0	nn::fs::save::ExclusiveFileSystem::CheckEntryExistence(nn::fs::Path const&)	_ZN2nn2fs4save19ExclusiveFileSystem19CheckEntryExistenceERKNS0_4PathE
+0x85155930	nn::account::detail::InitializeForSystemProcessAsAdministrator()	_ZN2nn7account6detail41InitializeForSystemProcessAsAdministratorEv
+0x85102210	nn::os::DetachReadableHandleOfSystemEvent(nn::os::SystemEventType*)	_ZN2nn2os33DetachReadableHandleOfSystemEventEPNS0_15SystemEventTypeE
+0x8546fe70	nn::movie::detail::BaseMediaExtractor::SetUpMediaSourceMode()	_ZN2nn5movie6detail18BaseMediaExtractor20SetUpMediaSourceModeEv
+0x85567eb0	nnsslConnectionGetHostName	nnsslConnectionGetHostName
+0x8566ebf0	nn::hid::VibrationPlayer::GetCurrentPosition() const	_ZNK2nn3hid15VibrationPlayer18GetCurrentPositionEv
+0x85106bc0	nnosConvertTickToNanoSeconds	nnosConvertTickToNanoSeconds
+0x853b7f90	fix_fnt	fix_fnt
+0x8547f430	nandroid::ALooper::createReplyToken()	_ZN8nandroid7ALooper16createReplyTokenEv
+0x85102220	nn::os::DetachWritableHandleOfSystemEvent(nn::os::SystemEventType*)	_ZN2nn2os33DetachWritableHandleOfSystemEventEPNS0_15SystemEventTypeE
+0x85181bf0	nn::applet::FinishGpuErrorHandling()	_ZN2nn6applet22FinishGpuErrorHandlingEv
+0x851822f0	nn::applet::RequestChatExpirationCheckSkip(bool)	_ZN2nn6applet30RequestChatExpirationCheckSkipEb
+0x8547ca70	nn::movie::detail::MediaMuxerImpl::~MediaMuxerImpl()	_ZN2nn5movie6detail14MediaMuxerImplD1Ev
+0x856dbac0	nn::imf::PrivateMessage::GetTextStart() const	_ZNK2nn3imf14PrivateMessage12GetTextStartEv
+0x854e1de0	nandroid::ElementaryStreamQueue::dequeueAccessUnitEAC3()	_ZN8nandroid21ElementaryStreamQueue21dequeueAccessUnitEAC3Ev
+0x85505bc0	nandroid::Vector<nandroid::heif::ExtentEntry>::do_splat(void*, void const*, unsigned long) const	_ZNK8nandroid6VectorINS_4heif11ExtentEntryEE8do_splatEPvPKvm
+0x854a0a90	nandroid::MetaDataBase::findPointer(unsigned int, void**) const	_ZNK8nandroid12MetaDataBase11findPointerEjPPv
+0x85248af0	int nn::audio::util::detail::BandlimitedInterpolationImpl::Resample<short, float, 15>(float* const*, int, short const* const*, int)	_ZN2nn5audio4util6detail28BandlimitedInterpolationImpl8ResampleIsfJLi15EEEEiPKPT0_iPKPKT_i
+0x85533230	nn::nifm::IsWirelessCommunicationEnabled()	_ZN2nn4nifm30IsWirelessCommunicationEnabledEv
+0x8557f890	nn::vi::detail::LayerNativeWindow::PresentBuffer(unsigned int, nn::gs::NativeSyncHandle const&)	_ZN2nn2vi6detail17LayerNativeWindow13PresentBufferEjRKNS_2gs16NativeSyncHandleE
+0x85788a80	std::__1::shared_timed_mutex::lock_shared()	_ZNSt3__118shared_timed_mutex11lock_sharedEv
+0x85052cf0	read	read
+0x850f4160	nn::nlibsdk::heap::TlsHeapCache::TlsHeapCache(nn::nlibsdk::heap::TlsHeapCentral*, unsigned int)	_ZN2nn7nlibsdk4heap12TlsHeapCacheC2EPNS1_14TlsHeapCentralEj
+0x85147b10	nn::account::ShowUserNicknameEditor(nn::account::Uid const&)	_ZN2nn7account22ShowUserNicknameEditorERKNS0_3UidE
+0x85241800	int nn::audio::util::internal::VecMacRampedFixedPoint<long, int, short, int, 15>(int*, short const*, int, int, int, bool)	_ZN2nn5audio4util8internal22VecMacRampedFixedPointIlisiLi15EEET2_PT0_PKT1_S4_S4_ib
+0x85368310	nn::codec::sbrDecoder_GetDelay(nn::codec::SBR_DECODER_INSTANCE*)	_ZN2nn5codec19sbrDecoder_GetDelayEPNS0_20SBR_DECODER_INSTANCEE
+0x8550fd90	nandroid::ABitReader::fillReservoir()	_ZN8nandroid10ABitReader13fillReservoirEv
+0x855c60f0	NvRmGpuDeviceGetMemoryState	NvRmGpuDeviceGetMemoryState
+0x856e0c90	nn::irsensor::detail::IrSensorSession::GetClusteringLifo(nn::irsensor::IrCameraHandle const&) const	_ZNK2nn8irsensor6detail15IrSensorSession17GetClusteringLifoERKNS0_14IrCameraHandleE

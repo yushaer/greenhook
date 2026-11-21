@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { zstdDecompressSync } from "node:zlib";
-import { addActorPlacement, bindAiMethod, bindGameFunction, callActorMethod, editResource, openNativeModule, listPlacementFiles, openByml, removeActorPlacement, trackActors } from "../scripts_sdk/lib/greenhook-data.js";
+import { describeNativeLeaf, addActorPlacement, bindAiMethod, bindGameFunction, callActorMethod, editResource, openNativeModule, listPlacementFiles, openByml, removeActorPlacement, trackActors } from "../scripts_sdk/lib/greenhook-data.js";
 
 // A one-element BYML array containing a signed integer.
 for (const little of [false, true]) {
@@ -160,4 +160,23 @@ await assert.rejects(aiMethod(() => 0n, 12), /unavailable/);
 globalThis.memory.readU64 = () => vtable + 8n;
 await assert.rejects(aiMethod(() => live, 12), /different vtable/);
 assert.throws(() => bindAiMethod("Test", 1, [], "void"), /Unresolved/);
+
+const leafAddress = 0x82000200n;
+const leaf = (first, second = 0xd65f03c0, third = 0) => {
+    const bytes = new Uint8Array(12), view = new DataView(bytes.buffer);
+    [first, second, third].forEach((op, i) => view.setUint32(i * 4, op, true));
+    globalThis.memory = {isMapped: () => true, readBytes: () => bytes};
+    return describeNativeLeaf(leafAddress);
+};
+globalThis.native = {hasFunction: addr => addr === leafAddress};
+assert.match(leaf(0x91098000), /plus 608 bytes/);
+assert.match(leaf(0xf9400800), /8-byte load from input x0 \+ 16/);
+assert.match(leaf(0xbd400400), /s0 returns a 4-byte/);
+assert.equal(leaf(0xd2800020), "x0 returns constant 1.");
+assert.match(leaf(0x90000000, 0x91004000, 0xd65f03c0), /0x82000010/);
+assert.match(leaf(0xf0ffffe0, 0x91004000, 0xd65f03c0), /0x81fff010/);
+assert.match(leaf(0xd65f03c0), /without writing/);
+assert.equal(leaf(0xf9400801), null); // writes x1, not the return register
+assert.equal(leaf(0x91098000, 0xd503201f), null); // an instruction follows the add
+assert.equal(describeNativeLeaf(0n), null);
 console.log("Game data, AI method and native symbol tests passed");

@@ -534,6 +534,43 @@ Install the Developer ZIP and open the installed `scripts` folder. The SDK READM
 | `installSavedOverrides()`, `removeSavedOverride(path)` | Restore saved redirects at script startup and return the number installed, or remove the saved override for one path. A scene may retain an already loaded resource until re-entry. |
 | `resourceSize(path)`, `setResourceSizes(sizes)` | Read the resource allocation in bytes (null if unlisted), or raise listed minima using a Map or path-to-size object. The result lists updated and missing paths. The running game can retain its old size table. Restore the saved redirect on the next launch before loading larger resources. |
 
+## Offline method reference
+
+The Developer ZIP includes an [index of AI classes and native exports](method-reference/README.md) for the supported Longshot 3.0.0 image. The installer copies it into `scripts/method-reference`. Open that folder in VS Code and press **Ctrl+Shift+F**. Search for a graph name such as `QueryIsRupeeMax`, an address such as `0x82a3c260`, or a C++ name such as `nn::os::GetSystemTick()`. Shared implementations can appear in many classes.
+
+Every AI entry lists its graph input names, types and declared defaults. Resolved entries also list every discovered virtual slot for that vtable. The **Verified identity** column labels known addresses and class-name getters. **Guest body** describes register behavior when the complete guest function matches a recognized short instruction sequence. For example, “x0 returns the input x0 address plus 608 bytes” is useful when inspecting an object layout, even if the field's C++ name is unknown. A blank body leaves its behavior open. Native export files are tab-separated and retain the mangled symbol to distinguish overloads.
+
+### Gameplay method contracts
+
+| Gameplay question | Graph method in 3.0.0 | What the translated method does |
+| --- | --- | --- |
+| How many of this actor does the pouch hold? | [QueryGetPouchContentNumByActorName](method-reference/ai-090.md#querygetpouchcontentnumbyactorname), slot 39, `0x82a3c260` | x0 is the initialized graph query. It initializes the output binding at receiver + 48 to zero, obtains the actor name through the tagged binding at receiver + 32, calls `PouchCount` on the pouch manager, then writes the count through the output binding. A missing manager leaves the initialized output. Use `game.inventory.get(name)` when a mod just needs the count. |
+| How does a graph add or remove items? | [OneShotAddOrRemovePouchContent](method-reference/ai-054.md#oneshotaddorremovepouchcontent), slot 39, `0x828d4a70` | x0 points to the initialized action or event parameter block. `Actor`, `Num`, `Reason`, `IsEquipDirect` and `IsGetEvent` are graph fields. The stock host supplies a signed delta and reads the upper two bits of the word at block + 24 for completion status. For JavaScript inventory edits use `game.inventory.add` or `remove`. |
+| Where does a map-change request get its arguments? | [QueryBancChangeEventRequestArg](method-reference/ai-080.md#querybancchangeeventrequestarg), slot 39, `0x829df380` | The graph input `EventName` defaults to the string `"None"`. The query reads from a game-owned request context. To initiate travel from JavaScript use `game.world.teleport`, which builds and submits the request. |
+| When does the ocarina action start waiting, and when does it poll? | [ExecuteWaitOcarinaInputCommon](method-reference/ai-051.md#executewaitocarinainputcommon), slots 29 and 30, `0x828a9190` and `0x828a9280` | The start routine initializes the wait. The tick routine evaluates its gates on successive updates. Longshot patches these two paths to report the wait and note timing to the input system. The class page lists the melody, instrument, play mode and two Boolean settings. |
+| How does the graph test one played note? | [QueryIsPlayedOcarinaNote](method-reference/ai-093.md#queryisplayedocarinanote), slot 39, `0x82a57f00` | Reads the bound 32-bit `SingleNote` value via receiver + 32 and passes it to the ocarina query helper. That binding belongs to a live query object. The definition exposes an empty default string for this typed input. |
+| Is the player a child, is an actor a rupee, or is the wallet full? | [QueryIsPlayerChild](method-reference/ai-093.md#queryisplayerchild), [QueryIsRupee](method-reference/ai-093.md#queryisrupee), [QueryIsRupeeMax](method-reference/ai-093.md#queryisrupeemax) | All three have a slot 39, respectively `0x82a58470`, `0x82a5a3d0`, and `0x82a5a550`. The first and third have no declared graph inputs. The middle query takes `ActorName` and classifies that actor. For a script reading Link's age or wallet balance, use `game.player.getAge()` or `getRupees()`. |
+
+A common mistake is binding the pouch graph query as a function returning an integer in w0. That integer belongs to the inner `PouchCount` call. Slot 39 delivers its result to the graph output. The following lookup reads the method identity without executing the query.
+
+```js
+import { native } from "greenhook";
+import { describeNativeLeaf } from "greenhook/data";
+
+const entry = native.getAiClass("QueryGetPouchContentNumByActorName")
+    .find(table => table.methods[39] === native.addresses.PouchCountQuery);
+const getter = entry?.methods[19];
+if (getter) console.log("Class-name getter", getter.toString(16), describeNativeLeaf(getter));
+```
+
+`describeNativeLeaf(address: bigint): string | null` reads at most 12 mapped bytes at a translated function entry. It recognizes an immediate return, a single constant or field load followed by return, addition of an offset to the receiver followed by return, and a page-relative address calculation followed by return. Returned text names the register, width or address operation as appropriate. Unmapped addresses and unrecognized sequences yield null. Mod authors still need the game's object ownership rules and the caller's ABI. Longshot may replace a guest body in the host.
+
+To regenerate the reference for a local installation, run the following from the extracted Developer ZIP while Longshot is presenting frames and RomFS is mounted. The CLI starts the export. The exporter writes a new timestamped folder under `scripts_data/method-reference` and writes its README last. The game console reports completion or an error.
+
+```powershell
+node scripts_sdk/longshot-js-cli.mjs file scripts_sdk/tools/export-method-reference.js
+```
+
 ## Discovering game classes and named native functions
 
 | Method | Result |

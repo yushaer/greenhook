@@ -50,6 +50,11 @@ if (Test-Path "$Repo\scripts_sdk\greenhook.d.ts") {
     Copy-Item "$Repo\scripts_sdk\greenhook-host.d.ts" $ScriptsDir -Force
     Copy-Item "$Repo\scripts_sdk\greenhook.d.ts" $ScriptsDir -Force
     Copy-Item "$Repo\docs\API_REFERENCE.md" $ScriptsDir -Force
+    if (Test-Path "$Repo\docs\method-reference") {
+        $MethodDir = Join-Path $ScriptsDir "method-reference"
+        New-Item -ItemType Directory -Force $MethodDir | Out-Null
+        Copy-Item "$Repo\docs\method-reference\*" $MethodDir -Force
+    }
     Copy-Item "$Repo\scripts_sdk\longshot.d.ts" (Join-Path $ScriptsDir "longshot.d.ts") -Force
     Copy-Item "$Repo\scripts_sdk\README.md"     (Join-Path $ScriptsDir "README.md") -Force
     Copy-Item "$Repo\scripts_sdk\examples\*.js" $ExamplesDir -Force

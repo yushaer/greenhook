@@ -33,3 +33,5 @@ Use `listPlacementFiles`, `addActorPlacement` and `removeActorPlacement` to edit
 The installed `API_REFERENCE.md` describes callback timing, method signatures, return values, gameplay units, unavailable data, register arguments, and structured resource editing. The Developer ZIP also includes `docs/CLI_AND_DEBUGGING.md` and the Node.js CLI under `scripts_sdk`.
 
 For native discovery, start with `openAiDefinitions()` for graph node names, `native.getAiClass(name)` for the associated virtual methods, `bindAiMethod` for a known scalar class method, and `openNativeModule("sdk")` for named exports. The API reference gives working lookup examples and explains how to interpret missing methods.
+
+The Developer ZIP includes a searchable offline catalog. Open the installed `scripts/method-reference` folder in VS Code, press **Ctrl+Shift+F**, and search by class name, demangled C++ symbol or hexadecimal address. The **Gameplay method contracts** section in `API_REFERENCE.md` explains how graph queries deliver results.

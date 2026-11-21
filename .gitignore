@@ -6,3 +6,4 @@ work/
 *.log
 
 asi/dist/
+/docs/method-reference/

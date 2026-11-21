@@ -14,7 +14,9 @@ foreach ($Edition in @("Player", "Developer")) {
         $Files += @("docs/API_REFERENCE.md", "docs/CLI_AND_DEBUGGING.md", "scripts_sdk/README.md",
             "scripts_sdk/jsconfig.json", "scripts_sdk/greenhook-host.d.ts", "scripts_sdk/greenhook.d.ts", "scripts_sdk/longshot.d.ts", "scripts_sdk/longshot-js-cli.mjs")
         $Files += "scripts_sdk/tools/export-method-reference.js"
-        $Files += Get-ChildItem "$Repo/docs/method-reference" -File | ForEach-Object { "docs/method-reference/" + $_.Name }
+        if (Test-Path -LiteralPath "$Repo/docs/method-reference" -PathType Container) {
+            $Files += Get-ChildItem "$Repo/docs/method-reference" -File | ForEach-Object { "docs/method-reference/" + $_.Name }
+        }
         $Files += Get-ChildItem "$PSScriptRoot/examples/*.js" | ForEach-Object { "scripts_sdk/examples/" + $_.Name }
     }
     $Dest = Join-Path $Out "Greenhook-$Version-$Edition-win64.zip"

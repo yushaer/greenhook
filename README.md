@@ -69,7 +69,7 @@ powershell -ExecutionPolicy Bypass -File tests\run_tests.ps1
 ## Documentation
 
 - **[Architecture & Hooking Internals](docs/ARCHITECTURE.md)** — How `winmm.dll`, PE COFF symbol resolution, MinHook detours, Dear ImGui overlay injection, and QuickJS-NG thread safety fit together.
-- [Searchable class and method index](docs/method-reference/README.md) for Longshot 3.0.0, including graph input defaults, native addresses, slot numbers and guest register behavior.
+- [Developer download with the searchable class and method index](https://github.com/yushaer/greenhook/releases/download/v0.1.0-beta.4/Greenhook-0.1.0-beta.4-Developer-win64.zip) for Longshot 3.0.0, including graph input defaults, native addresses, slot numbers and guest register behavior.
 - **[Greenhook API Reference](docs/API_REFERENCE.md)** — Complete module, hook, memory, UI, RomFS, filesystem, and gameplay scripting guide.
 - **[Building & Testing Guide](docs/BUILDING.md)** — Toolchain setup, static linking requirements, unit testing, deployment, and environment switches.
 - **[CLI, Pipe Protocol & Debugging](docs/CLI_AND_DEBUGGING.md)** — `F9` console usage, `\\.\pipe\longshot-js` JSON RPC schema, `longshot-js-cli.mjs`, and troubleshooting.

@@ -50,6 +50,37 @@ node scripts_sdk/longshot-js-cli.mjs repl
 
 ---
 
+## Booting Straight Into a Save (No Manual Input)
+
+Stock Longshot `v3.0.0` can load a save at startup by itself. Nothing needs patching. Set these in `<GameDir>\longshot_options.ini`:
+
+```ini
+skip_title_screen=1   ; load the most recent save automatically
+skip_opening=1        ; skip the intro
+```
+
+At boot the game scans `<GameDir>\user\save\<account>\slot_*` and picks the slot whose `progress.sav` has the newest modification time. It then presses A for you, starting about 20 s in. The log (`<GameDir>\logs\longshot_log.txt`) confirms each step:
+
+```
+skip title: ...\slot_05\progress.sav is the most recent save: pressing A from 20 s
+skip title: loaded, the player is running
+```
+
+When there are no saves, it logs `skip title: no saved game yet: the title screen stays`. When nothing has loaded after about 120 s, it logs `skip title: gave up after ... s`.
+
+**Booting a specific slot (e.g. a debug save):** the game picks the newest file, so before launching, set that slot's timestamps to now:
+
+```powershell
+$slot = Get-Item "<GameDir>\user\save\*\slot_03"
+Get-ChildItem $slot -Filter *.sav | ForEach-Object { $_.LastWriteTime = Get-Date }
+```
+
+Saving in another slot makes that slot the newest one. Bump your slot again before the next launch.
+
+Related stock `longshot.exe` symbols, which are not hooked yet: `hos_oot_autoload_input`, `hos_oot_autoload_reset`, `hos_title_input`.
+
+---
+
 ## Troubleshooting
 
 - **Plugin did not attach**: Verify `<GameDir>\bin\winmm.dll` and `<GameDir>\bin\plugins\longshot_js.asi` are both present and `LONGSHOT_JS_DISABLE` is not set to `1`. Check game logs for `[hos MainThread] longshot-js: ASI runtime active on stock v3.0.0 (bridge=complete, hooks=29)` and `ImGui & F9 console attached to stock longshot_vk.dll (73/73 symbols)`.

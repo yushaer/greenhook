@@ -29,7 +29,11 @@ The core namespaces are available as globals and as ES module exports. `Greenhoo
 
 ```js
 import { Greenhook, game, ui, memory, native, fs, events } from "greenhook";
-// Or import individual namespaces:
+```
+
+For individual namespaces, use their default exports.
+
+```js
 import game from "greenhook/game";
 import ui from "greenhook/ui";
 ```
@@ -59,84 +63,169 @@ Relative `.js` / `.mjs` imports and `.json` imports are allowed **strictly insid
 
 ---
 
-## `game` Namespace
+## `game` method reference
+
+Import `game` from `"greenhook"`. Each section below lists methods on the named object. Signatures use the SDK types available in VS Code. Guest addresses are represented as bigints.
+
+Gameplay actions that run at the next player update return `true` when queued and `false` when the shared 64-entry queue is full. To check an operation in a live guest context, use `await game.defer(() => game.inventory.set(item, count))`. A paused or absent player can delay that promise.
 
 ### `game.player`
-- Position & facing: `getPos(): Vec3 | null`, `setPos(x, y, z): boolean`, `getFacing(): number | null`, `setFacing(radians): boolean`
-- Vitals & age: `getLife(): number`, `setLife(quarterHearts)`, `getMaxLife()`, `setMaxLife(quarterHearts)`, `getRupees()`, `setRupees(amount)`, `getAge(): "child" | "adult" | null`, `setAge("child" | "adult")`
-- Physics & combat cheats (pass `null` to restore host option default):
-  - `getSpeedScale()` / `setSpeedScale(scale)`
-  - `getInvincible()` / `setInvincible(enabled | null)`
-  - `getDamageMultiplier()` / `setDamageMultiplier(mult)`
-  - `getFlight()` / `setFlight(enabled | null)`
-- Inspection: `getPrompt(): string`, `getPointers(): { actor, player, components, controller }` (`bigint` addresses).
+
+- `getProgress(): { life: number | null; maxLife: number | null; rupees: number | null; skulltulaTokens: number | null; heartPieces: number | null } | null` — Read the latest sample of life, maximum life, rupees, Skulltula tokens and heart pieces. Life uses quarter hearts. An unavailable sample or individual field is null.
+- `getPos(): Vec3` — Read Link’s world coordinates. Falls back to the cached position, initially (0, 0, 0). Use getPointers().actor to check whether Link has been observed.
+- `setPos(x: number, y: number, z: number): boolean` — Move Link to absolute world coordinates. Executes with a live player context or queues the move for a player update.
+- `getFacing(): number` — Read Link’s heading in radians from his transform, falling back to the last sample (initially zero).
+- `setFacing(radians: number): boolean` — Write the heading in radians. Returns true when the runtime has an actor to update.
+- `getLife(): number` — Read current life in quarter hearts (4 is one heart). Falls back to the last sample, initially -1.
+- `setLife(quarterHearts: number): boolean` — Set current life in quarter hearts, clamped to a minimum of zero. Returns true if either the game-data or live health write succeeds.
+- `getMaxLife(): number` — Read heart capacity in quarter hearts, or -1 before the first successful read or sample.
+- `setMaxLife(quarterHearts: number): boolean` — Set heart capacity in quarter hearts, with a minimum of 4. Returns whether the capacity flag was written.
+- `getRupees(): number` — Read the wallet count, falling back to the last sample, initially -1.
+- `setRupees(amount: number): boolean` — Write the wallet count, clamping negative amounts to zero. Returns false if the rupee flag cannot be written.
+- `getAge(): "child" | "adult" | null` — Read the age flag or last observed age. Returns null before either is available.
+- `setAge(age: "child" | "adult"): boolean` — Request the child or adult form. Runs immediately with a live actor and guest context or queues the change. Unsupported names throw RangeError.
+- `getSpeedScale(): number` — Read the script movement-speed multiplier.
+- `setSpeedScale(scale: number): void` — Set the movement multiplier. Values clamp to 0.05–10. Use 1 for normal speed.
+- `getInvincible(): boolean | null` — Read the invincibility override. Null means the host controls it.
+- `setInvincible(enabled: boolean | null): void` — Force invincibility on or off. Pass null to release script control.
+- `getDamageMultiplier(): number` — Read the script damage multiplier.
+- `setDamageMultiplier(mult: number): void` — Scale incoming damage by a factor from 0 to 100. Use 1 for normal damage.
+- `getFlight(): boolean | null` — Read the flight override. Null means the host controls it.
+- `setFlight(enabled: boolean | null): void` — Force flight on or off. Pass null to release script control.
+- `getPrompt(): string` — Read the current player prompt string or its last sampled value. It can be empty.
+- `getPointers(): PlayerPointers` — Read the last observed actor, player, components and controller guest addresses. An unavailable address is 0n. Refresh pointers after transitions.
 
 ### `game.inventory`
-- `list(): InventoryItemEntry[]` (`{ label, name, kind, count }`)
-- `get(itemName): number`, `has(itemName): boolean`
-- `add(itemName, amount = 1): boolean`, `remove(itemName, amount = 1): boolean`, `set(itemName, targetCount): boolean`
+
+- `list(): InventoryItemEntry[]` — Enumerate known items with their display label, actor name, kind (toggle or quantity) and count. A count of -1 means unavailable.
+- `get(itemName: string): number` — Read an item by actor name or recognized label. Returns its count, 0 or 1 for a recognized song flag, or -1 if unavailable.
+- `has(itemName: string): boolean` — Return true when the reported count exceeds zero. Use get() to distinguish an unavailable count from zero.
+- `add(itemName: string, amount?: number): boolean` — Add the specified amount (default 1). Outside a live guest context, true means the change was accepted into the queue.
+- `remove(itemName: string, amount?: number): boolean` — Subtract the specified amount (default 1). Outside a live guest context, true means the change was accepted into the queue.
+- `set(itemName: string, targetCount: number): boolean` — Set an absolute count. Negative targets throw RangeError. A queued edit computes the required change when it executes.
 
 ### `game.flags`
-Operates on OoT GameDataMgr flags by name (hashed automatically with **MurmurHash3 x86-32, seed 0**) or numeric hash:
-- `hash(name): number`
-- Typed readers/writers (`nameOrHash: string | number`):
-  - `get(nameOrHash)`
-  - `getBool` / `setBool(nameOrHash, value, persist = true)`
-  - `getInt` / `setInt`, `getUInt` / `setUInt`, `getFloat` / `setFloat`, `getEnum` / `setEnum`
-  - `getString` / `setString`; the separate `getBool64(id)` / `setBool64(id, value)` take a placement ID (use a bigint literal for full precision).
-- Reactive watcher: `watch(nameOrHash, (newVal, oldVal, key) => void): Unsubscribable`
+
+- `list(kind: "bool" | "int" | "float" | "enum" | "string" | "uint", cursor?: number): { hashes: number[]; next: number | null } | null` — Scan up to 128 table slots per call for bool, int, uint, float, enum or string. Start at cursor 0 and pass back next, even after an empty page. A null next ends the scan. A null page means unavailable.
+- `hash(name: string): number` — Compute the unsigned MurmurHash3 x86-32 key for a flag name using seed zero.
+- `get(nameOrHash: string | number): boolean | number | string | null` — Read a named or hashed flag across supported 32-bit-key tables. Returns a boolean, number, string or null when absent.
+- `getBool(nameOrHash: string | number): boolean | null` — Read an existing Boolean flag. Null means missing or unavailable.
+- `setBool(nameOrHash: string | number, value: boolean, persist?: boolean): boolean` — Write a Boolean. With persist enabled (default), also invoke or queue the game’s persistent setter. Pass false as the third argument for a direct in-memory write.
+- `getInt(nameOrHash: string | number): number | null` — Read an existing signed 32-bit flag, or null.
+- `setInt(nameOrHash: string | number, value: number): boolean` — Write an existing signed 32-bit entry. Returns whether the write succeeded.
+- `getUInt(nameOrHash: string | number): number | null` — Read an existing unsigned 32-bit flag, or null.
+- `setUInt(nameOrHash: string | number, value: number): boolean` — Write an existing unsigned 32-bit entry. Returns whether the write succeeded.
+- `getFloat(nameOrHash: string | number): number | null` — Read a single-precision game flag as a JavaScript number, or null.
+- `setFloat(nameOrHash: string | number, value: number): boolean` — Write an existing float flag with single-precision rounding. Returns whether the write succeeded.
+- `getEnum(nameOrHash: string | number): number | null` — Read the numeric enum value hash, or null when the entry is unavailable.
+- `setEnum(nameOrHash: string | number, value: string | number): boolean` — Write an enum value using its string name (hashed) or numeric hash. Returns whether the existing entry was written.
+- `getString(nameOrHash: string | number): string | null` — Read an existing game string from its 64-byte buffer, or null.
+- `setString(nameOrHash: string | number, value: string): boolean` — Update an existing string buffer. At most 63 UTF-8 bytes fit before the terminator. Keep replacements within that limit to preserve whole characters.
+- `getBool64(placementId: AddressLike): boolean | null` — Read a placement Boolean by its full 64-bit ID. Pass a bigint for exact integer precision. Returns null if absent.
+- `setBool64(placementId: AddressLike, value: boolean): boolean` — Change an existing placement Boolean by ID. Returns false if its entry cannot be found or written.
+- `watch(nameOrHash: string | number, callback: (newVal: boolean | number | string | null, oldVal: boolean | number | string | null, key: string | number) => void): Unsubscribable` — Observe changes after the first readable sample establishes a baseline. The callback receives new value, previous value and original key. Call the returned function to stop.
 
 ### `game.world`
-- `getMap(): string | null`, `isLoading(): boolean`, `isEventPlaying(): boolean`, `getMusic(): string`
-- `getTime(): { totalSeconds, seconds, hour, minute, formatted } | null`, `setTime(hourOrSeconds, minute?)` (2-arg form treats args as `(hour, minute)`).
-- `destinations(): { index, child, adult }[]`
-- `teleport(target)` — Accepts preset destination `index`, substring/name match, or `{ banc, startPos?, bootEvent? }`.
-- `triggerEvent(eventName, starterActorPtr?): boolean`
-- `getSingletons(): { gameDataMgr, eventMgr, worldMgr, cameraMgr, actorMgr, pouchMgr }`
+
+- `getMap(): string | null` — Read the current map’s internal ID, or null when unavailable.
+- `getAreaName(map?: string): string | null` — Look up the English area name for a map ID. Omit the ID to use the current map. Returns null when unresolved.
+- `isLoading(): boolean` — Read the loading flag. Returns false when the flag is unavailable.
+- `isEventPlaying(): boolean` — Test whether the event manager has a current event. Returns false if the manager cannot be read.
+- `getMusic(): string` — Read the current BGM identifier from game data or its cached sample. The string may be empty.
+- `getTime(): WorldTime | null` — Read totalSeconds as a bigint and seconds within the day as a number. Also returns hour, minute and formatted HH:MM. Returns null without a readable clock.
+- `setTime(hourOrSeconds: number, minute?: number): boolean` — With two arguments, set hours and minutes. With one, values 0 through 24 are hours (fractions allowed), all others are seconds. The result wraps at 24 hours. May queue until a player update.
+- `destinations(): DestinationEntry[]` — List teleport presets and their child/adult map IDs. Either age-specific ID can be null. Use index for an unambiguous preset.
+- `teleport(target: number | string | { banc: string; startPos?: string; bootEvent?: string }): boolean` — Request a map change by index, first matching name or custom destination. Full names match case-insensitively, substrings case-sensitively. Custom defaults are Entrance and Dm_SY_BancChangeArrive. Observe onMapChange to detect arrival.
+- `triggerEvent(eventName: string, starterActorPtr?: AddressLike): boolean` — Request a named game event using the supplied starter actor or the most recently sampled Link actor. May queue until a player update.
+- `getSingletons(): SingletonsInfo` — Read the six game manager addresses as bigints. Check for 0n before using a manager and obtain a fresh address after transitions.
 
 ### `game.camera`
-- `getPose(): { eye, target, matrix, yaw, pitch } | null`
-- `setOverride(pose | null)` — `{ matrix? }` or `{ eye?, target?, yaw?, pitch? }`.
-- `setPlayerAngles(yawDeg, pitchDeg)`, `clearPlayerAngles()`
-- `getFovScale()` / `setFovScale(scale)`, `getSpeedScale()` / `setSpeedScale(scale)`, `setDisableCentering(disable | null)`
-- `worldToScreen(x, y, z, fovDeg?): { x, y, depth, visible } | null`
+
+- `getPose(): CameraPose | null` — Read the active gameplay view’s eye, target, 12-number view matrix and last sampled camera angles. Returns null when the view is unavailable.
+- `setOverride(pose: CameraOverridePose | null): void` — Supply a 12-number row-major view matrix, eye and target, or eye with yaw and pitch in radians. Both angles are needed in the angle form. Pass null to release the view.
+- `setPlayerAngles(yawDeg: number, pitchDeg: number): void` — Override the player camera’s yaw and pitch in degrees.
+- `clearPlayerAngles(): void` — Release the player camera angle override.
+- `setFovScale(scale: number): void` — Set the field-of-view multiplier, clamped to 0.25–2.5.
+- `getFovScale(): number` — Read the current field-of-view multiplier.
+- `setSpeedScale(scale: number): void` — Set the camera-speed multiplier, clamped to 0.1–8.
+- `getSpeedScale(): number` — Read the current camera-speed multiplier.
+- `setDisableCentering(disable: boolean | null): void` — Pass true to suppress camera centering, false to allow it or null to use the host setting.
+- `worldToScreen(x: number, y: number, z: number, fovDeg?: number): ScreenPoint | null` — Project a world position to window pixels using a vertical FOV in degrees (default 50). Returns null without a view. Positive depth is forward. The visible test allows a 200-pixel margin, so check window bounds for strict clipping.
 
 ### `game.actors`
-- `getPlayer(): ActorSnapshot | null`
-- `inspect(ptr: AddressLike): ActorSnapshot | null` (`{ ptr, vtable, name?, components, pos, facing? }`)
-- `setPos(ptr: AddressLike, x, y, z): boolean`
+
+- `getPlayer(): ActorSnapshot | null` — Read Link’s actor snapshot, or null before an actor has been observed.
+- `getMethods(actor: AddressLike, firstSlot: number, count: number): (bigint | null)[] | null` — Resolve 1–128 consecutive vtable slots starting at a nonnegative integer slot. An unreadable range returns null. Individual untranslated entries are null. Slot signatures depend on the actor class and build.
+- `inspect(ptr: AddressLike): (ActorSnapshot & { instanceId: number; statusCode: number; name: string }) | null` — Read a snapshot for a current actor address, or null if the header cannot be read. Obtain addresses from actor callbacks and refresh them after map changes.
+- `setPos(ptr: AddressLike, x: number, y: number, z: number): boolean` — Write world coordinates to a live actor. Link uses the player movement path. Other actors receive a direct transform write which their own update can overwrite.
 
 ### `game.input`
-- `game.input.Buttons` — Enum bitmasks for `"A"`, `"B"`, `"X"`, `"Y"`, `"LS"`, `"RS"`, `"L"`, `"R"`, `"ZL"`, `"ZR"`, `"PLUS"`, `"MINUS"`, `"LEFT"`, `"UP"`, `"RIGHT"`, `"DOWN"`.
-- `getState(): { buttons, rawButtons, justPressed, justReleased, lx, ly, rx, ry }`
-- `isDown(btn)`, `justPressed(btn)`, `justReleased(btn)`, `isKeyDown(keyOrVk)`, `getMouse(): { x, y, width, height, buttons }`
-- `setOverride({ buttons?, mask?, blockGameInput?, lx?, ly?, rx?, ry? } | null)`, `clearOverride()`, `setBlockGameInput(block)`
 
-### `game.audio` & `game.graphics`
-- Audio: `getMusic()`, `setVolumeScale(scale)` / `getVolumeScale()`, `setPitchScale(scale)` / `getPitchScale()`, `setMute(muted)` / `isMuted()`.
-- Graphics: `getFrame()`, `getFps()`, `getWindowSize()`, `getOption(keyOrId)`, `setOption(key, value)`, `listOptions()`, `setTextSpeedScale(scale)` / `getTextSpeedScale()`, `setTextSizeScale(scale)` / `getTextSizeScale()`, `setResolutionScale(percent)`, `takeScreenshot(relPath?): Promise<{ ok, present, path }>`.
+Use `game.input.Buttons` for numeric bitmasks. Its keys are A, B, X, Y, LS, RS, L, R, ZL, ZR, PLUS, MINUS, LEFT, UP, RIGHT and DOWN.
+- `getState(): PadStateSnapshot` — Read sampled buttons, rawButtons, justPressed, justReleased and four integer stick axes. Button masks here are numbers sampled before script overrides.
+- `isDown(button: ButtonName | number): boolean` — Test a button name or bitmask. For a combined mask, every selected button must be held.
+- `justPressed(button: ButtonName | number): boolean` — Test whether any selected button changed from up to down between the two latest input samples.
+- `justReleased(button: ButtonName | number): boolean` — Test whether any selected button changed from down to up between the two latest input samples.
+- `isKeyDown(key: string | number): boolean` — Test a supported key name or Windows virtual-key code. Returns false while the game process lacks foreground focus.
+- `getMouse(): MouseSnapshot` — Read cursor coordinates, window size and button bits (left 1, right 2, middle 4). Coordinates are client-relative when the game is foreground, otherwise screen-relative.
+- `setOverride(spec: InputOverrideSpec | null): void` — Replace selected controller bits and stick axes on successive input polls. The button mask defaults to 0xffff. Use mask 0 for a sticks-only override. Axes clamp to ±32767. Passing null releases buttons and sticks but preserves the block setting.
+- `clearOverride(): void` — Release controller button and stick overrides and clear the persistent input block.
+- `setBlockGameInput(block: boolean): void` — Zero game input before script overrides on each poll while enabled. Pass false to release the block.
+
+### `game.audio`
+
+- `getMusic(): string` — Read the most recently observed background music identifier.
+- `setVolumeScale(scale: number): void` — Set the volume multiplier, clamped to 0–4. Use 1 for normal volume.
+- `getVolumeScale(): number` — Read the current volume multiplier.
+- `setPitchScale(scale: number): void` — Set the pitch multiplier, clamped to 0.25–4. Use 1 for normal pitch.
+- `getPitchScale(): number` — Read the current pitch multiplier.
+- `setMute(muted: boolean): void` — Enable or disable the script mute switch.
+- `isMuted(): boolean` — Return the script mute switch state.
+
+### `game.graphics`
+
+- `getFrame(): number` — Read the number of presented frames. Use differences for frame counts.
+- `getFps(): number` — Read the recent measured presentation rate in frames per second. It starts at zero before sufficient samples arrive.
+- `getWindowSize(): { width: number; height: number }` — Read render window width and height in pixels. Dimensions can be zero before frame information is available.
+- `getOption(keyOrId: string | number): number | null` — Read an integer option value. A missing string key returns null. A numeric ID uses the host lookup with fallback -1.
+- `setOption(keyOrId: string | number, value: number): boolean` — Set an integer option by key or numeric ID. A string key reports host success. A numeric ID returns true after dispatch. Use listOptions() for discoverable keys and ranges.
+- `listOptions(): ControlOptionEntry[]` — Enumerate host settings with key, display name, text, tab, numeric value, min, max and step.
+- `setTextSpeedScale(scale: number): void` — Set the text-speed multiplier, clamped to 0.1–100.
+- `getTextSpeedScale(): number` — Read the script text-speed multiplier.
+- `setTextSizeScale(scale: number): void` — Set the text-size multiplier, clamped to 0.25–4.
+- `getTextSizeScale(): number` — Read the script text-size multiplier.
+- `setResolutionScale(percent: number): boolean` — Set the resolution_scale option as an integer percentage. Returns whether the host accepted it.
+- `takeScreenshot(relPath?: string): Promise<ScreenshotResult>` — Request a capture under scripts_data, default screenshots/shot.png. Await the result for ok, present and path. An invalid path or a second pending request throws synchronously. A rejected capture request can reject the promise.
 
 ### `game.romfs`
-- `setVirtualFile(romPath, stringOrBytes)` — Serves an in-memory virtual file (`ReadFile`, `GetFileSize`, `GetEntryType`, `CloseFile`) over `rom:/<romPath>`.
-- `redirect(romPath, hostFilePath)` — Redirects `host_path` resolution to any host file.
-- `clearOverride(romPath)`, `clearAllOverrides()`, `exists(romPath)`, `readFile(romPath): Uint8Array | null`, `listDir(romDir?)`.
 
-### `game.on*` Lifecycle Events
-Each registration returns a function. Save it and call it to unsubscribe.
-- `game.onFrame(({ frame, dt, fps }) => ...)`
-- `game.onPlayerUpdate((ev) => ...)` — Runs on Link's update with live `{ actor, player, components, controller, pos, facing, life, maxLife, rupees }` + guest CPU `Ctx` active (`native.call()` allowed!).
-- `game.onDamage((ev) => { ev.damage = ...; ev.cancel = true; })`
-- `game.onCameraUpdate(({ view, eye, target }) => ...)`
-- `game.onInput((ev) => { ev.buttons = ...; ev.lx = ...; ev.blockGameInput = true; })`
-- `game.onEventRequest(({ name, arg }) => ...)`
-- `game.onTimelineStart((ev) => { ev.cancel = true; })`
-- `game.onSaveRequest((ev) => { ev.cancel = true; })`
-- `game.onMapChange((map, prevMap) => ...)`
-- `game.onMenuTick(({ screen, vtable }) => ...)`
-- `game.onMenuFocus(({ screen, pane, lr }) => ...)`
-- `game.onBgmChange((music, prevMusic) => ...)`
-- `game.onUnload(() => ...)`
-- `game.defer(fn)` — Returns a promise for the result of `fn()`. It runs immediately in a live guest context, otherwise on the next player update. Callback exceptions reject the promise.
+- `redirect(romPath: string, hostFilePath: string): boolean` — Serve a game resource from a host file on future opens. Returns whether the redirect was registered.
+- `setVirtualFile(romPath: string, content: string | Uint8Array | ArrayBuffer): boolean` — Serve supplied text or bytes at a game resource path on future opens. Returns false when no override slot is available.
+- `clearOverride(romPath: string): boolean` — Remove the virtual file or redirect registered at this path. Returns whether a matching entry was removed.
+- `clearAllOverrides(): void` — Remove all scripts’ in-memory resource overrides and redirects. Use clearOverride(path) when cleaning up one mod.
+- `exists(romPath: string): boolean` — Test for a virtual entry or a file or directory at the resolved game resource path.
+- `decompressZstd(bytes: Uint8Array, dictionary?: Uint8Array): Uint8Array` — Decode one Zstandard frame to fresh bytes, optionally with its dictionary. An unknown size or output above 32 MiB throws RangeError. An invalid frame or wrong dictionary throws TypeError.
+- `readFile(romPath: string): Uint8Array | null` — Read a fresh byte array, preferring a virtual file, then the resolved host file. Returns null on a missing file or an unreadable or oversized disk file (64 MiB limit).
+- `listDir(romDir?: string): string[]` — List immediate child names from the resolved disk directory, or an empty array if unavailable. Omit the path for the root. Virtual-only files are absent from this listing.
+
+### `game` lifecycle and scheduling
+
+Every `on…` method returns a zero-argument unsubscribe function. Call it to remove that particular listener. Set mutable event fields before the callback returns.
+- `defer<T>(fn: () => T): Promise<T>` — Run the callback immediately with a live guest context or at the next player update. Await its return value. A thrown callback exception rejects the promise.
+- `onFrame(cb: (ev: FrameEvent) => void): Unsubscribable` — Receive frame number, elapsed seconds (dt) and measured fps on presentation. Use for overlays and frame-based timers.
+- `onActorUpdate(cb: (actor: ActorSnapshot & {instanceId: number; statusCode: number}) => void): Unsubscribable` — Observe snapshots from the shared actor transform hook, including instanceId and statusCode. An actor can appear repeatedly. This hook observes updates and gives no guarantee of seeing every spawn or destruction.
+- `onPlayerUpdate(cb: (ev: PlayerUpdateEvent) => void): Unsubscribable` — Receive Link’s pointers, position, facing, life, maxLife and rupees during a player update. Guest calls can run synchronously inside this callback.
+- `onDamage(cb: (ev: DamageEvent) => void): Unsubscribable` — Inspect oldLife and incoming damage in quarter hearts. Assign a nonnegative integer to damage or set cancel to true before returning.
+- `onCameraUpdate(cb: (ev: CameraUpdateEvent) => void): Unsubscribable` — Receive the guest view address and eye and target positions when the gameplay camera updates.
+- `onInput(cb: (ev: GreenhookInputEvent) => void): Unsubscribable` — Receive raw and effective button masks as bigints and four stick axes. Modify buttons and axes synchronously to change the sample. To suppress this sample, set buttons to 0n and all four axes to zero.
+- `onEventRequest(cb: (ev: EventRequestEvent) => void): Unsubscribable` — Receive the requested game event name and guest argument address. Inspect the argument during the callback.
+- `onTimelineStart(cb: (ev: TimelineStartEvent) => void): Unsubscribable` — Receive the timeline name and player address. Set cancel to true synchronously to veto the start.
+- `onSaveRequest(cb: (ev: SaveRequestEvent) => void): Unsubscribable` — Inspect reason, mode, caller address and isTransition. Set cancel to true synchronously to veto this save request.
+- `onMapChange(cb: (map: string, prevMap: string) => void): Unsubscribable` — Receive current and previous map IDs as two positional strings. Refresh map-specific state here.
+- `onMenuTick(cb: (ev: MenuTickEvent) => void): Unsubscribable` — Observe the current guest menu screen and its vtable during a menu update.
+- `onMenuFocus(cb: (ev: MenuFocusEvent) => void): Unsubscribable` — Observe the guest menu screen, focused pane and caller link register when focus changes.
+- `onBgmChange(cb: (music: string, prevMusic: string) => void): Unsubscribable` — Receive current and previous background music identifiers as two positional strings.
+- `onUnload(cb: () => void): Unsubscribable` — Run cleanup during script unload. Release subscriptions or overrides your mod owns here.
 
 ---
 
@@ -174,7 +263,7 @@ Every access checks `addr >= 0x100000` and `hos_mem_region(addr, size)` and noti
 
 ### `native`
 - `native.hasFunction(addr): boolean`
-- `native.call(addr, { x?, f?, d? })` — Must run during a live `GuestContext` (such as `game.onPlayerUpdate` or `game.defer`). Returns `{ x0, x1, x2, x3, f0, d0 }`.
+- `native.call(addr, { x?, f?, d?, indirectResult? })` — Must run during a live `GuestContext` (such as `game.onPlayerUpdate` or `game.defer`). Returns `{ x0, x1, x2, x3, f0, d0 }`.
 - `native.hook(addr, { before?: (ctx) => boolean | void, after?: (ctx) => void }): number` — Returning `false` from `before` skips invoking the original function. `ctx` exposes `x0..x7`, `lr`, `sp`, and `getX`/`setX`/`getF`/`setF`/`getD`/`setD`.
 - `native.unhook(handleOrAddr): boolean`
 - `native.createCallback(fn): bigint` — Allocates up to 32 synthetic guest function addresses (`0xFF00000000+`) dispatchable via `a64_lookup`.
@@ -228,15 +317,19 @@ import { listTables, openTable, readResource, openByml } from "greenhook/data";
 const filename = listTables().find(name => name.startsWith("ActorInfo."));
 if (filename) {
     const firstActor = openTable(filename)?.get(0);
-    if (firstActor) console.log(firstActor.get("__RowId"), firstActor.get("ClassName"));
+    if (firstActor && typeof firstActor === "object" && "kind" in firstActor) console.log(firstActor.get("__RowId"), firstActor.get("ClassName"));
 }
 
 const bytes = readResource("Banc/KokiriForest/KokiriForest_Child_Static.bcett.byml.zs");
 if (bytes) {
     const placements = openByml(bytes).get("Actors");
-    for (const [, placement] of placements.entries()) {
-        console.log(placement.get("Gyaml"), placement.get("Hash").toString(16));
-        break;
+    if (placements && typeof placements === "object" && "kind" in placements) {
+        for (const [, placement] of placements.entries()) {
+            if (!placement || typeof placement !== "object" || !("kind" in placement)) continue;
+            const id = placement.get("Hash");
+            if (typeof id === "bigint") console.log(placement.get("Gyaml"), id.toString(16));
+            break;
+        }
     }
 }
 ```
@@ -270,6 +363,12 @@ Before invoking a discovered method, determine its receiver, argument registers,
 | `0x806a2b20 SetBoolPersist` | GameData manager in x0, Boolean in w1, flag hash in w2 | Updates the specified Boolean. Use `game.flags.setBool(name, value, true)`. |
 | `0x806d2530 ChangePosition` | Player controller in x0 and pointer to three f32 coordinates in x1 | Moves Link through the controller. Use `game.player.setPos(x, y, z)`. |
 | `0x80d9a820 RequestEvent` | Event manager in x0 and constructed event-request object in x1 | Submits the request. `game.world.triggerEvent(name, actor?)` handles construction and actor-link lifetime. |
+| `0x8022d9c0 GetBool` | GameData manager in x0, writable output byte address in x1, flag hash in w2 | Bit 0 of w0 reports whether the lookup succeeded. Read bit 0 of the output byte for the value. Use `game.flags.getBool(key)` to distinguish false from missing. |
+| `0x80cd0ea0 GetString64` | GameData manager in x0, writable guest pointer slot in x1, flag hash in w2 | Bit 0 of w0 reports success. The output slot receives a guest string pointer. Copy the string during the callback. `game.flags.getString(key)` returns the JavaScript string directly. |
+| `0x80d99f10 EventRequestArgCtor` | Address of writable event-request storage in x0 | Initializes the request object in place. The 3.0.0 bridge reserves 0x1b20 bytes for it, then fills its event name and optional parameters before submission. Use `game.world.triggerEvent()` or `teleport()` for that sequence. |
+| `0x802dc440 ActorLinkSet` | Initialized actor link in x0, live actor pointer in x1, zero in x2 for the event-request path | Attaches the actor to the request’s starter link. The link has a lifetime separate from the actor. |
+| `0x8022b6f0 ActorLinkRelease` | Initialized actor link in x0 | Releases a link. The event bridge cleans up both embedded links after submitting the request. Passing the actor pointer itself would target the wrong object. |
+| `0x828d4a70 PouchAddRemove` | Pointer to a populated event parameter block in x0 | Uses the item name and signed count delta referenced by that block. The host reads the top two bits of the word at block + 0x18 for status. Use `game.inventory.add()` or `remove()` for ordinary edits. |
 
 `native.call(addr, {x, f, d, indirectResult})` accepts up to eight positional values per register bank. Omitted registers retain the live context value. `indirectResult` supplies the x8 guest address for structure returns. Allocate the size and alignment required by the specific method. Greenhook requires a mapped 24-byte buffer for GetTime. The native call restores registers afterward. Writes to the guest result buffer and game state persist.
 
@@ -320,9 +419,14 @@ import { editResource, openByml } from "greenhook/data";
 const path = "Banc/KokiriForest/KokiriForest_Child_Static.bcett.byml.zs";
 function movePlacement(id, x) {
     return editResource(path, bytes => {
-        for (const [, actor] of openByml(bytes).get("Actors").entries()) {
+        const actors = openByml(bytes).get("Actors");
+        if (!actors || typeof actors !== "object" || !("kind" in actors)) throw new Error("Actors array missing");
+        for (const [, actor] of actors.entries()) {
+            if (!actor || typeof actor !== "object" || !("kind" in actor)) continue;
             if (actor.get("Hash") === id) {
-                actor.get("Translate").set(0, x);
+                const position = actor.get("Translate");
+                if (!position || typeof position !== "object" || !("kind" in position)) throw new Error("Translate array missing");
+                position.set(0, x);
                 return;
             }
         }
@@ -347,8 +451,9 @@ function movePlacement(id, x) {
 ```js
 import { listTables, openTable, findRecord } from "greenhook/data";
 const file = listTables().find(s => s.startsWith("DungeonParam."));
-if (file) {
-    const dungeon = findRecord(openTable(file), "BottomOfTheWell");
+const table = file && openTable(file);
+if (table) {
+    const dungeon = findRecord(table, "BottomOfTheWell");
     const hash = dungeon?.get("TargetGameData");
     if (typeof hash === "number") console.log(game.flags.get(hash));
 }

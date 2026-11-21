@@ -129,32 +129,51 @@ interface BgmChangeEvent {
 }
 
 interface GamePlayerNamespace {
-    /** Latest sampled Link statistics. Life and maxLife use quarter hearts. Missing fields are null. */
+    /** Read the latest sample of life, maximum life, rupees, Skulltula tokens and heart pieces. Life uses quarter hearts. An unavailable sample or individual field is null. */
     getProgress(): { life: number | null; maxLife: number | null; rupees: number | null; skulltulaTokens: number | null; heartPieces: number | null } | null;
-    getPos(): Vec3 | null;
+    /** Read Link’s world coordinates. Falls back to the cached position, initially (0, 0, 0). Use getPointers().actor to check whether Link has been observed. */
+    getPos(): Vec3;
+    /** Move Link to absolute world coordinates. Executes with a live player context or queues the move for a player update. */
     setPos(x: number, y: number, z: number): boolean;
-    getFacing(): number | null;
+    /** Read Link’s heading in radians from his transform, falling back to the last sample (initially zero). */
+    getFacing(): number;
+    /** Write the heading in radians. Returns true when the runtime has an actor to update. */
     setFacing(radians: number): boolean;
-    /** Quarter hearts, or -1 before the first sample. */
+    /** Read current life in quarter hearts (4 is one heart). Falls back to the last sample, initially -1. */
     getLife(): number;
+    /** Set current life in quarter hearts, clamped to a minimum of zero. Returns true if either the game-data or live health write succeeds. */
     setLife(quarterHearts: number): boolean;
-    /** Maximum life in quarter hearts, or -1 before the first sample. */
+    /** Read heart capacity in quarter hearts, or -1 before the first successful read or sample. */
     getMaxLife(): number;
+    /** Set heart capacity in quarter hearts, with a minimum of 4. Returns whether the capacity flag was written. */
     setMaxLife(quarterHearts: number): boolean;
-    /** Rupee count, or -1 before the first sample. */
+    /** Read the wallet count, falling back to the last sample, initially -1. */
     getRupees(): number;
+    /** Write the wallet count, clamping negative amounts to zero. Returns false if the rupee flag cannot be written. */
     setRupees(amount: number): boolean;
+    /** Read the age flag or last observed age. Returns null before either is available. */
     getAge(): "child" | "adult" | null;
+    /** Request the child or adult form. Runs immediately with a live actor and guest context or queues the change. Unsupported names throw RangeError. */
     setAge(age: "child" | "adult"): boolean;
+    /** Read the script movement-speed multiplier. */
     getSpeedScale(): number;
+    /** Set the movement multiplier. Values clamp to 0.05–10. Use 1 for normal speed. */
     setSpeedScale(scale: number): void;
+    /** Read the invincibility override. Null means the host controls it. */
     getInvincible(): boolean | null;
+    /** Force invincibility on or off. Pass null to release script control. */
     setInvincible(enabled: boolean | null): void;
+    /** Read the script damage multiplier. */
     getDamageMultiplier(): number;
+    /** Scale incoming damage by a factor from 0 to 100. Use 1 for normal damage. */
     setDamageMultiplier(mult: number): void;
+    /** Read the flight override. Null means the host controls it. */
     getFlight(): boolean | null;
+    /** Force flight on or off. Pass null to release script control. */
     setFlight(enabled: boolean | null): void;
+    /** Read the current player prompt string or its last sampled value. It can be empty. */
     getPrompt(): string;
+    /** Read the last observed actor, player, components and controller guest addresses. An unavailable address is 0n. Refresh pointers after transitions. */
     getPointers(): PlayerPointers;
 }
 
@@ -166,33 +185,56 @@ interface InventoryItemEntry {
 }
 
 interface GameInventoryNamespace {
+    /** Enumerate known items with their display label, actor name, kind (toggle or quantity) and count. A count of -1 means unavailable. */
     list(): InventoryItemEntry[];
+    /** Read an item by actor name or recognized label. Returns its count, 0 or 1 for a recognized song flag, or -1 if unavailable. */
     get(itemName: string): number;
+    /** Return true when the reported count exceeds zero. Use get() to distinguish an unavailable count from zero. */
     has(itemName: string): boolean;
+    /** Add the specified amount (default 1). Outside a live guest context, true means the change was accepted into the queue. */
     add(itemName: string, amount?: number): boolean;
+    /** Subtract the specified amount (default 1). Outside a live guest context, true means the change was accepted into the queue. */
     remove(itemName: string, amount?: number): boolean;
+    /** Set an absolute count. Negative targets throw RangeError. A queued edit computes the required change when it executes. */
     set(itemName: string, targetCount: number): boolean;
 }
 
 interface GameFlagsNamespace {
-    /** Scan up to 128 slots. Pass next as the next cursor until it is null. A null page means unavailable. */
+    /** Scan up to 128 table slots per call for bool, int, uint, float, enum or string. Start at cursor 0 and pass back next, even after an empty page. A null next ends the scan. A null page means unavailable. */
     list(kind: "bool" | "int" | "float" | "enum" | "string" | "uint", cursor?: number): { hashes: number[]; next: number | null } | null;
+    /** Compute the unsigned MurmurHash3 x86-32 key for a flag name using seed zero. */
     hash(name: string): number;
+    /** Read a named or hashed flag across supported 32-bit-key tables. Returns a boolean, number, string or null when absent. */
     get(nameOrHash: string | number): boolean | number | string | null;
+    /** Read an existing Boolean flag. Null means missing or unavailable. */
     getBool(nameOrHash: string | number): boolean | null;
+    /** Write a Boolean. With persist enabled (default), also invoke or queue the game’s persistent setter. Pass false as the third argument for a direct in-memory write. */
     setBool(nameOrHash: string | number, value: boolean, persist?: boolean): boolean;
+    /** Read an existing signed 32-bit flag, or null. */
     getInt(nameOrHash: string | number): number | null;
+    /** Write an existing signed 32-bit entry. Returns whether the write succeeded. */
     setInt(nameOrHash: string | number, value: number): boolean;
+    /** Read an existing unsigned 32-bit flag, or null. */
     getUInt(nameOrHash: string | number): number | null;
+    /** Write an existing unsigned 32-bit entry. Returns whether the write succeeded. */
     setUInt(nameOrHash: string | number, value: number): boolean;
+    /** Read a single-precision game flag as a JavaScript number, or null. */
     getFloat(nameOrHash: string | number): number | null;
+    /** Write an existing float flag with single-precision rounding. Returns whether the write succeeded. */
     setFloat(nameOrHash: string | number, value: number): boolean;
+    /** Read the numeric enum value hash, or null when the entry is unavailable. */
     getEnum(nameOrHash: string | number): number | null;
+    /** Write an enum value using its string name (hashed) or numeric hash. Returns whether the existing entry was written. */
     setEnum(nameOrHash: string | number, value: string | number): boolean;
+    /** Read an existing game string from its 64-byte buffer, or null. */
     getString(nameOrHash: string | number): string | null;
+    /** Update an existing string buffer. At most 63 UTF-8 bytes fit before the terminator. Keep replacements within that limit to preserve whole characters. */
     setString(nameOrHash: string | number, value: string): boolean;
+    /** Read a placement Boolean by its full 64-bit ID. Pass a bigint for exact integer precision. Returns null if absent. */
     getBool64(placementId: AddressLike): boolean | null;
+    /** Change an existing placement Boolean by ID. Returns false if its entry cannot be found or written. */
     setBool64(placementId: AddressLike, value: boolean): boolean;
+    /** Observe changes after the first readable sample establishes a baseline. The callback receives new value, previous value and original key. Call the returned function to stop. */
     watch(
         nameOrHash: string | number,
         callback: (newVal: boolean | number | string | null, oldVal: boolean | number | string | null, key: string | number) => void
@@ -223,17 +265,27 @@ interface SingletonsInfo {
 }
 
 interface GameWorldNamespace {
+    /** Read the current map’s internal ID, or null when unavailable. */
     getMap(): string | null;
-    /** English display name for a map ID. With no argument, looks up the current map. */
+    /** Look up the English area name for a map ID. Omit the ID to use the current map. Returns null when unresolved. */
     getAreaName(map?: string): string | null;
+    /** Read the loading flag. Returns false when the flag is unavailable. */
     isLoading(): boolean;
+    /** Test whether the event manager has a current event. Returns false if the manager cannot be read. */
     isEventPlaying(): boolean;
+    /** Read the current BGM identifier from game data or its cached sample. The string may be empty. */
     getMusic(): string;
+    /** Read totalSeconds as a bigint and seconds within the day as a number. Also returns hour, minute and formatted HH:MM. Returns null without a readable clock. */
     getTime(): WorldTime | null;
+    /** With two arguments, set hours and minutes. With one, values 0 through 24 are hours (fractions allowed), all others are seconds. The result wraps at 24 hours. May queue until a player update. */
     setTime(hourOrSeconds: number, minute?: number): boolean;
+    /** List teleport presets and their child/adult map IDs. Either age-specific ID can be null. Use index for an unambiguous preset. */
     destinations(): DestinationEntry[];
+    /** Request a map change by index, first matching name or custom destination. Full names match case-insensitively, substrings case-sensitively. Custom defaults are Entrance and Dm_SY_BancChangeArrive. Observe onMapChange to detect arrival. */
     teleport(target: number | string | { banc: string; startPos?: string; bootEvent?: string }): boolean;
+    /** Request a named game event using the supplied starter actor or the most recently sampled Link actor. May queue until a player update. */
     triggerEvent(eventName: string, starterActorPtr?: AddressLike): boolean;
+    /** Read the six game manager addresses as bigints. Check for 0n before using a manager and obtain a fresh address after transitions. */
     getSingletons(): SingletonsInfo;
 }
 
@@ -261,15 +313,25 @@ interface ScreenPoint {
 }
 
 interface GameCameraNamespace {
+    /** Read the active gameplay view’s eye, target, 12-number view matrix and last sampled camera angles. Returns null when the view is unavailable. */
     getPose(): CameraPose | null;
+    /** Supply a 12-number row-major view matrix, eye and target, or eye with yaw and pitch in radians. Both angles are needed in the angle form. Pass null to release the view. */
     setOverride(pose: CameraOverridePose | null): void;
+    /** Override the player camera’s yaw and pitch in degrees. */
     setPlayerAngles(yawDeg: number, pitchDeg: number): void;
+    /** Release the player camera angle override. */
     clearPlayerAngles(): void;
+    /** Set the field-of-view multiplier, clamped to 0.25–2.5. */
     setFovScale(scale: number): void;
+    /** Read the current field-of-view multiplier. */
     getFovScale(): number;
+    /** Set the camera-speed multiplier, clamped to 0.1–8. */
     setSpeedScale(scale: number): void;
+    /** Read the current camera-speed multiplier. */
     getSpeedScale(): number;
+    /** Pass true to suppress camera centering, false to allow it or null to use the host setting. */
     setDisableCentering(disable: boolean | null): void;
+    /** Project a world position to window pixels using a vertical FOV in degrees (default 50). Returns null without a view. Positive depth is forward. The visible test allows a 200-pixel margin, so check window bounds for strict clipping. */
     worldToScreen(x: number, y: number, z: number, fovDeg?: number): ScreenPoint | null;
 }
 
@@ -283,10 +345,13 @@ interface ActorSnapshot {
 }
 
 interface GameActorsNamespace {
+    /** Read Link’s actor snapshot, or null before an actor has been observed. */
     getPlayer(): ActorSnapshot | null;
-    /** Resolve a known span of actor virtual method slots. Each entry is a guest address or null. */
+    /** Resolve 1–128 consecutive vtable slots starting at a nonnegative integer slot. An unreadable range returns null. Individual untranslated entries are null. Slot signatures depend on the actor class and build. */
     getMethods(actor: AddressLike, firstSlot: number, count: number): (bigint | null)[] | null;
-    inspect(ptr: AddressLike): ActorSnapshot | null;
+    /** Read a snapshot for a current actor address, or null if the header cannot be read. Obtain addresses from actor callbacks and refresh them after map changes. */
+    inspect(ptr: AddressLike): (ActorSnapshot & { instanceId: number; statusCode: number; name: string }) | null;
+    /** Write world coordinates to a live actor. Link uses the player movement path. Other actors receive a direct transform write which their own update can overwrite. */
     setPos(ptr: AddressLike, x: number, y: number, z: number): boolean;
 }
 
@@ -321,24 +386,40 @@ interface InputOverrideSpec {
 
 interface GameInputNamespace {
     readonly Buttons: Record<ButtonName, number>;
+    /** Read sampled buttons, rawButtons, justPressed, justReleased and four integer stick axes. Button masks here are numbers sampled before script overrides. */
     getState(): PadStateSnapshot;
+    /** Test a button name or bitmask. For a combined mask, every selected button must be held. */
     isDown(button: ButtonName | number): boolean;
+    /** Test whether any selected button changed from up to down between the two latest input samples. */
     justPressed(button: ButtonName | number): boolean;
+    /** Test whether any selected button changed from down to up between the two latest input samples. */
     justReleased(button: ButtonName | number): boolean;
+    /** Test a supported key name or Windows virtual-key code. Returns false while the game process lacks foreground focus. */
     isKeyDown(key: string | number): boolean;
+    /** Read cursor coordinates, window size and button bits (left 1, right 2, middle 4). Coordinates are client-relative when the game is foreground, otherwise screen-relative. */
     getMouse(): MouseSnapshot;
+    /** Replace selected controller bits and stick axes on successive input polls. The button mask defaults to 0xffff. Use mask 0 for a sticks-only override. Axes clamp to ±32767. Passing null releases buttons and sticks but preserves the block setting. */
     setOverride(spec: InputOverrideSpec | null): void;
+    /** Release controller button and stick overrides and clear the persistent input block. */
     clearOverride(): void;
+    /** Zero game input before script overrides on each poll while enabled. Pass false to release the block. */
     setBlockGameInput(block: boolean): void;
 }
 
 interface GameAudioNamespace {
+    /** Read the most recently observed background music identifier. */
     getMusic(): string;
+    /** Set the volume multiplier, clamped to 0–4. Use 1 for normal volume. */
     setVolumeScale(scale: number): void;
+    /** Read the current volume multiplier. */
     getVolumeScale(): number;
+    /** Set the pitch multiplier, clamped to 0.25–4. Use 1 for normal pitch. */
     setPitchScale(scale: number): void;
+    /** Read the current pitch multiplier. */
     getPitchScale(): number;
+    /** Enable or disable the script mute switch. */
     setMute(muted: boolean): void;
+    /** Return the script mute switch state. */
     isMuted(): boolean;
 }
 
@@ -360,28 +441,48 @@ interface ScreenshotResult {
 }
 
 interface GameGraphicsNamespace {
+    /** Read the number of presented frames. Use differences for frame counts. */
     getFrame(): number;
+    /** Read the recent measured presentation rate in frames per second. It starts at zero before sufficient samples arrive. */
     getFps(): number;
+    /** Read render window width and height in pixels. Dimensions can be zero before frame information is available. */
     getWindowSize(): { width: number; height: number };
-    getOption(keyOrId: string | number): ControlOptionEntry | number | null;
-    setOption(key: string, value: number): ControlOptionEntry | null;
+    /** Read an integer option value. A missing string key returns null. A numeric ID uses the host lookup with fallback -1. */
+    getOption(keyOrId: string | number): number | null;
+    /** Set an integer option by key or numeric ID. A string key reports host success. A numeric ID returns true after dispatch. Use listOptions() for discoverable keys and ranges. */
+    setOption(keyOrId: string | number, value: number): boolean;
+    /** Enumerate host settings with key, display name, text, tab, numeric value, min, max and step. */
     listOptions(): ControlOptionEntry[];
+    /** Set the text-speed multiplier, clamped to 0.1–100. */
     setTextSpeedScale(scale: number): void;
+    /** Read the script text-speed multiplier. */
     getTextSpeedScale(): number;
+    /** Set the text-size multiplier, clamped to 0.25–4. */
     setTextSizeScale(scale: number): void;
+    /** Read the script text-size multiplier. */
     getTextSizeScale(): number;
-    setResolutionScale(percent: number): ControlOptionEntry | null;
+    /** Set the resolution_scale option as an integer percentage. Returns whether the host accepted it. */
+    setResolutionScale(percent: number): boolean;
+    /** Request a capture under scripts_data, default screenshots/shot.png. Await the result for ok, present and path. An invalid path or a second pending request throws synchronously. A rejected capture request can reject the promise. */
     takeScreenshot(relPath?: string): Promise<ScreenshotResult>;
 }
 
 interface GameRomfsNamespace {
+    /** Serve a game resource from a host file on future opens. Returns whether the redirect was registered. */
     redirect(romPath: string, hostFilePath: string): boolean;
+    /** Serve supplied text or bytes at a game resource path on future opens. Returns false when no override slot is available. */
     setVirtualFile(romPath: string, content: string | Uint8Array | ArrayBuffer): boolean;
+    /** Remove the virtual file or redirect registered at this path. Returns whether a matching entry was removed. */
     clearOverride(romPath: string): boolean;
+    /** Remove all scripts’ in-memory resource overrides and redirects. Use clearOverride(path) when cleaning up one mod. */
     clearAllOverrides(): void;
+    /** Test for a virtual entry or a file or directory at the resolved game resource path. */
     exists(romPath: string): boolean;
+    /** Decode one Zstandard frame to fresh bytes, optionally with its dictionary. An unknown size or output above 32 MiB throws RangeError. An invalid frame or wrong dictionary throws TypeError. */
     decompressZstd(bytes: Uint8Array, dictionary?: Uint8Array): Uint8Array;
+    /** Read a fresh byte array, preferring a virtual file, then the resolved host file. Returns null on a missing file or an unreadable or oversized disk file (64 MiB limit). */
     readFile(romPath: string): Uint8Array | null;
+    /** List immediate child names from the resolved disk directory, or an empty array if unavailable. Omit the path for the root. Virtual-only files are absent from this listing. */
     listDir(romDir?: string): string[];
 }
 
@@ -397,24 +498,35 @@ interface GameNamespace {
     readonly graphics: GameGraphicsNamespace;
     readonly romfs: GameRomfsNamespace;
 
-    /** Run with a live guest context. Resolves to the callback result or rejects with its exception. */
+    /** Run the callback immediately with a live guest context or at the next player update. Await its return value. A thrown callback exception rejects the promise. */
     defer<T>(fn: () => T): Promise<T>;
-    /** Runs each presented frame. dt is seconds. Call the returned function to unsubscribe. */
+    /** Receive frame number, elapsed seconds (dt) and measured fps on presentation. Use for overlays and frame-based timers. */
     onFrame(cb: (ev: FrameEvent) => void): Unsubscribable;
-    /** Observe an actor at the shared transform-update hook. Copy values needed after the callback. */
+    /** Observe snapshots from the shared actor transform hook, including instanceId and statusCode. An actor can appear repeatedly. This hook observes updates and gives no guarantee of seeing every spawn or destruction. */
     onActorUpdate(cb: (actor: ActorSnapshot & {instanceId: number; statusCode: number}) => void): Unsubscribable;
+    /** Receive Link’s pointers, position, facing, life, maxLife and rupees during a player update. Guest calls can run synchronously inside this callback. */
     onPlayerUpdate(cb: (ev: PlayerUpdateEvent) => void): Unsubscribable;
+    /** Inspect oldLife and incoming damage in quarter hearts. Assign a nonnegative integer to damage or set cancel to true before returning. */
     onDamage(cb: (ev: DamageEvent) => void): Unsubscribable;
+    /** Receive the guest view address and eye and target positions when the gameplay camera updates. */
     onCameraUpdate(cb: (ev: CameraUpdateEvent) => void): Unsubscribable;
+    /** Receive raw and effective button masks as bigints and four stick axes. Modify buttons and axes synchronously to change the sample. To suppress this sample, set buttons to 0n and all four axes to zero. */
     onInput(cb: (ev: GreenhookInputEvent) => void): Unsubscribable;
+    /** Receive the requested game event name and guest argument address. Inspect the argument during the callback. */
     onEventRequest(cb: (ev: EventRequestEvent) => void): Unsubscribable;
+    /** Receive the timeline name and player address. Set cancel to true synchronously to veto the start. */
     onTimelineStart(cb: (ev: TimelineStartEvent) => void): Unsubscribable;
+    /** Inspect reason, mode, caller address and isTransition. Set cancel to true synchronously to veto this save request. */
     onSaveRequest(cb: (ev: SaveRequestEvent) => void): Unsubscribable;
-    /** Receives the current and previous map IDs as positional strings. Call the returned function to unsubscribe. */
+    /** Receive current and previous map IDs as two positional strings. Refresh map-specific state here. */
     onMapChange(cb: (map: string, prevMap: string) => void): Unsubscribable;
+    /** Observe the current guest menu screen and its vtable during a menu update. */
     onMenuTick(cb: (ev: MenuTickEvent) => void): Unsubscribable;
+    /** Observe the guest menu screen, focused pane and caller link register when focus changes. */
     onMenuFocus(cb: (ev: MenuFocusEvent) => void): Unsubscribable;
+    /** Receive current and previous background music identifiers as two positional strings. */
     onBgmChange(cb: (music: string, prevMusic: string) => void): Unsubscribable;
+    /** Run cleanup during script unload. Release subscriptions or overrides your mod owns here. */
     onUnload(cb: () => void): Unsubscribable;
 }
 
@@ -499,7 +611,7 @@ interface HookCpuContext {
 }
 
 interface NativeNamespace {
-    /** Page through the installed executable's translated guest methods. Limits are 1–1024. */
+    /** Page through the installed executable's translated guest methods. Limits are 1â€“1024. */
     listFunctions(start?: number, limit?: number): { addresses: bigint[]; total: number; next: number | null } | null;
     hasFunction(addr: AddressLike): boolean;
     /** Invoke a translated function inside game.defer or onPlayerUpdate. indirectResult supplies x8 for structure returns. */

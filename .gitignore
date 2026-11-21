@@ -1,0 +1,8 @@
+asi/.obj/
+asi/winmm_exports.inc
+asi/winmm_stubs.S
+asi/winmm.def
+work/
+*.log
+
+asi/dist/

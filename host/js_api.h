@@ -63,6 +63,9 @@ int hos_js_ui_active(void);
 int hos_js_ui_snapshot_vk(void *out_snap);
 void hos_js_ui_event_vk(const void *ev);
 void hos_display_js_want_mouse(int want);
+/* Overlay image size and Dear ImGui's mouse capture, recorded by the overlay each frame so scripts can
+   draw and hit-test in the same pixels as ui.draw (hooks_vk.cpp -> js_io.c). */
+void hos_js_set_overlay_state(int width, int height, int ui_wants_mouse);
 
 /* Thin C wrappers from hos_main.c for high-level OoT scripting */
 int hos_oot_js_pouch_count(struct GuestContext *c, const char *name);

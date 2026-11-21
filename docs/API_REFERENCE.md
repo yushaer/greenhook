@@ -150,7 +150,7 @@ Gameplay actions that run at the next player update return `true` when queued an
 - `setSpeedScale(scale: number): void` — Set the camera-speed multiplier, clamped to 0.1–8.
 - `getSpeedScale(): number` — Read the current camera-speed multiplier.
 - `setDisableCentering(disable: boolean | null): void` — Pass true to suppress camera centering, false to allow it or null to use the host setting.
-- `worldToScreen(x: number, y: number, z: number, fovDeg?: number): ScreenPoint | null` — Project a world position to window pixels using a vertical FOV in degrees (default 50). Returns null without a view. Positive depth is forward. The visible test allows a 200-pixel margin, so check window bounds for strict clipping.
+- `worldToScreen(x: number, y: number, z: number, fovDeg?: number): ScreenPoint | null` — Project a world position to `ui.draw` pixels (the overlay image, which can differ from the window or render size) using a vertical FOV in degrees (default 50). Returns null without a view. Positive depth is forward. The visible test allows a 200-pixel margin, so check window bounds for strict clipping.
 
 ### `game.actors`
 
@@ -167,7 +167,7 @@ Use `game.input.Buttons` for numeric bitmasks. Its keys are A, B, X, Y, LS, RS, 
 - `justPressed(button: ButtonName | number): boolean` — Test whether any selected button changed from up to down between the two latest input samples.
 - `justReleased(button: ButtonName | number): boolean` — Test whether any selected button changed from down to up between the two latest input samples.
 - `isKeyDown(key: string | number): boolean` — Test a supported key name or Windows virtual-key code. Returns false while the game process lacks foreground focus.
-- `getMouse(): MouseSnapshot` — Read cursor coordinates, window size and button bits (left 1, right 2, middle 4). Coordinates are client-relative when the game is foreground, otherwise screen-relative.
+- `getMouse(): MouseSnapshot` — Read cursor coordinates, window size and button bits (left 1, right 2, middle 4). Coordinates are client-relative when the game is foreground, otherwise screen-relative. `overlayX`/`overlayY` give the cursor in `ui.draw` pixels (`overlayWidth` × `overlayHeight`) for hit-testing overlay drawings, and `overUi` is true while the cursor is over a Dear ImGui window or a widget holds the mouse.
 - `setOverride(spec: InputOverrideSpec | null): void` — Replace selected controller bits and stick axes on successive input polls. The button mask defaults to 0xffff. Use mask 0 for a sticks-only override. Axes clamp to ±32767. Passing null releases buttons and sticks but preserves the block setting.
 - `clearOverride(): void` — Release controller button and stick overrides and clear the persistent input block.
 - `setBlockGameInput(block: boolean): void` — Zero game input before script overrides on each poll while enabled. Pass false to release the block.

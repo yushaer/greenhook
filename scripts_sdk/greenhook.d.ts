@@ -367,11 +367,21 @@ interface PadStateSnapshot {
 }
 
 interface MouseSnapshot {
+    /** Cursor in window client pixels. */
     x: number;
     y: number;
+    /** Render frame size. */
     width: number;
     height: number;
     buttons: number;
+    /** Cursor in ui.draw / worldToScreen pixels. Use these to hit-test overlay drawings. */
+    overlayX: number;
+    overlayY: number;
+    /** Size of the ui.draw coordinate space. */
+    overlayWidth: number;
+    overlayHeight: number;
+    /** True while the cursor is over a Dear ImGui window or a widget holds the mouse. */
+    overUi: boolean;
 }
 
 interface InputOverrideSpec {

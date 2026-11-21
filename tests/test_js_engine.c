@@ -366,6 +366,12 @@ int main(void) {
     assert(hos_js_reload() == 1);
     step_frames(1, 1.0 / 60.0);
     eval_must("__unit.btnCount", "0");
+    /* Overlay coordinate space: frame size until the overlay reports its image, then the overlay size. */
+    hos_js_set_overlay_state(0, 0, 0);
+    eval_must("const m0 = game.input.getMouse(); `${m0.overlayWidth}x${m0.overlayHeight}:${m0.overUi}`", "1280x720:false");
+    hos_js_set_overlay_state(1920, 1080, 1);
+    eval_must("const m1 = game.input.getMouse(); `${m1.overlayWidth}x${m1.overlayHeight}:${m1.overUi}:${typeof m1.overlayX}`", "1920x1080:true:number");
+    hos_js_set_overlay_state(0, 0, 0);
 
     hos_js_shutdown();
     rm_rf_dir(base_dir);
